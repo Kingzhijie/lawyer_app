@@ -14,6 +14,7 @@ class HomeController extends GetxController {
   final ChatBottomPanelContainerController<ChatPanelType> panelController =
       ChatBottomPanelContainerController<ChatPanelType>();
 
+  final RxBool hasText = false.obs;
   ChatPanelType currentPanelType = ChatPanelType.none;
 
   /// 统一切换面板逻辑，参考官方示例：切到工具时先收起键盘，下一帧切面板；切到键盘时请求焦点
@@ -33,6 +34,20 @@ class HomeController extends GetxController {
     } else {
       update();
     }
+  }
+
+  /// 输入变化监听
+  void _handleTextChanged() {
+    hasText.value = textController.text.trim().isNotEmpty;
+  }
+
+  /// 发送按钮动作（占位：清空输入并保持焦点）
+  void handleSendPressed() {
+    final text = textController.text.trim();
+    if (text.isEmpty) return;
+    textController.clear();
+    hasText.value = false;
+    inputFocusNode.requestFocus();
   }
 
   /// 点击输入框：切到键盘并请求焦点
@@ -97,7 +112,14 @@ class HomeController extends GetxController {
   }
 
   @override
+  void onInit() {
+    super.onInit();
+    textController.addListener(_handleTextChanged);
+  }
+
+  @override
   void onClose() {
+    textController.removeListener(_handleTextChanged);
     textController.dispose();
     inputFocusNode.dispose();
     super.onClose();

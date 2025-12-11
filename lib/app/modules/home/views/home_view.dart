@@ -39,11 +39,15 @@ class HomeView extends GetView<HomeController> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               color: Colors.white,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Expanded(
+                  Flexible(
                     child: TextField(
                       controller: controller.textController,
                       focusNode: controller.inputFocusNode,
+                      minLines: 1,
+                      maxLines: 4, // 1-4 行内自适应，高度到 4 行后内部滚动
+                      keyboardType: TextInputType.multiline,
                       decoration: InputDecoration(
                         hintText: '请输入您要咨询的问题...',
                         border: OutlineInputBorder(
@@ -57,15 +61,23 @@ class HomeView extends GetView<HomeController> {
                           vertical: 12,
                         ),
                       ),
+                      onSubmitted: (text){
+                        controller.handleSendPressed();
+                      },
+                      textInputAction: TextInputAction.send,
                       onTap: controller.handleInputTap,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline),
-                    onPressed: controller.handleToolBtnClick,
-                    iconSize: 28,
-                  ),
+                  Obx(() {
+                    final hasText = controller.hasText.value;
+                    return IconButton(
+                      icon: Icon(hasText ? Icons.send : Icons.add_circle_outline),
+                      onPressed:
+                          hasText ? controller.handleSendPressed : controller.handleToolBtnClick,
+                      iconSize: 28,
+                    );
+                  }),
                 ],
               ),
             ),
