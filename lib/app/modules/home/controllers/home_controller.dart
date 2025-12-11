@@ -44,7 +44,10 @@ class HomeController extends GetxController {
   final RxBool hasText = false.obs;
   ChatPanelType currentPanelType = ChatPanelType.none;
 
-  /// 统一切换面板逻辑，参考官方示例：切到工具时先收起键盘，下一帧切面板；切到键盘时请求焦点
+  /// 统一切换面板逻辑：
+  /// - keyboard：直接切换并请求焦点
+  /// - tool：若当前有焦点先收起键盘，下一帧切换到 other，减少跳动
+  /// - none：回到初始态
   void updatePanelType(ChatPanelType type) {
     final targetPanelType = _toBottomPanel(type);
     final targetFocus = _toHandleFocus(type);
@@ -63,12 +66,12 @@ class HomeController extends GetxController {
     }
   }
 
-  /// 输入变化监听
+  /// 输入变化监听：用于更新 hasText，控制“发送/加号”切换
   void _handleTextChanged() {
     hasText.value = textController.text.trim().isNotEmpty;
   }
 
-  /// 发送按钮动作（模拟发送+AI回复）
+  /// 发送动作：添加用户消息，清空输入并保持焦点，然后模拟 AI 回复并滚动到底
   void handleSendPressed() {
     final text = textController.text.trim();
     if (text.isEmpty) return;
@@ -80,26 +83,26 @@ class HomeController extends GetxController {
     _scheduleScrollToBottom();
   }
 
-  /// 点击输入框：切到键盘并请求焦点
+  /// 点击输入框：无条件切到键盘，保证从其他面板回到可输入态
   void handleInputTap() {
     logPrint('323232');
     updatePanelType(ChatPanelType.keyboard);
   }
 
-  /// PointerUp：若当前是只读（可能处于其他面板），切回键盘
+  /// PointerUp 兜底：当前未聚焦（可能只读/其他面板）时，切回键盘
   void handleInputPointerUp() {
     if (inputFocusNode.canRequestFocus && !inputFocusNode.hasFocus) {
       updatePanelType(ChatPanelType.keyboard);
     }
   }
 
-  /// 点击加号：在工具面板与键盘间切换
+  /// 点击加号：工具面板 <-> 键盘 间切换
   void handleToolBtnClick() {
     final isToolOpen = currentPanelType == ChatPanelType.tool;
     updatePanelType(isToolOpen ? ChatPanelType.keyboard : ChatPanelType.tool);
   }
 
-  /// 同步当前面板状态
+  /// 同步当前面板状态（来自 ChatBottomPanelContainer 回调）
   void onPanelTypeChange(ChatBottomPanelType panelType, ChatPanelType? data) {
     switch (panelType) {
       case ChatBottomPanelType.none:
@@ -151,6 +154,7 @@ class HomeController extends GetxController {
     }
   }
 
+  /// 初始化时推送欢迎语，并滚动到底
   void _addAiWelcome() {
     messages.add(
       UiMessage(
@@ -163,6 +167,7 @@ class HomeController extends GetxController {
     _scheduleScrollToBottom(animated: false);
   }
 
+  /// 添加用户消息并滚动到底
   void _addUserMessage(String text) {
     messages.add(
       UiMessage(
@@ -175,6 +180,7 @@ class HomeController extends GetxController {
     _scheduleScrollToBottom();
   }
 
+  /// 延迟 600ms 模拟 AI 回复，并滚动到底
   void _simulateAiReply(String userText) {
     Future.delayed(const Duration(milliseconds: 600), () {
       messages.add(
@@ -189,6 +195,7 @@ class HomeController extends GetxController {
     });
   }
 
+  /// 标记消息已完成打字动画，避免重复播放
   void markMessageAnimated(String id) {
     final index = messages.indexWhere((m) => m.id == id);
     if (index == -1) return;
@@ -197,6 +204,7 @@ class HomeController extends GetxController {
     messages[index] = current.copyWith(hasAnimated: true);
   }
 
+  /// 滚动到底部；animated=false 使用 jump，animated=true 使用动画
   void _scrollToBottom({bool animated = true}) {
     if (!scrollController.hasClients) return;
     final position = scrollController.position.maxScrollExtent;
@@ -211,6 +219,7 @@ class HomeController extends GetxController {
     }
   }
 
+  /// 带可选延时的滚动，常用于等待键盘高度稳定后再对齐底部
   void _scheduleScrollToBottom({bool animated = true, Duration delay = Duration.zero}) {
     final run = () => WidgetsBinding.instance.addPostFrameCallback((_) {
           _scrollToBottom(animated: animated);
@@ -229,7 +238,7 @@ class HomeController extends GetxController {
     });
   }
 
-  /// 输入框高度变化时也滚动到底，避免遮挡
+  /// 输入框高度变化时滚动到底，避免输入框长高后遮挡尾部消息
   void handleInputSizeChanged(Size _) {
     _scheduleScrollToBottom(animated: false);
   }
