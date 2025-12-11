@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:chat_bottom_container/chat_bottom_container.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,17 +23,69 @@ class HomeView extends GetView<HomeController> {
         child: Column(
           children: [
             Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey),
-                    SizedBox(height: 16),
-                    Text(
-                      '聊天功能待实现',
-                      style: TextStyle(color: Colors.black54, fontSize: 16),
-                    ),
-                  ],
+              child: Obx(
+                () => ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                  controller: controller.scrollController,
+                  itemCount: controller.messages.length,
+                  itemBuilder: (context, index) {
+                    final msg = controller.messages[index];
+                    final isAi = msg.isAi;
+                    final bubbleColor = isAi ? Colors.grey.shade200 : Colors.blue.shade50;
+                    final align = isAi ? CrossAxisAlignment.start : CrossAxisAlignment.end;
+                    final textColor = isAi ? Colors.black87 : Colors.blue.shade900;
+                    final radius = BorderRadius.only(
+                      topLeft: const Radius.circular(12),
+                      topRight: const Radius.circular(12),
+                      bottomLeft: isAi ? const Radius.circular(2) : const Radius.circular(12),
+                      bottomRight: isAi ? const Radius.circular(12) : const Radius.circular(2),
+                    );
+
+                    Widget textWidget;
+                    if (isAi && !msg.hasAnimated) {
+                      final total = msg.text.length;
+                      final duration =
+                          Duration(milliseconds: max(600, 40 * total.clamp(1, 80)));
+                      textWidget = TweenAnimationBuilder<double>(
+                        key: ValueKey('tw-${msg.id}'),
+                        tween: Tween(begin: 0, end: total.toDouble()),
+                        duration: duration,
+                        onEnd: () => controller.markMessageAnimated(msg.id),
+                        builder: (context, value, _) {
+                          controller.scheduleScrollDuringTyping();
+                          final count = value.clamp(0, total.toDouble()).floor();
+                          final text = msg.text.substring(0, count);
+                          return Text(
+                            text.isEmpty ? ' ' : text,
+                            style: TextStyle(color: textColor, fontSize: 15),
+                          );
+                        },
+                      );
+                    } else {
+                      textWidget = Text(
+                        msg.text,
+                        style: TextStyle(color: textColor, fontSize: 15),
+                      );
+                    }
+
+                    return Align(
+                      alignment: isAi ? Alignment.centerLeft : Alignment.centerRight,
+                      child: Column(
+                        crossAxisAlignment: align,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: bubbleColor,
+                              borderRadius: radius,
+                            ),
+                            child: textWidget,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -42,30 +96,21 @@ class HomeView extends GetView<HomeController> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Flexible(
-                    child: TextField(
-                      controller: controller.textController,
-                      focusNode: controller.inputFocusNode,
-                      minLines: 1,
-                      maxLines: 4, // 1-4 行内自适应，高度到 4 行后内部滚动
-                      keyboardType: TextInputType.multiline,
-                      decoration: InputDecoration(
-                        hintText: '请输入您要咨询的问题...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade100,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+                    child: Listener(
+                      onPointerUp: (_) => controller.handleInputPointerUp(),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return NotificationListener<SizeChangedLayoutNotification>(
+                            onNotification: (_) {
+                              controller.handleInputSizeChanged(Size.zero);
+                              return false;
+                            },
+                            child: const SizeChangedLayoutNotifier(
+                              child: _InputField(),
+                            ),
+                          );
+                        },
                       ),
-                      onSubmitted: (text){
-                        controller.handleSendPressed();
-                      },
-                      textInputAction: TextInputAction.send,
-                      onTap: controller.handleInputTap,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -118,6 +163,40 @@ class HomeView extends GetView<HomeController> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _InputField extends StatelessWidget {
+  const _InputField();
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<HomeController>();
+    return TextField(
+      controller: controller.textController,
+      focusNode: controller.inputFocusNode,
+      minLines: 1,
+      maxLines: 4, // 1-4 行内自适应，高度到 4 行后内部滚动
+      keyboardType: TextInputType.multiline,
+      decoration: InputDecoration(
+        hintText: '请输入您要咨询的问题...',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+      ),
+      onSubmitted: (text){
+        controller.handleSendPressed();
+      },
+      textInputAction: TextInputAction.send,
+      onTap: controller.handleInputTap,
     );
   }
 }
