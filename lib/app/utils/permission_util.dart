@@ -127,6 +127,48 @@ class PermissionUtils {
         onCancel: onCancel);
   }
 
+  /// 申请麦克风
+  static Future<bool> requestMicrophonePermission(
+      {bool isToast = true, VoidCallback? onCancel}) async {
+    if (Platform.isAndroid) {
+      Permission permission = Permission.microphone;
+      var status = await permission.status;
+      if (status.isDenied) {
+        showDialog(
+          context: currentContext,
+          builder: (context) {
+            return PermissionNoticeContentWidget(
+                content: '当您使用APP时，会在您发送语音消息等功能时，访问麦克风权限，不授权上述权限，不影响APP的其他功能使用');
+          },
+        );
+      }
+    }
+    return _requestPermission(Permission.microphone,
+        content: '需要使用麦克风权限, 实现发送语音消息等功能',
+        onCancel: onCancel);
+  }
+
+  /// 申请语音转文字功能
+  static Future<bool> requestSpeechPermission(
+      {bool isToast = true, VoidCallback? onCancel}) async {
+    if (Platform.isAndroid) {
+      Permission permission = Permission.speech;
+      var status = await permission.status;
+      if (status.isDenied) {
+        showDialog(
+          context: currentContext,
+          builder: (context) {
+            return PermissionNoticeContentWidget(
+                content: '当您使用APP时，会在您发送语音消息等功能时，访问麦克风实现语音转文字权限，不授权上述权限，不影响APP的其他功能使用');
+          },
+        );
+      }
+    }
+    return _requestPermission(Permission.speech,
+        content: '需要使用麦克风, 实现发送语音转文字消息等功能',
+        onCancel: onCancel);
+  }
+
   /// 申请蓝牙权限
   static Future<bool> requestBluetoothPermission(
       {bool isToast = true, VoidCallback? onCancel}) async {

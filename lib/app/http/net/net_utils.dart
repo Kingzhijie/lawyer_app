@@ -224,4 +224,55 @@ class NetUtils {
       return null;
     }
   }
+
+  /// 上传音频文件
+  static Future<Map<String, dynamic>?> uploadAudio(String filePath) async {
+    try {
+      LoadingTool.showLoading();
+      final dio = DioUtils.instance.dio;
+      
+      final formData = FormData.fromMap({
+        'audio': await MultipartFile.fromFile(
+          filePath,
+          filename: 'audio_${DateTime.now().millisecondsSinceEpoch}.m4a',
+          contentType: MediaType('audio', 'm4a'),
+        ),
+      });
+
+      final response = await dio.post(
+        DioConfig.baseURL + Apis.uploadAudio,
+        data: formData,
+        onSendProgress: (int sent, int total) {
+          final progress = (sent / total * 100).toStringAsFixed(0);
+          logPrint('音频上传进度: $progress%');
+        },
+      );
+      
+      LoadingTool.dismissLoading();
+      
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data != null) {
+          if (data['data'] != null) {
+            logPrint("上传音频成功: ${data.toString()}");
+            final dataAudio = data['data'];
+            if (dataAudio['audioUrl'] != null) {
+              return {
+                'audioUrl': dataAudio['audioUrl'],
+                'audioId': dataAudio['audioId'],
+              };
+            }
+          }
+        }
+      } else {
+        showToast('上传失败');
+      }
+      return null;
+    } catch (e) {
+      LoadingTool.dismissLoading();
+      logPrint('音频上传失败: $e');
+      showToast('上传失败');
+      return null;
+    }
+  }
 }

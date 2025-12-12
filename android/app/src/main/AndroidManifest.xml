@@ -46,6 +46,14 @@
     <!-- 华为 HMS SDK 所需（如果集成了华为通道） -->
     <uses-permission android:name="com.huawei.permission.external_app_settings.USE_COMPONENT" />
 
+    <!-- 录音权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- 可能会有蓝牙耳机 -->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
 
     <application
         android:label="lawyer_app"
@@ -231,6 +239,9 @@
         </intent>
         <intent>
             <action android:name="com.getui.sdk.action" />
+        </intent>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
         </intent>
     </queries>
 </manifest>
