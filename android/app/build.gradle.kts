@@ -13,7 +13,7 @@ plugins {
 }
 
 android {
-    namespace = "com.lawyer.app.lawyer_app"
+    namespace = "com.fm.lawyer.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -48,7 +48,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.lawyer.app.lawyer_app"
+        applicationId = "com.fm.lawyer.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
