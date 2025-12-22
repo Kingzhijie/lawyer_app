@@ -92,12 +92,12 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: Container(
         width: 50.toW,
         alignment: Alignment.center,
-        child: ImageUtils(
+        child: leftIconPath != null ? ImageUtils(
           imageUrl: leftIconPath,
           width: 22.toW,
           height: 22.toW,
           fit: BoxFit.cover,
-        ),
+        ) : Icon(Icons.arrow_back_ios, size: 22.toW, color: Colors.black),
       ),
     );
   }

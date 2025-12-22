@@ -9,7 +9,7 @@ class AppColors {
   }
 
   static const Color theme = Color(0xFF0058EA);
-  static const Color color_line = Color(0x1A000000);
+  static const Color color_line = Color(0x1D000000);
   static const Color color_99000000 = Color(0x99000000);
   static const Color color_E6000000 = Color(0xE6000000);
   static const Color color_white = Color(0xFFFFFFFF);

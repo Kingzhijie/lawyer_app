@@ -1,5 +1,6 @@
 import 'package:chat_bottom_container/chat_bottom_container.dart';
 import 'package:flutter/material.dart';
+import 'package:lawyer_app/app/common/constants/app_colors.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -13,7 +14,7 @@ class ChatBottomPanel extends StatelessWidget {
     return ChatBottomPanelContainer<ChatPanelType>(
       controller: controller.panelController,
       inputFocusNode: controller.inputFocusNode,
-      panelBgColor: Colors.grey.shade100,
+      panelBgColor: AppColors.color_white,
       otherPanelWidget: (type) {
         switch (type) {
           case ChatPanelType.tool:

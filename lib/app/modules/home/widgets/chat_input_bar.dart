@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/utils/screen_utils.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -12,8 +14,11 @@ class ChatInputBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: Colors.white,
+      padding: EdgeInsets.symmetric(horizontal: 12.toW, vertical: 8.toW),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(bottom: BorderSide(color: AppColors.color_line, width: 0.5))
+      ),
       child: Obx(() {
         final hasText = controller.hasText.value;
         final hasVoice = controller.hasVoice.value;
