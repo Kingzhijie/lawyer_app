@@ -59,16 +59,15 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         splitScreenMode: true,
         builder: (mContext, child) {
           return GetMaterialApp(
-            title: "腰动力",
+            title: "灵动",
             initialRoute: AppPages.INITIAL,
             getPages: AppPages.routes,
             navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
-            // 使用 GetX 的全局 locale，Get.updateLocale 会自动更新
             navigatorObservers: [RouteHistoryObserver()],
             theme: ThemeData(
               dividerColor: Colors.transparent,
-              scaffoldBackgroundColor: AppColors.color_FFF5F5F5,
+              scaffoldBackgroundColor: AppColors.color_white,
               fontFamily: Platform.isIOS ? 'PingFang SC' : 'NotoSansSC',
               appBarTheme: AppBarTheme(
                 scrolledUnderElevation: 0.0,

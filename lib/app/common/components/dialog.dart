@@ -401,7 +401,7 @@ class _ShowAlertDialogState extends State<_ShowAlertDialog> {
                   decoration: const BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
-                        color: AppColors.color_FFEDEDED,
+                        color: AppColors.color_line,
                         width: 0.5,
                       ),
                     ),
@@ -459,7 +459,7 @@ class _ShowAlertDialogState extends State<_ShowAlertDialog> {
               decoration: BoxDecoration(
                 border: Border(
                   right: BorderSide(
-                    color: AppColors.color_FFEDEDED,
+                    color: AppColors.color_line,
                     width: 0.5,
                   ),
                 ),

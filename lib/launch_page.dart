@@ -25,7 +25,7 @@ class _LaunchPageState extends State<LaunchPage> {
   Widget build(BuildContext context) {
     return Container(
         alignment: Alignment.center,
-        color: AppColors.color_FFF5F5F5,
+        color: AppColors.color_white,
         width: AppScreenUtil.screenWidth,
         height: AppScreenUtil.screenHeight,
         child: Stack(
@@ -43,7 +43,7 @@ class _LaunchPageState extends State<LaunchPage> {
   Widget _setContentWidget() {
     return Container(
       decoration: BoxDecoration(
-          color: AppColors.color_FF1F1F1F,
+          color: AppColors.color_white,
           borderRadius: BorderRadius.circular(12.toW)),
       width: 295.toW,
       padding: EdgeInsets.only(
@@ -97,7 +97,7 @@ class _LaunchPageState extends State<LaunchPage> {
           Text(
             '不同意',
             style:
-                TextStyle(color: AppColors.color_B3FFFFFF, fontSize: 14.toSp),
+                TextStyle(color: AppColors.color_white, fontSize: 14.toSp),
           ).withOnTap(() {
             exit(0);
           })

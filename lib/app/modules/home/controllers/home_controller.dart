@@ -105,7 +105,6 @@ class HomeController extends GetxController {
 
   /// 点击输入框：无条件切到键盘，保证从其他面板回到可输入态
   void handleInputTap() {
-    logPrint('323232');
     updatePanelType(ChatPanelType.keyboard);
   }
 

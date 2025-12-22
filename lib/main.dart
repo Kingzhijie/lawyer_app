@@ -22,7 +22,6 @@ Future<void> main() async {
   if (Platform.isAndroid) {
     SystemUiOverlayStyle style = SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      systemNavigationBarColor: AppColors.color_FFF5F5F5,
     );
     SystemChrome.setSystemUIOverlayStyle(style);
   }

@@ -8,51 +8,25 @@ class AppColors {
     return Color(int.parse(buffer.toString(), radix: 16));
   }
 
+  static const Color theme = Color(0xFF0058EA);
+  static const Color color_line = Color(0x1A000000);
+  static const Color color_99000000 = Color(0x99000000);
+  static const Color color_E6000000 = Color(0xE6000000);
+  static const Color color_white = Color(0xFFFFFFFF);
+  static const Color color_66000000 = Color(0x66000000);
+  static const Color color_FFC5C5C5 = Color(0xFFC5C5C5);
+  static const Color color_FFF3F3F3 = Color(0xFFF3F3F3);
+  static const Color color_FFDCDCDC = Color(0xFFDCDCDC);
+  static const Color color_FFF3F7FF = Color(0xFFF3F7FF);
+  static const Color color_FFECF2FE = Color(0xFFECF2FE);
+  static const Color color_FFFEF3E6 = Color(0xFFFEF3E6);
+  static const Color color_FFFDECEE = Color(0xFFFDECEE);
+  static const Color color_FFE8F7F2 = Color(0xFFE8F7F2);
+  static const Color color_FFEBEBF8 = Color(0xFFEBEBF8);
+  static const Color color_FFFFEDEF = Color(0xFFFFEDEF);
+  static const Color color_FFE34D59 = Color(0xFFE34D59);
+  static const Color color_FF1F2937 = Color(0xFF1F2937);
+  static const Color color_FFEEEEEE = Color(0xFFEEEEEE);
 
-  static const Color bgBlue1 = Color(0xFF4C8EFE);
-  static const Color bgBlue2 = Color(0xFF4095E5);
-  //蓝色
-  static const Color textBlue = Color(0xFF4C8EFE);
-
-  static const Color theme = Color(0xFFFAD59D);
-  static const Color color_FFFAD59D = Color(0xFFFAD59D);
-  //
-  static const Color color_FF101010 = Color(0xFF101010);
-  static const Color color_14FF6F00 = Color(0x14FF6F00);
-  static const Color color_0FFF6F00 = Color(0x0FFF6F00);
-  static const Color color_B3111F2C = Color(0xB3111F2C);
-  static const Color color_0F111F2C = Color(0x0F111F2C);
-  static const Color color_FF8D583A = Color(0xFF8D583A);
-  static const Color color_8FF93A4A = Color(0x8FF93A4A);
-  static const Color color_8FFF6F00 = Color(0x8FFF6F00);
-  static const Color color_14F93A4A = Color(0x14F93A4A);
-  static const Color color_FFF93A4A = Color(0xFFF93A4A);
-  static const Color color_FFFFE9B6 = Color(0xFFFFE9B6);
-  static const Color color_FFF1D299 = Color(0xFFF1D299);
-  static const Color color_FF8B572A = Color(0xFF8B572A);
-  static const Color color_FFFF6F00 = Color(0xFFFF6F00);
-  static const Color color_FF505050 = Color(0xFF505050);
-  static const Color color_FFFFEEDF = Color(0xFFFFEEDF);
-  static const Color color_66FF6F00 = Color(0x66FF6F00);
-  static const Color color_47111F2C = Color(0x47111F2C);
-  static const Color color_0FF93A4A = Color(0x0FF93A4A);
-  static const Color color_FF999999 = Color(0xFF999999);
-  static const Color color_FF333333 = Color(0xFF333333);
-  static const Color color_FFB2B2B2 = Color(0xFFB2B2B2);
-
-  static const Color color_FFF5F5F5 = Color(0xFFF5F5F5);
-  static const Color color_FFEDEDED = Color(0xFFEDEDED);
-
-  static const Color color_FFAE86 = Color(0xFFFFAE86);
-  static const Color color_FF1F1F1F = Color(0xFF1F1F1F);
-  static const Color color_B3FFFFFF = Color(0xB3FFFFFF);
-  static const Color color_FFFF3F3F = Color(0xFFFF3F3F);
-  static const Color color_66FFFFFF = Color(0x66FFFFFF);
-
-
-  //红色
-  static const Color color_FA5151 = Color(0xFFFA5151);
-  //红色
-  static const Color bgRed = Color(0xFFDB2D1D);
 
 }
