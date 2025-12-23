@@ -9,6 +9,8 @@ abstract class Routes {
   static const AGENCY_PAGE = _Paths.AGENCY_PAGE;
   static const CASE_PAGE = _Paths.CASE_PAGE;
   static const NEW_HOME_PAGE = _Paths.NEW_HOME_PAGE;
+  static const LOGIN_PAGE = _Paths.LOGIN_PAGE;
+  static const LOGIN_CODE_PAGE = _Paths.LOGIN_CODE_PAGE;
 }
 
 abstract class _Paths {
@@ -19,4 +21,6 @@ abstract class _Paths {
   static const AGENCY_PAGE = '/agency-page';
   static const CASE_PAGE = '/case-page';
   static const NEW_HOME_PAGE = '/new-home-page';
+  static const LOGIN_PAGE = '/login-page';
+  static const LOGIN_CODE_PAGE = '/login-code-page';
 }

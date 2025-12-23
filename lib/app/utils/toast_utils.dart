@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:lawyer_app/app/utils/screen_utils.dart';
 
 /// toast
 void showToast(String text, {int closeTime = 2, ToastPosition? toastPosition}) {
@@ -37,10 +38,8 @@ class ToastUtils {
         toastLength: Toast.LENGTH_SHORT,
         gravity: position,
         timeInSecForIosWeb: closeTime,
-        backgroundColor: Colors.white,
-        textColor: Colors.black,
-        webBgColor: "#FFFFFF",      // Web 背景色（十六进制）
-        webPosition: "center",      // 位置（center/left/right）
-        fontSize: 16);
+        backgroundColor: Colors.black87,
+        textColor: Colors.white,
+        fontSize: 14.toSp);
   }
 }

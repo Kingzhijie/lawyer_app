@@ -22,8 +22,84 @@ class $AssetsCommonGen {
   AssetGenImage get launchImg =>
       const AssetGenImage('assets/common/launch_img.png');
 
+  /// File path: assets/common/lingban_icon.png
+  AssetGenImage get lingbanIcon =>
+      const AssetGenImage('assets/common/lingban_icon.png');
+
   /// List of all assets
-  List<AssetGenImage> get values => [appLogo, launchImg];
+  List<AssetGenImage> get values => [appLogo, launchImg, lingbanIcon];
+}
+
+class $AssetsHomeGen {
+  const $AssetsHomeGen();
+
+  /// File path: assets/home/anjian_zongs.png
+  AssetGenImage get anjianZongs =>
+      const AssetGenImage('assets/home/anjian_zongs.png');
+
+  /// File path: assets/home/beigao_icon.png
+  AssetGenImage get beigaoIcon =>
+      const AssetGenImage('assets/home/beigao_icon.png');
+
+  /// File path: assets/home/bqqd_icon.png
+  AssetGenImage get bqqdIcon =>
+      const AssetGenImage('assets/home/bqqd_icon.png');
+
+  /// File path: assets/home/dbrw_icon.png
+  AssetGenImage get dbrwIcon =>
+      const AssetGenImage('assets/home/dbrw_icon.png');
+
+  /// File path: assets/home/fjjrw_icon.png
+  AssetGenImage get fjjrwIcon =>
+      const AssetGenImage('assets/home/fjjrw_icon.png');
+
+  /// File path: assets/home/home_bg.png
+  AssetGenImage get homeBg => const AssetGenImage('assets/home/home_bg.png');
+
+  /// File path: assets/home/jjrw_icon.png
+  AssetGenImage get jjrwIcon =>
+      const AssetGenImage('assets/home/jjrw_icon.png');
+
+  /// File path: assets/home/notice_icon.png
+  AssetGenImage get noticeIcon =>
+      const AssetGenImage('assets/home/notice_icon.png');
+
+  /// File path: assets/home/rili_icon.png
+  AssetGenImage get riliIcon =>
+      const AssetGenImage('assets/home/rili_icon.png');
+
+  /// File path: assets/home/search_icon.png
+  AssetGenImage get searchIcon =>
+      const AssetGenImage('assets/home/search_icon.png');
+
+  /// File path: assets/home/un_notice_icon.png
+  AssetGenImage get unNoticeIcon =>
+      const AssetGenImage('assets/home/un_notice_icon.png');
+
+  /// File path: assets/home/yichang_icon.png
+  AssetGenImage get yichangIcon =>
+      const AssetGenImage('assets/home/yichang_icon.png');
+
+  /// File path: assets/home/yuangao_icon.png
+  AssetGenImage get yuangaoIcon =>
+      const AssetGenImage('assets/home/yuangao_icon.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+    anjianZongs,
+    beigaoIcon,
+    bqqdIcon,
+    dbrwIcon,
+    fjjrwIcon,
+    homeBg,
+    jjrwIcon,
+    noticeIcon,
+    riliIcon,
+    searchIcon,
+    unNoticeIcon,
+    yichangIcon,
+    yuangaoIcon,
+  ];
 }
 
 class $AssetsTabbarGen {
@@ -53,6 +129,7 @@ class Assets {
   const Assets._();
 
   static const $AssetsCommonGen common = $AssetsCommonGen();
+  static const $AssetsHomeGen home = $AssetsHomeGen();
   static const $AssetsTabbarGen tabbar = $AssetsTabbarGen();
 }
 

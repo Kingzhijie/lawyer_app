@@ -8,6 +8,10 @@ import '../modules/chatPage/bindings/chat_page_binding.dart';
 import '../modules/chatPage/views/chat_page_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/loginCodePage/bindings/login_code_page_binding.dart';
+import '../modules/loginCodePage/views/login_code_page_view.dart';
+import '../modules/loginPage/bindings/login_page_binding.dart';
+import '../modules/loginPage/views/login_page_view.dart';
 import '../modules/newHomePage/bindings/new_home_page_binding.dart';
 import '../modules/newHomePage/views/new_home_page_view.dart';
 import '../modules/tabPage/bindings/tab_page_binding.dart';
@@ -50,6 +54,16 @@ class AppPages {
       name: _Paths.NEW_HOME_PAGE,
       page: () => const NewHomePageView(),
       binding: NewHomePageBinding(),
+    ),
+    GetPage(
+      name: _Paths.LOGIN_PAGE,
+      page: () => const LoginPageView(),
+      binding: LoginPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.LOGIN_CODE_PAGE,
+      page: () => const LoginCodePageView(),
+      binding: LoginCodePageBinding(),
     ),
   ];
 }

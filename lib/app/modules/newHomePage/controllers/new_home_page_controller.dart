@@ -1,23 +1,16 @@
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/routes/app_pages.dart';
 
 class NewHomePageController extends GetxController {
-  //TODO: Implement NewHomePageController
+  /// 顶部筛选 tab 下标：0 我的待办、1 我参与的、2 已逾期
+  final RxInt tabIndex = 0.obs;
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  void switchTab(int index) {
+    tabIndex.value = index;
   }
 
-  @override
-  void onReady() {
-    super.onReady();
+  void lookCalendarCaseAction() {
+    Get.toNamed(Routes.LOGIN_PAGE);
   }
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

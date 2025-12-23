@@ -538,6 +538,7 @@ class HomeController extends GetxController {
             } else {
               // 临时结果（实时更新）
               _recognizedText = result.recognizedWords;
+              logPrint('语音实时: $_recognizedText');
             }
           },
           localeId: 'zh_CN', // 中文识别
