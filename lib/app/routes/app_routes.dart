@@ -11,6 +11,7 @@ abstract class Routes {
   static const NEW_HOME_PAGE = _Paths.NEW_HOME_PAGE;
   static const LOGIN_PAGE = _Paths.LOGIN_PAGE;
   static const LOGIN_CODE_PAGE = _Paths.LOGIN_CODE_PAGE;
+  static const CALENDAR_PAGE = _Paths.CALENDAR_PAGE;
 }
 
 abstract class _Paths {
@@ -23,4 +24,5 @@ abstract class _Paths {
   static const NEW_HOME_PAGE = '/new-home-page';
   static const LOGIN_PAGE = '/login-page';
   static const LOGIN_CODE_PAGE = '/login-code-page';
+  static const CALENDAR_PAGE = '/calendar-page';
 }
