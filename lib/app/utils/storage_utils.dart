@@ -54,18 +54,27 @@ class StorageUtils {
     return instance?.get(key);
   }
 
+  /// 数据读取
+  static String? getString<T>(String key) {
+    return instance?.getString(key);
+  }
+
   // 字符串移除
   static void removeString(String key) {
     instance?.remove(key);
   }
 
+  static void setToken(String token) {
+    StorageUtils.setString(StorageKey.accessToken, token);
+  }
+
   static String getToken() {
-    return StorageUtils.get<String>(StorageKey.accessToken).toString();
+    return StorageUtils.getString(StorageKey.accessToken) ?? '';
   }
 
   /// 获取是否首次安装
   static String getIsFirstInstall() {
-    return StorageUtils.get<String>(StorageKey.isFirstInstall).toString();
+    return StorageUtils.getString(StorageKey.isFirstInstall) ?? '';
   }
 
   /// 记录安装

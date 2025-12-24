@@ -5,7 +5,7 @@ import 'package:lawyer_app/app/utils/toast_utils.dart';
 
 class LoginPageController extends GetxController {
   final TextEditingController phoneController = TextEditingController();
-  final RxBool agreeProtocol = true.obs;
+  final RxBool agreeProtocol = false.obs;
   final RxBool isSending = false.obs;
 
   void toggleAgree(bool? value) {
@@ -32,7 +32,7 @@ class LoginPageController extends GetxController {
     Get.toNamed(Routes.LOGIN_CODE_PAGE, arguments: phone);
   }
 
-  void lookProtocol() {
+  void lookProtocol(String text) {
     // TODO: 跳转用户协议/隐私政策
   }
 

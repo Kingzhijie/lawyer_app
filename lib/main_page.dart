@@ -31,7 +31,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   StreamSubscription? _sub;
-  late final LocaleController localeController;
   final appLinks = AppLinks();
 
   @override
@@ -44,9 +43,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    localeController = Get.put(LocaleController());
-    // 初始化 GetX 的 locale
-    Get.updateLocale(localeController.locale.value);
     _init();
     WidgetsBinding.instance.addObserver(this);
   }
@@ -150,13 +146,3 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   }
 }
 
-class LocaleController extends GetxController {
-  // 默认语言为中文，如果系统是中文则用系统语言，否则用中文
-  var locale = ui.window.locale.obs;
-  // 切换语言
-  void changeLocale(Locale newLocale) {
-    locale.value = newLocale;
-    // Get.updateLocale 会更新 GetMaterialApp 的 locale
-    Get.updateLocale(newLocale);
-  }
-}

@@ -1,7 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/components/bottom_sheet_utils.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
+import 'package:lawyer_app/gen/assets.gen.dart';
 
 import 'app/common/components/light_text.dart';
 import 'app/common/constants/app_colors.dart';
@@ -24,95 +28,116 @@ class _LaunchPageState extends State<LaunchPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        alignment: Alignment.center,
-        color: AppColors.color_white,
-        width: AppScreenUtil.screenWidth,
-        height: AppScreenUtil.screenHeight,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            ImageUtils(
-                imageUrl: '',
-                width: AppScreenUtil.screenWidth,
-                height: AppScreenUtil.screenHeight),
-            if (widget.isFinishInit == false) _setContentWidget()
+      alignment: Alignment.center,
+      color: AppColors.color_white,
+      width: AppScreenUtil.screenWidth,
+      height: AppScreenUtil.screenHeight,
+      child: Stack(
+        children: [
+          ImageUtils(
+            imageUrl: Assets.common.launchImg.path,
+            width: AppScreenUtil.screenWidth,
+            height: AppScreenUtil.screenHeight,
+          ),
+          if (widget.isFinishInit == false) ...[
+            Container(
+              width: AppScreenUtil.screenWidth,
+              height: AppScreenUtil.screenHeight,
+              color: Colors.black.withOpacity(0.4),
+            ),
+            _setContentWidget(),
           ],
-        ));
+        ],
+      ),
+    );
   }
 
   Widget _setContentWidget() {
     return Container(
+      height: 539.toW,
+      width: AppScreenUtil.screenWidth,
+      margin: EdgeInsets.only(top: AppScreenUtil.screenHeight - 539.toW),
       decoration: BoxDecoration(
-          color: AppColors.color_white,
-          borderRadius: BorderRadius.circular(12.toW)),
-      width: 295.toW,
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12.toW)),
+      ),
       padding: EdgeInsets.only(
-          left: 24.toW, right: 24.toW, bottom: 12.toW, top: 12.toW),
+        left: 24.toW,
+        top: 28.toW,
+        right: 24.toW,
+        bottom: AppScreenUtil.bottomBarHeight + 12.toW,
+      ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            '个人信息保护提示',
-            style: TextStyle(
-                fontSize: 18.toSp,
-                fontWeight: FontWeight.w600,
-                color: Colors.white),
-          ),
-          Height(12.toW),
-          LightText(
-            text: "欢迎使用腰动力！\n我们将通过《用户协议》和《隐私政策》帮助您了解我们的服务，我们如何处理您的个人信息，以及您享有的权利。我们严格遵守相关法律法规，并采取各种安全措施保护您的个人信息。\n点击同意按钮，即表示您知悉并同意上述协议及以下条款。",
-            textStyle:
-                TextStyle(height: 1.6, fontSize: 14.toSp, color: Colors.white),
-            lightTexts: [
-              '《用户协议》',
-              '《隐私政策》'
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '用户服务协议和隐私政策',
+                style: TextStyle(
+                  color: AppColors.color_E6000000,
+                  fontSize: 17.toSp,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Height(24.toW),
+              Text('感谢您选择灵伴', style: TextStyle(color: AppColors.color_99000000, fontSize: 14.toSp, fontWeight: FontWeight.w500)),
+              Height(11.toW),
+              LightText(
+                text: "我们依据相关法律法规制定了《灵伴用户服务协议》和《灵伴隐私政策》来帮助你了解：我们如何收集个人信息、如何使用及存储个人信息，以及你享有的相关权利。请你在开始我们的服务前，务必仔细阅读上述协议内容，尤其是加粗等标志性内容。我们将严格按照上述协议为你提供服务，保护你的信息安全。",
+                textStyle:
+                TextStyle(height: 1.6, fontSize: 14.toSp, color: AppColors.color_99000000),
+                lightTexts: [
+                  '《灵伴用户服务协议》',
+                  '《灵伴隐私政策》'
+                ],
+                lightStyle: TextStyle(
+                    height: 1.6,
+                    fontSize: 14.toSp,
+                    color: AppColors.theme,
+                    fontWeight: FontWeight.w600),
+                onTapLightText: (text) {
+                  _lookAgreementMethod(text);
+                },
+              ),
             ],
-            lightStyle: TextStyle(
-                height: 1.6,
-                fontSize: 14.toSp,
-                color: AppColors.theme,
-                fontWeight: FontWeight.w600),
-            onTapLightText: (text) {
-              _lookAgreementMethod(text);
-            },
           ),
-          Height(32.toW),
-          Container(
-            decoration: BoxDecoration(
-                color: AppColors.theme,
-                borderRadius: BorderRadius.circular(12.toW)),
-            alignment: Alignment.center,
-            height: 44.toW,
-            child: Text(
-              '同意',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15.toSp,
-                  fontWeight: FontWeight.w600),
-            ),
-          ).withOnTap(() {
-            widget.agreeCallBack();
-          }),
-          Height(12.toW),
-          Text(
-            '不同意',
-            style:
-                TextStyle(color: AppColors.color_white, fontSize: 14.toSp),
-          ).withOnTap(() {
-            exit(0);
-          })
+          Row(
+            children: [
+              Container(
+                height: 44.toW,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6.toW),
+                  border: Border.all(color: AppColors.theme, width: 0.8)
+                ),
+                alignment: Alignment.center,
+                child: Text('不同意退出', style: TextStyle(color: AppColors.theme, fontSize: 15.toSp),),
+              ).withOnTap((){
+                exit(0);
+              }).withExpanded(),
+              Width(12.toW),
+              Container(
+                height: 44.toW,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6.toW),
+                  color: AppColors.theme
+                ),
+                alignment: Alignment.center,
+                child: Text('同意', style: TextStyle(color: Colors.white, fontSize: 15.toSp),),
+              ).withOnTap((){
+                widget.agreeCallBack();
+              }).withExpanded()
+            ],
+          )
         ],
       ),
     );
   }
 
   void _lookAgreementMethod(String text) {
-    // if (text == '《${S.of(context).userAgreement}》') {
-    //   Get.toNamed(Routes.WEB_PAGE, arguments: AppAgreement.userAgreement);
-    // } else if (text == '《${S.of(context).privacyPolicy}》') {
-    //   Get.toNamed(Routes.WEB_PAGE,
-    //       arguments: AppAgreement.privacyServiceAgreement);
-    // }
+    if (text == '《灵伴用户服务协议》') {
+    } else if (text == '《灵伴隐私政策》') {
+    }
   }
-
 }

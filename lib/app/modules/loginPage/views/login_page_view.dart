@@ -6,6 +6,7 @@ import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
+import '../../../common/components/light_text.dart';
 import '../controllers/login_page_controller.dart';
 
 class LoginPageView extends GetView<LoginPageController> {
@@ -121,10 +122,7 @@ class LoginPageView extends GetView<LoginPageController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ImageUtils(
-          imageUrl: Assets.common.lingbanIcon.path,
-          height: 32.toW,
-        ),
+        ImageUtils(imageUrl: Assets.common.lingbanIcon.path, height: 32.toW),
         SizedBox(height: 12.toW),
         Text(
           '手机号验证码登录',
@@ -143,7 +141,7 @@ class LoginPageView extends GetView<LoginPageController> {
       padding: EdgeInsets.symmetric(horizontal: 15.toW),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.toW),
-        border: Border.all(color: AppColors.color_FFC5C5C5, width: 0.6)
+        border: Border.all(color: AppColors.color_FFC5C5C5, width: 0.6),
       ),
       height: 52.toW,
       alignment: Alignment.centerLeft,
@@ -152,10 +150,7 @@ class LoginPageView extends GetView<LoginPageController> {
         keyboardType: TextInputType.phone,
         maxLength: 11,
         cursorColor: AppColors.theme,
-        style: TextStyle(
-          fontSize: 16.toSp,
-          color: AppColors.color_E6000000,
-        ),
+        style: TextStyle(fontSize: 16.toSp, color: AppColors.color_E6000000),
         decoration: InputDecoration(
           counterText: '',
           border: InputBorder.none,
@@ -180,10 +175,7 @@ class LoginPageView extends GetView<LoginPageController> {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [
-                Color(0xFF0060FF),
-                Color(0xFF10B2F9),
-              ],
+              colors: [Color(0xFF0060FF), Color(0xFF10B2F9)],
             ),
             borderRadius: BorderRadius.circular(12.toW),
             boxShadow: [
@@ -224,51 +216,47 @@ class LoginPageView extends GetView<LoginPageController> {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Checkbox(
-            value: agreed,
-            activeColor: AppColors.theme,
-            onChanged: controller.toggleAgree,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          Expanded(
-            child: Wrap(
-              spacing: 4.toW,
-              runSpacing: 4.toW,
-              children: [
-                Text(
-                  '我已阅读并同意',
-                  style: TextStyle(
-                    fontSize: 12.toSp,
-                    color: AppColors.color_99000000,
-                  ),
-                ),
-                _protocolLink('《用户协议》'),
-                Text(
-                  '与',
-                  style: TextStyle(
-                    fontSize: 12.toSp,
-                    color: AppColors.color_99000000,
-                  ),
-                ),
-                _protocolLink('《隐私政策》'),
-              ],
+          Transform.scale(
+            scale: 0.8, // 调整大小
+            child: Checkbox(
+              value: agreed,
+              activeColor: AppColors.theme,
+              onChanged: controller.toggleAgree,
+              checkColor: Colors.white,
+              fillColor: MaterialStateProperty.resolveWith((states) {
+                if (states.contains(MaterialState.selected)) {
+                  return AppColors.theme; // 选中颜色
+                }
+                return Colors.transparent; // 未选中颜色
+              }),
+              // 边框颜色（未选中时的边框）
+              side: BorderSide(
+                color: Colors.grey.shade400, // 未选中边框颜色
+                width: 1,
+              ),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
           ),
+          LightText(
+            text: "我已阅读并同意《用户协议》与《隐私政策》",
+            textStyle:
+            TextStyle(fontSize: 12.toSp, color: AppColors.color_99000000),
+            lightTexts: [
+              '《用户协议》',
+              '《隐私政策》'
+            ],
+            lightStyle: TextStyle(
+                fontSize: 12.toSp,
+                color: AppColors.theme,
+                fontWeight: FontWeight.w500),
+            onTapLightText: (text) {
+              controller.lookProtocol(text);
+            },
+          ),
+
         ],
       );
     });
   }
 
-  Widget _protocolLink(String text) {
-    return GestureDetector(
-      onTap: controller.lookProtocol,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 12.toSp,
-          color: AppColors.theme,
-        ),
-      ),
-    );
-  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app/common/constants/app_colors.dart';
 import 'app/utils/storage_utils.dart';
+import 'gen/assets.gen.dart';
 import 'main_page.dart';
 
 
@@ -15,10 +16,10 @@ BuildContext get currentContext => navigatorKey.currentContext!;
 Future<void> main() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
   await StorageUtils.initSharedPreferences();
-  // if (binding.rootElement != null) {
-  //   await precacheImage(
-  //       AssetImage(Assets.images.common.mlyLaunchImg.path), binding.rootElement!);
-  // }
+  if (binding.rootElement != null) {
+    await precacheImage(
+        AssetImage(Assets.common.launchImg.path), binding.rootElement!);
+  }
   if (Platform.isAndroid) {
     SystemUiOverlayStyle style = SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/modules/loginPage/controllers/login_page_controller.dart';
+import 'package:lawyer_app/app/modules/loginPage/views/login_page_view.dart';
 import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/new_home_page_view.dart';
+import 'package:lawyer_app/app/utils/app_common_instance.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
+import '../../../../launch_page.dart';
 import '../../../common/components/keep_alive_wrapper.dart';
 import '../../../common/constants/app_colors.dart';
 import '../../agencyPage/controllers/agency_page_controller.dart';
@@ -51,17 +55,33 @@ class TabPageView extends GetView<TabPageController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.color_white,
-      body: PageView(
-        controller: controller.pageController,
-        onPageChanged: controller.onPageChanged,
-        physics: const NeverScrollableScrollPhysics(),
-        children: _pages,
-      ),
-      extendBody: true,
-      bottomNavigationBar: _buildBottomBar(context),
-    );
+    return Obx(() {
+      if (controller.isFinishInit.value != true) {
+        //首次
+        return _setPlaceWidget();
+      }
+
+      if (!AppCommonUtils.isLogin) {
+        return KeepAliveWrapper(
+          child: GetBuilder<LoginPageController>(
+            init: LoginPageController(),
+            builder: (_) => const LoginPageView(),
+          ),
+        );
+      }
+
+      return Scaffold(
+        backgroundColor: AppColors.color_white,
+        body: PageView(
+          controller: controller.pageController,
+          onPageChanged: controller.onPageChanged,
+          physics: const NeverScrollableScrollPhysics(),
+          children: _pages,
+        ),
+        extendBody: true,
+        bottomNavigationBar: _buildBottomBar(context),
+      );
+    });
   }
 
   Widget _buildBottomBar(BuildContext context) {
@@ -86,23 +106,11 @@ class TabPageView extends GetView<TabPageController> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildTabItem(
-                index: 0,
-                asset: Assets.tabbar.homeS.path,
-              ),
-              _buildTabItem(
-                index: 1,
-                asset: Assets.tabbar.chatN.path,
-              ),
+              _buildTabItem(index: 0, asset: Assets.tabbar.homeS.path),
+              _buildTabItem(index: 1, asset: Assets.tabbar.chatN.path),
               _buildCenterButton(),
-              _buildTabItem(
-                index: 3,
-                asset: Assets.tabbar.caseN.path,
-              ),
-              _buildTabItem(
-                index: 4,
-                asset: Assets.tabbar.waitN.path,
-              ),
+              _buildTabItem(index: 3, asset: Assets.tabbar.caseN.path),
+              _buildTabItem(index: 4, asset: Assets.tabbar.waitN.path),
             ],
           ),
         ),
@@ -110,10 +118,7 @@ class TabPageView extends GetView<TabPageController> {
     );
   }
 
-  Widget _buildTabItem({
-    required int index,
-    required String asset,
-  }) {
+  Widget _buildTabItem({required int index, required String asset}) {
     return Obx(() {
       final bool selected = controller.currentIndex.value == index;
       return GestureDetector(
@@ -126,9 +131,7 @@ class TabPageView extends GetView<TabPageController> {
             imageUrl: asset,
             width: 28.toW,
             height: 28.toW,
-            imageColor: selected
-                ? AppColors.theme
-                : AppColors.color_FFC5C5C5,
+            imageColor: selected ? AppColors.theme : AppColors.color_FFC5C5C5,
           ),
         ),
       );
@@ -143,6 +146,16 @@ class TabPageView extends GetView<TabPageController> {
         width: 55.toW,
         height: 55.toW,
       ),
+    );
+  }
+
+  /// 设置占位开屏图
+  Widget _setPlaceWidget() {
+    return LaunchPage(
+      isFinishInit: controller.isFinishInit.value,
+      agreeCallBack: () async {
+        await controller.callBack();
+      },
     );
   }
 }

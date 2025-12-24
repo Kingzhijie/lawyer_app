@@ -168,7 +168,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
   Widget _buildTabs() {
     final tabs = ['我的待办 (12)', '我参与的 (12)', '已逾期 (12)', '未逾期 (12)'];
     return Obx(() {
-      final current = Get.find<NewHomePageController>().tabIndex.value;
+      final current = controller.tabIndex.value;
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -177,7 +177,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
             return Padding(
               padding: EdgeInsets.only(right: 12.toW),
               child: GestureDetector(
-                onTap: () => Get.find<NewHomePageController>().switchTab(index),
+                onTap: () => controller.switchTab(index),
                 child: Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: 12.toW,
@@ -210,15 +210,13 @@ class NewHomePageView extends GetView<NewHomePageController> {
 
   Widget _buildTaskCardsList() {
     final items = List.generate(4, (index) => index);
-    return Column(
-      children: items
-          .map(
-            (_) => Padding(
-              padding: EdgeInsets.only(bottom: 12.toW),
-              child: const TaskCard(),
-            ),
-          )
-          .toList(),
-    );
+    return ListView.builder(
+      itemCount: items.length,
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index){
+      return TaskCard().withMarginOnly(bottom: 12.toW);
+    });
   }
 }
