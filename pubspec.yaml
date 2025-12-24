@@ -179,5 +179,9 @@ flutter_native_splash:
   image: assets/common/launch_img.png
   android: true
   ios: true
-  android_gravity: "center_crop"
+  android_gravity: "fill"
   ios_content_mode: "scaleAspectFill"
+
+
+#更新 dart run flutter_native_splash:create
+# dart run flutter_launcher_icons

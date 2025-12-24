@@ -7,6 +7,7 @@ buildscript {
         maven { url = uri("https://mvn.getui.com/nexus/content/repositories/releases/") }
         maven { url = uri("https://developer.huawei.com/repo/") }
         maven { url = uri("https://developer.hihonor.com/repo/") }
+        maven { url = uri("https://jitpack.io") }
     }
 
     dependencies {
@@ -24,6 +25,7 @@ allprojects {
         maven { url = uri("https://mvn.getui.com/nexus/content/repositories/releases/") }
         maven { url = uri("https://developer.huawei.com/repo/") }
         maven { url = uri("https://developer.hihonor.com/repo/") }
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
