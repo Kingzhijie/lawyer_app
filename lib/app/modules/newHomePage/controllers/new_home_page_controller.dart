@@ -10,7 +10,7 @@ class NewHomePageController extends GetxController {
   }
 
   void lookCalendarCaseAction() {
-    Get.toNamed(Routes.LOGIN_PAGE);
+    Get.toNamed(Routes.CALENDAR_PAGE);
   }
 
 }

@@ -1,0 +1,98 @@
+import 'package:flutter_advanced_calendar/flutter_advanced_calendar.dart';
+import 'package:get/get.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
+
+class CalendarPageController extends GetxController {
+  /// 日历控制器
+  late final AdvancedCalendarController calendarController;
+
+  /// 日历是否展开
+  final RxBool isCalendarExpanded = true.obs;
+
+  /// 当前选中的日期
+  final Rx<DateTime> selectedDate = DateTime.now().obs;
+
+  /// 当前显示的月份（用于底部大数字显示）
+  final Rx<DateTime> currentDisplayMonth = DateTime.now().obs;
+
+  /// 有事件的日期列表（示例数据）
+  /// 根据UI图，17、18（今日）、19、20有事件
+  /// 使用固定日期，避免其他日期出现点
+  final RxList<DateTime> eventDates = <DateTime>[
+    // 只设置当前月份的具体日期，避免跨月问题
+    // 这里需要根据实际当前日期动态计算
+  ].obs;
+
+  /// 初始化事件日期
+  void _initEventDates() {
+    final now = DateTime.now();
+    final currentMonth = now.month;
+    final currentYear = now.year;
+    
+    // 只设置当前月份的17、18、19、20号
+    eventDates.value = [
+      DateTime(currentYear, currentMonth, 17),
+      DateTime(currentYear, currentMonth, 18),
+      DateTime(currentYear, currentMonth, 19),
+      DateTime(currentYear, currentMonth, 24),
+    ];
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    calendarController = AdvancedCalendarController.today();
+    calendarController.addListener(_onCalendarChanged);
+    _initEventDates();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
+  void onClose() {
+    calendarController.removeListener(_onCalendarChanged);
+    calendarController.dispose();
+    super.onClose();
+  }
+
+  void _onCalendarChanged() {
+    selectedDate.value = calendarController.value;
+    // 更新显示的月份（只更新年月，不更新日）
+    final newMonth = calendarController.value;
+    if (currentDisplayMonth.value.year != newMonth.year ||
+        currentDisplayMonth.value.month != newMonth.month) {
+      currentDisplayMonth.value = DateTime(newMonth.year, newMonth.month, 1);
+    }
+  }
+
+  /// 处理日历水平滚动（月份切换）
+  void onMonthChanged(DateTime monthDate) {
+    // 更新显示的月份
+    currentDisplayMonth.value = DateTime(monthDate.year, monthDate.month, 1);
+  }
+
+  /// 切换日历展开/折叠
+  void toggleCalendar() {
+    isCalendarExpanded.value = !isCalendarExpanded.value;
+  }
+
+  /// 选择日期
+  void selectDate(DateTime date) {
+    calendarController.value = date;
+    selectedDate.value = date;
+  }
+
+  /// 判断日期是否有事件
+  bool hasEvent(DateTime date) {
+    return eventDates.any((eventDate) =>
+        eventDate.year == date.year &&
+        eventDate.month == date.month &&
+        eventDate.day == date.day);
+  }
+
+  /// 获取当前显示的月份
+  DateTime get currentMonth => calendarController.value;
+}

@@ -16,7 +16,6 @@ class NewHomePageView extends GetView<NewHomePageController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.color_FFF3F3F3,
       body: Stack(
         children: [
           // 背景

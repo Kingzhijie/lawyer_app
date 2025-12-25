@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/modules/tabPage/controllers/tab_page_controller.dart';
 import 'package:lawyer_app/app/utils/storage_utils.dart';
+
+import 'object_utils.dart';
 
 class AppInfoUtils {
   //单例
@@ -64,7 +67,11 @@ class AppCommonUtils {
 
 
   /// 切换tab到主页
-  static changeTabHome({int index = 0}) {
-
+  /// 切换tab到主页
+  static void changeTabHome({int index = 0}) {
+    var tabController = getFindController<TabPageController>();
+    tabController?.currentIndex.value = index;
+    // tabController?.currentIndex.refresh();
   }
+
 }

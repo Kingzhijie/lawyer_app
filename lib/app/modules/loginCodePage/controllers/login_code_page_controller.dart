@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
+import 'package:lawyer_app/app/utils/storage_utils.dart';
+
+import '../../../utils/app_common_instance.dart';
 
 class LoginCodePageController extends GetxController {
   /// 传入的手机号码
@@ -32,6 +35,11 @@ class LoginCodePageController extends GetxController {
       var text = codeController.text;
       logPrint('验证码====$text');
       code.value = text;
+      if (text.length == 4) {
+        StorageUtils.setToken('token_test');
+        Get.back();
+        AppCommonUtils.changeTabHome();
+      }
     });
 
     _cursorTimer = Timer.periodic(const Duration(milliseconds: 600), (_) {
@@ -78,4 +86,7 @@ class LoginCodePageController extends GetxController {
   String get verifyCode => code.value;
 
   String get displayPhone => '+86 $phone';
+
+
+
 }
