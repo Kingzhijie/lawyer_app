@@ -56,7 +56,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
 
     <application
-        android:label="lawyer_app"
+        android:label="@string/appName"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
         tools:replace="android:label"
@@ -245,3 +245,4 @@
         </intent>
     </queries>
 </manifest>
+

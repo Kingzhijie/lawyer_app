@@ -106,6 +106,8 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   #启动图
   flutter_native_splash: ^2.4.7
+  #配置名字
+  launcher_name: ^1.0.2
   #国际化
   intl: ^0.20.2
 
@@ -182,6 +184,8 @@ flutter_native_splash:
   android_gravity: "fill"
   ios_content_mode: "scaleAspectFill"
 
+launcher_name:
+  default: "灵动"
 
 #更新 dart run flutter_native_splash:create
 # dart run flutter_launcher_icons
