@@ -1,19 +1,18 @@
 import 'package:flutter_advanced_calendar/flutter_advanced_calendar.dart';
 import 'package:get/get.dart';
-import 'package:lawyer_app/app/http/net/tool/logger.dart';
 
 class CalendarPageController extends GetxController {
   /// 日历控制器
   late final AdvancedCalendarController calendarController;
-
-  /// 日历是否展开
-  final RxBool isCalendarExpanded = true.obs;
 
   /// 当前选中的日期
   final Rx<DateTime> selectedDate = DateTime.now().obs;
 
   /// 当前显示的月份（用于底部大数字显示）
   final Rx<DateTime> currentDisplayMonth = DateTime.now().obs;
+
+  /// 日历是否展开
+  final RxBool isCalendarExpanded = true.obs;
 
   /// 有事件的日期列表（示例数据）
   /// 根据UI图，17、18（今日）、19、20有事件
@@ -47,11 +46,6 @@ class CalendarPageController extends GetxController {
   }
 
   @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
   void onClose() {
     calendarController.removeListener(_onCalendarChanged);
     calendarController.dispose();
@@ -74,10 +68,6 @@ class CalendarPageController extends GetxController {
     currentDisplayMonth.value = DateTime(monthDate.year, monthDate.month, 1);
   }
 
-  /// 切换日历展开/折叠
-  void toggleCalendar() {
-    isCalendarExpanded.value = !isCalendarExpanded.value;
-  }
 
   /// 选择日期
   void selectDate(DateTime date) {
@@ -93,6 +83,8 @@ class CalendarPageController extends GetxController {
         eventDate.day == date.day);
   }
 
-  /// 获取当前显示的月份
-  DateTime get currentMonth => calendarController.value;
+  /// 切换日历展开/收起状态
+  void toggleCalendarExpanded() {
+    isCalendarExpanded.value = !isCalendarExpanded.value;
+  }
 }

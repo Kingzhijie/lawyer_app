@@ -31,33 +31,34 @@ class NewHomePageView extends GetView<NewHomePageController> {
           SingleChildScrollView(
             padding: EdgeInsets.only(
               bottom: AppScreenUtil.bottomBarHeight + 80.toW,
-              left: 16.toW,
-              right: 16.toW,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 12.toW),
-                _buildOverviewTitle(),
-                SizedBox(height: 12.toW),
-                _buildOverviewGrid(),
-                SizedBox(height: 18.toW),
-                _buildTabs(),
-                SizedBox(height: 12.toW),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 12.toW),
+                    _buildOverviewTitle(),
+                    SizedBox(height: 12.toW),
+                    _buildOverviewGrid(),
+                    SizedBox(height: 18.toW),
+                    _buildTabs(),
+                    SizedBox(height: 12.toW),
+                  ],
+                ).withMarginOnly(left: 16.toW, right: 16.toW),
                 _buildTaskCardsList(),
                 SizedBox(height: 24.toW),
               ],
             ),
-          ).withMarginOnly(top: AppScreenUtil.statusBarHeight + 95.toW),
+          ).withMarginOnly(top: AppScreenUtil.navigationBarHeight + 50.toW),
           Positioned(
             top: 0,
             right: 16.toW,
             left: 16.toW,
             child: Column(
               children: [
-                SizedBox(height: AppScreenUtil.statusBarHeight),
                 _buildTopBar(),
-                SizedBox(height: 14.toW),
                 _buildSearchBar(),
               ],
             ),
@@ -68,33 +69,37 @@ class NewHomePageView extends GetView<NewHomePageController> {
   }
 
   Widget _buildTopBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          width: 34.toW,
-          height: 34.toW,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.color_white.withOpacity(0.9),
-          ),
-          child: ClipOval(
-            child: ImageUtils(
-              imageUrl: Assets.home.yuangaoIcon.path,
-              fit: BoxFit.cover,
+    return Container(
+      height: AppScreenUtil.navigationBarHeight,
+      padding: EdgeInsets.only(top: AppScreenUtil.statusBarHeight),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            width: 34.toW,
+            height: 34.toW,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.color_white.withOpacity(0.9),
+            ),
+            child: ClipOval(
+              child: ImageUtils(
+                imageUrl: Assets.home.yuangaoIcon.path,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
-        Text(
-          '灵伴',
-          style: TextStyle(
-            fontSize: 18.toSp,
-            fontWeight: FontWeight.w600,
-            color: AppColors.color_E6000000,
+          Text(
+            '灵伴',
+            style: TextStyle(
+              fontSize: 18.toSp,
+              fontWeight: FontWeight.w600,
+              color: AppColors.color_E6000000,
+            ),
           ),
-        ),
-        SizedBox(width: 34.toW),
-      ],
+          SizedBox(width: 34.toW),
+        ],
+      ),
     );
   }
 
@@ -110,7 +115,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
               BoxShadow(
                 color: Colors.black.withOpacity(0.04),
                 blurRadius: 10,
-                offset: const Offset(0, 6),
+                offset: const Offset(0, 0),
               ),
             ],
           ),
@@ -215,7 +220,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index){
-      return TaskCard().withMarginOnly(bottom: 12.toW);
+      return TaskCard(controller: controller).withMarginOnly(bottom: 12.toW);
     });
   }
 }

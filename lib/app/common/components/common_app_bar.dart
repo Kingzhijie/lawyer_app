@@ -63,7 +63,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: centerTitle,
       systemOverlayStyle: Platform.isIOS
           ? SystemUiOverlayStyle.dark
-          : SystemUiOverlayStyle.light,
+          : SystemUiOverlayStyle.dark,
       surfaceTintColor: backgroundColor ?? Colors.white,
       titleSpacing: titleSpacing,
       leadingWidth:

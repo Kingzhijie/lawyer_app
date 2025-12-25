@@ -14,6 +14,22 @@ part 'month_view_bean.dart';
 part 'week_days.dart';
 part 'week_view.dart';
 
+/// 自定义的更灵敏的 PageView 滚动物理效果
+class SensitivePageScrollPhysics extends PageScrollPhysics {
+  const SensitivePageScrollPhysics({super.parent});
+
+  @override
+  SensitivePageScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return SensitivePageScrollPhysics(parent: buildParent(ancestor));
+  }
+
+  @override
+  double get minFlingVelocity => 50.0; // 降低最小滑动速度阈值（默认是 50）
+
+  @override
+  double get minFlingDistance => 15.0; // 降低最小滑动距离阈值（默认是 50）
+}
+
 /// Advanced Calendar widget.
 class AdvancedCalendar extends StatefulWidget {
   const AdvancedCalendar({
@@ -146,11 +162,14 @@ class _AdvancedCalendarState extends State<AdvancedCalendar>
       startWeekDay: widget.startWeekDay,
     );
     _controller.addListener(() {
-      _weekRangeList = _controller.value.generateWeeks(
-        widget.preloadWeekViewAmount,
-        startWeekDay: widget.startWeekDay,
-      );
-      _weekPageController!.jumpToPage(widget.preloadWeekViewAmount ~/ 2);
+      // 只在展开状态时才更新周视图并跳转
+      if (_animationController.value >= 0.5) {
+        _weekRangeList = _controller.value.generateWeeks(
+          widget.preloadWeekViewAmount,
+          startWeekDay: widget.startWeekDay,
+        );
+        _weekPageController!.jumpToPage(widget.preloadWeekViewAmount ~/ 2);
+      }
     });
     if (widget.startWeekDay != null && widget.startWeekDay! < 7) {
       // 使用中文星期标签
@@ -267,7 +286,7 @@ class _AdvancedCalendarState extends State<AdvancedCalendar>
                                     },
                                     controller: _monthPageController,
                                     physics: _animationController.value == 1.0
-                                        ? const AlwaysScrollableScrollPhysics()
+                                        ? const SensitivePageScrollPhysics()
                                         : const NeverScrollableScrollPhysics(),
                                     itemCount: _monthRangeList.length,
                                     itemBuilder: (_, pageIndex) {
@@ -334,7 +353,7 @@ class _AdvancedCalendarState extends State<AdvancedCalendar>
                                             },
                                             controller: _weekPageController,
                                             itemCount: _weekRangeList.length,
-                                            physics: _closeMonthScroll(),
+                                            physics: const NeverScrollableScrollPhysics(),
                                             itemBuilder: (context, index) {
                                               return WeekView(
                                                 innerDot: widget.innerDot,
@@ -370,6 +389,38 @@ class _AdvancedCalendarState extends State<AdvancedCalendar>
                   onPressed: () async {
                     if (_animationController.value >= 0.5) {
                       // 当前是展开状态，执行收起
+                      final currentMonthFirstDay = _monthRangeList[_monthViewCurrentPage.value].firstDay;
+                      final today = DateTime.now().toZeroTime();
+                      final selectedDate = _controller.value;
+                      
+                      // 判断当前显示的是否是本月
+                      final isCurrentMonth = currentMonthFirstDay.year == today.year && 
+                                            currentMonthFirstDay.month == today.month;
+                      
+                      // 判断选中的日期是否在当前显示的月份
+                      final isSelectedInCurrentMonth = selectedDate.year == currentMonthFirstDay.year &&
+                                                       selectedDate.month == currentMonthFirstDay.month;
+                      
+                      // 决定使用哪个日期生成周视图
+                      DateTime dateForWeekView;
+                      if (isSelectedInCurrentMonth) {
+                        // 优先：如果选中了当前月份的日期，显示选中日期所在的周
+                        dateForWeekView = selectedDate;
+                      } else if (isCurrentMonth) {
+                        // 本月且没有选中：显示今天所在的周
+                        dateForWeekView = today;
+                      } else {
+                        // 其他月份且没有选中该月的日期：显示该月第一周
+                        dateForWeekView = currentMonthFirstDay;
+                      }
+                      
+                      _weekRangeList = dateForWeekView.generateWeeks(
+                        widget.preloadWeekViewAmount,
+                        startWeekDay: widget.startWeekDay,
+                      );
+                      // 跳转到周视图的中间页
+                      _weekPageController!.jumpToPage(widget.preloadWeekViewAmount ~/ 2);
+                      
                       await _animationController.reverse();
                       _animationValue = 0.0;
                     } else {
@@ -459,17 +510,6 @@ class _AdvancedCalendarState extends State<AdvancedCalendar>
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
-    }
-  }
-
-  ScrollPhysics _closeMonthScroll() {
-    if ((_monthViewCurrentPage.value ==
-            (widget.preloadMonthViewAmount ~/ 2) + 3 ||
-        _monthViewCurrentPage.value ==
-            (widget.preloadMonthViewAmount ~/ 2) - 3)) {
-      return const NeverScrollableScrollPhysics();
-    } else {
-      return const AlwaysScrollableScrollPhysics();
     }
   }
 }

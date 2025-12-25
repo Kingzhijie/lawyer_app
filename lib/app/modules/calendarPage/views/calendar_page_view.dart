@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_calendar/flutter_advanced_calendar.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/components/common_app_bar.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
@@ -14,9 +16,25 @@ class CalendarPageView extends GetView<CalendarPageController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.color_white,
+      appBar: CommonAppBar(isShowLeading: false, leadingWidth: 200,leftActionWidget: Container(
+        padding: EdgeInsets.only(left: 10.toW),
+        child: Obx((){
+          // 通过访问 selectedDate 来触发更新，然后获取当前月份
+          final date = controller.currentDisplayMonth.value;
+          return Row(
+            children: [
+              Icon(Icons.arrow_back_ios, size: 22.toW, color: Colors.black),
+              Width(8.toW),
+              Text('${date.year}年${date.month}月', style: TextStyle(color: Colors.black, fontSize: 17.toSp, fontWeight: FontWeight.w600))
+            ],
+          );
+        }).withOnTap((){
+          Get.back();
+        }),
+      )),
       body: SafeArea(
         child: SingleChildScrollView(
+          padding: EdgeInsets.only(top: 10.toW),
           child: Column(children: [_buildCalendarSection(), _buildTodoList()]),
         ),
       ),
@@ -24,61 +42,13 @@ class CalendarPageView extends GetView<CalendarPageController> {
   }
 
   Widget _buildCalendarSection() {
-    return Obx(() {
-      final isExpanded = controller.isCalendarExpanded.value;
-      final selectedDate = controller.selectedDate.value;
-
-      return Container(
-        color: AppColors.color_white,
-        padding: EdgeInsets.symmetric(horizontal: 6.toW),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildMonthHeader(),
-            // 展开时显示完整日历
-            _buildExpandedCalendar(),
-          ],
-        ),
-      );
-    });
+    return Container(
+      color: AppColors.color_white,
+      padding: EdgeInsets.symmetric(horizontal: 6.toW),
+      child: _buildExpandedCalendar(),
+    );
   }
 
-  Widget _buildMonthHeader() {
-    return Obx(() {
-      // 通过访问 selectedDate 来触发更新，然后获取当前月份
-      final _ = controller.selectedDate.value;
-      final month = controller.currentMonth;
-      return Padding(
-        padding: EdgeInsets.symmetric(vertical: 12.toW),
-        child: Row(
-          children: [
-            // 左箭头
-            GestureDetector(
-              onTap: () {
-                Get.back();
-              },
-              child: Icon(
-                Icons.chevron_left,
-                size: 24.toW,
-                color: AppColors.color_66000000,
-              ),
-            ),
-            SizedBox(width: 4.toW),
-            // 年月显示
-            Text(
-              '${month.year}年${month.month}月',
-              style: TextStyle(
-                fontSize: 16.toSp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.color_E6000000,
-              ),
-            ),
-            const Spacer(),
-          ],
-        ),
-      );
-    });
-  }
 
   Widget _buildExpandedCalendar() {
     return Theme(
