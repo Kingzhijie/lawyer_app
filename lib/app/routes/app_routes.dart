@@ -12,6 +12,9 @@ abstract class Routes {
   static const LOGIN_PAGE = _Paths.LOGIN_PAGE;
   static const LOGIN_CODE_PAGE = _Paths.LOGIN_CODE_PAGE;
   static const CALENDAR_PAGE = _Paths.CALENDAR_PAGE;
+  static const SEARCH_CASE_PAGE = _Paths.SEARCH_CASE_PAGE;
+  static const SEARCH_CASE_RSULT_PAGE = _Paths.SEARCH_CASE_RSULT_PAGE;
+  static const SEARCH_CASE_RSULT_SUB_PAGE = _Paths.SEARCH_CASE_RSULT_SUB_PAGE;
 }
 
 abstract class _Paths {
@@ -25,4 +28,7 @@ abstract class _Paths {
   static const LOGIN_PAGE = '/login-page';
   static const LOGIN_CODE_PAGE = '/login-code-page';
   static const CALENDAR_PAGE = '/calendar-page';
+  static const SEARCH_CASE_PAGE = '/search-case-page';
+  static const SEARCH_CASE_RSULT_PAGE = '/search-case-rsult-page';
+  static const SEARCH_CASE_RSULT_SUB_PAGE = '/search-case-rsult-sub-page';
 }

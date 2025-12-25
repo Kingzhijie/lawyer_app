@@ -16,6 +16,12 @@ import '../modules/loginPage/bindings/login_page_binding.dart';
 import '../modules/loginPage/views/login_page_view.dart';
 import '../modules/newHomePage/bindings/new_home_page_binding.dart';
 import '../modules/newHomePage/views/new_home_page_view.dart';
+import '../modules/searchCasePage/bindings/search_case_page_binding.dart';
+import '../modules/searchCasePage/views/search_case_page_view.dart';
+import '../modules/searchCaseRsultPage/bindings/search_case_rsult_page_binding.dart';
+import '../modules/searchCaseRsultPage/views/search_case_result_page_view.dart';
+import '../modules/searchCaseRsultSubPage/bindings/search_case_rsult_sub_page_binding.dart';
+import '../modules/searchCaseRsultSubPage/views/search_case_rsult_sub_page_view.dart';
 import '../modules/tabPage/bindings/tab_page_binding.dart';
 import '../modules/tabPage/views/tab_page_view.dart';
 
@@ -71,6 +77,21 @@ class AppPages {
       name: _Paths.CALENDAR_PAGE,
       page: () => const CalendarPageView(),
       binding: CalendarPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.SEARCH_CASE_PAGE,
+      page: () => const SearchCasePageView(),
+      binding: SearchCasePageBinding(),
+    ),
+    GetPage(
+      name: _Paths.SEARCH_CASE_RSULT_PAGE,
+      page: () => const SearchCaseResultPageView(),
+      binding: SearchCaseRsultPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.SEARCH_CASE_RSULT_SUB_PAGE,
+      page: () => const SearchCaseRsultSubPageView(),
+      binding: SearchCaseRsultSubPageBinding(),
     ),
   ];
 }

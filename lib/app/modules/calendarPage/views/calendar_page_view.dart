@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/components/common_app_bar.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/calendarPage/views/widgets/today_wait_work_widget.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
@@ -23,8 +24,8 @@ class CalendarPageView extends GetView<CalendarPageController> {
           final date = controller.currentDisplayMonth.value;
           return Row(
             children: [
-              Icon(Icons.arrow_back_ios, size: 22.toW, color: Colors.black),
-              Width(8.toW),
+              Icon(Icons.arrow_back_ios, size: 22.toW, color: Colors.black).withMarginOnly(left: 6.toW),
+              Width(4.toW),
               Text('${date.year}年${date.month}月', style: TextStyle(color: Colors.black, fontSize: 17.toSp, fontWeight: FontWeight.w600))
             ],
           );
@@ -141,73 +142,39 @@ class CalendarPageView extends GetView<CalendarPageController> {
           Text(
             '今日待办',
             style: TextStyle(
-              fontSize: 17.toSp,
-              fontWeight: FontWeight.w700,
+              fontSize: 20.toSp,
+              fontWeight: FontWeight.w600,
               color: AppColors.color_E6000000,
             ),
           ),
           const Spacer(),
-          // 搜索图标
-          ImageUtils(
-            imageUrl: Assets.home.searchIcon.path,
-            width: 18.toW,
-            height: 18.toW,
-          ),
-          SizedBox(width: 16.toW),
-          // 日期选择器
-          Obx(
-            () => GestureDetector(
-              onTap: () => _showDatePicker(),
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10.toW,
-                  vertical: 6.toW,
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.color_FFC5C5C5, width: 1),
-                  borderRadius: BorderRadius.circular(4.toW),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      _formatDate(controller.selectedDate.value),
-                      style: TextStyle(
-                        fontSize: 13.toSp,
-                        color: AppColors.color_E6000000,
-                      ),
-                    ),
-                    SizedBox(width: 4.toW),
-                    Icon(
-                      Icons.keyboard_arrow_down,
-                      size: 16.toW,
-                      color: AppColors.color_66000000,
-                    ),
-                  ],
-                ),
-              ),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.color_FFF3F3F3,
+              borderRadius: BorderRadius.circular(16.toW)
             ),
-          ),
+            width: 120.toW,
+            height: 32.toW,
+            padding: EdgeInsets.symmetric(horizontal: 16.toW),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('搜索', style: TextStyle(color: AppColors.color_42000000, fontSize: 14.toSp),),
+                ImageUtils(
+                  imageUrl: Assets.home.searchIcon.path,
+                  width: 16.toW,
+                  height: 16.toW,
+                ),
+              ],
+            ),
+          ).withOnTap((){
+            controller.searchAction();
+          })
         ],
       ),
     );
   }
 
-  void _showDatePicker() async {
-    final result = await showDatePicker(
-      context: Get.context!,
-      initialDate: controller.selectedDate.value,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (result != null) {
-      controller.selectDate(result);
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}';
-  }
 
   Widget _buildTodoItems(DateTime date) {
     final tasks = _getTasksForDate(date);
@@ -233,218 +200,12 @@ class CalendarPageView extends GetView<CalendarPageController> {
       padding: EdgeInsets.only(
         left: 16.toW,
         right: 16.toW,
-        top: 8.toW,
         bottom: 40.toW,
       ),
       itemCount: tasks.length,
       itemBuilder: (context, index) {
-        return _buildTodoItemWithTimeline(
-          tasks[index],
-          index == tasks.length - 1,
-        );
+        return TodayWaitWorkWidget(task: tasks[index]);
       },
-    );
-  }
-
-  Widget _buildTodoItemWithTimeline(Map<String, dynamic> task, bool isLast) {
-    final bool isPlaintiff = task['role'] == '原告';
-
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 左侧时间和时间轴
-          SizedBox(
-            width: 50.toW,
-            child: Column(
-              children: [
-                Text(
-                  task['time'],
-                  style: TextStyle(
-                    fontSize: 14.toSp,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.color_E6000000,
-                  ),
-                ),
-                SizedBox(height: 8.toW),
-                // 时间轴竖线
-                Expanded(
-                  child: Container(
-                    width: 1.toW,
-                    color: AppColors.color_FFC5C5C5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 12.toW),
-          // 右侧卡片
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(bottom: 16.toW),
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                color: AppColors.color_white,
-                borderRadius: BorderRadius.circular(12.toW),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0x0A000000),
-                    blurRadius: 14,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  // 右侧渐变色块
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    child: Container(
-                      width: 60.toW,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: isPlaintiff
-                              ? [
-                                  Colors.white.withValues(alpha: 0),
-                                  const Color(0xFFFFE4E4),
-                                ]
-                              : [
-                                  Colors.white.withValues(alpha: 0),
-                                  const Color(0xFFE4F7EF),
-                                ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  // 右上角角标
-                  Positioned(
-                    right: -20.toW,
-                    top: 10.toW,
-                    child: Transform.rotate(
-                      angle: 0.785398, // 45度
-                      child: Container(
-                        width: 70.toW,
-                        padding: EdgeInsets.symmetric(vertical: 2.toW),
-                        color: isPlaintiff
-                            ? const Color(0xFFFF6B6B)
-                            : const Color(0xFF4ECDC4),
-                        child: Center(
-                          child: Text(
-                            isPlaintiff ? '原告' : '被告',
-                            style: TextStyle(
-                              fontSize: 10.toSp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // 卡片内容
-                  Padding(
-                    padding: EdgeInsets.all(14.toW),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            ImageUtils(
-                              imageUrl: task['icon'],
-                              width: 20.toW,
-                              height: 20.toW,
-                            ),
-                            SizedBox(width: 8.toW),
-                            Text(
-                              task['title'],
-                              style: TextStyle(
-                                fontSize: 15.toSp,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.color_E6000000,
-                              ),
-                            ),
-                            if (task['isUrgent'] == true) ...[
-                              SizedBox(width: 6.toW),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 6.toW,
-                                  vertical: 2.toW,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFDECEE),
-                                  borderRadius: BorderRadius.circular(4.toW),
-                                ),
-                                child: Text(
-                                  '紧急',
-                                  style: TextStyle(
-                                    fontSize: 10.toSp,
-                                    fontWeight: FontWeight.w500,
-                                    color: const Color(0xFFE34D59),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                        SizedBox(height: 12.toW),
-                        _infoRow('案件：', task['case']),
-                        SizedBox(height: 6.toW),
-                        _infoRow('截止：', task['deadline']),
-                        SizedBox(height: 6.toW),
-                        _infoRow('承办人（法官）', task['handler']),
-                        SizedBox(height: 6.toW),
-                        _infoRow('电话：', task['phone']),
-                        SizedBox(height: 12.toW),
-                        _smallButton('备注'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _infoRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(fontSize: 13.toSp, color: AppColors.color_66000000),
-        ),
-        SizedBox(width: 4.toW),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-              fontSize: 13.toSp,
-              color: AppColors.color_E6000000,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _smallButton(String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 14.toW, vertical: 6.toW),
-      decoration: BoxDecoration(
-        color: AppColors.color_FFEEEEEE,
-        borderRadius: BorderRadius.circular(6.toW),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(fontSize: 13.toSp, color: AppColors.color_E6000000),
-      ),
     );
   }
 
@@ -453,12 +214,6 @@ class CalendarPageView extends GetView<CalendarPageController> {
     return date.year == now.year &&
         date.month == now.month &&
         date.day == now.day;
-  }
-
-  DateTime _getWeekStart(DateTime date) {
-    final weekday = date.weekday;
-    final daysFromSunday = weekday == 7 ? 0 : weekday;
-    return date.subtract(Duration(days: daysFromSunday));
   }
 
   List<Map<String, dynamic>> _getTasksForDate(DateTime date) {

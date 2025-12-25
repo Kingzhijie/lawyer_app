@@ -63,7 +63,7 @@ class BottomSheetUtils {
                         child: Icon(
                             Icons.close,
                           size: 24.toW,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                         onTap: () {
                           Navigator.of(context).pop();

@@ -1,5 +1,6 @@
 import 'package:flutter_advanced_calendar/flutter_advanced_calendar.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/routes/app_pages.dart';
 
 class CalendarPageController extends GetxController {
   /// 日历控制器
@@ -87,4 +88,10 @@ class CalendarPageController extends GetxController {
   void toggleCalendarExpanded() {
     isCalendarExpanded.value = !isCalendarExpanded.value;
   }
+
+  ///搜索
+  void searchAction() {
+    Get.toNamed(Routes.SEARCH_CASE_PAGE);
+  }
+
 }

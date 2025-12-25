@@ -18,6 +18,10 @@ class $AssetsCommonGen {
   AssetGenImage get appLogo =>
       const AssetGenImage('assets/common/app_logo.png');
 
+  /// File path: assets/common/close_tf_icon.png
+  AssetGenImage get closeTfIcon =>
+      const AssetGenImage('assets/common/close_tf_icon.png');
+
   /// File path: assets/common/launch_img.png
   AssetGenImage get launchImg =>
       const AssetGenImage('assets/common/launch_img.png');
@@ -27,7 +31,12 @@ class $AssetsCommonGen {
       const AssetGenImage('assets/common/lingban_icon.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [appLogo, launchImg, lingbanIcon];
+  List<AssetGenImage> get values => [
+    appLogo,
+    closeTfIcon,
+    launchImg,
+    lingbanIcon,
+  ];
 }
 
 class $AssetsHomeGen {
@@ -119,6 +128,14 @@ class $AssetsHomeGen {
   AssetGenImage get searchIcon =>
       const AssetGenImage('assets/home/search_icon.png');
 
+  /// File path: assets/home/select_crile_icon.png
+  AssetGenImage get selectCrileIcon =>
+      const AssetGenImage('assets/home/select_crile_icon.png');
+
+  /// File path: assets/home/send_icon.png
+  AssetGenImage get sendIcon =>
+      const AssetGenImage('assets/home/send_icon.png');
+
   /// File path: assets/home/susong_icon.png
   AssetGenImage get susongIcon =>
       const AssetGenImage('assets/home/susong_icon.png');
@@ -130,6 +147,10 @@ class $AssetsHomeGen {
   /// File path: assets/home/un_notice_icon.png
   AssetGenImage get unNoticeIcon =>
       const AssetGenImage('assets/home/un_notice_icon.png');
+
+  /// File path: assets/home/un_select_crile_icon.png
+  AssetGenImage get unSelectCrileIcon =>
+      const AssetGenImage('assets/home/un_select_crile_icon.png');
 
   /// File path: assets/home/yichang_icon.png
   AssetGenImage get yichangIcon =>
@@ -175,9 +196,12 @@ class $AssetsHomeGen {
     panjueSxIcon,
     riliIcon,
     searchIcon,
+    selectCrileIcon,
+    sendIcon,
     susongIcon,
     susongfeiIcon,
     unNoticeIcon,
+    unSelectCrileIcon,
     yichangIcon,
     yuangaoBg,
     yuangaoIcon,

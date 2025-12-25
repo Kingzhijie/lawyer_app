@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/gen/assets.gen.dart';
 
 class AddCaseRemarkWidget extends StatelessWidget {
-  const AddCaseRemarkWidget({super.key});
+  final TextEditingController textEditingController;
+  final Function(String remark) sendAction;
+  const AddCaseRemarkWidget({super.key, required this.textEditingController, required this.sendAction});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +58,9 @@ class AddCaseRemarkWidget extends StatelessWidget {
               ),
             ),
             SizedBox(width: 12.toW),
-            Icon(Icons.send, size: 36.toW, color: Colors.black),
+            ImageUtils(imageUrl: Assets.home.sendIcon.path, width: 36.toW).withOnTap((){
+              sendAction(textEditingController.text);
+            }),
           ],
         ),
       ),
