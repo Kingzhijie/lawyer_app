@@ -179,6 +179,8 @@ flutter_launcher_icons:
   ios: true
   remove_alpha_ios: true
   image_path: "assets/common/app_logo.png"
+  adaptive_icon_background: "#ffffff"  # 自适应图标背景色（白色）
+  adaptive_icon_foreground: "assets/common/app_logo.png"  # 自适应图标前景
 
 flutter_native_splash:
   color: "#ffffff"  # 背景颜色
@@ -193,3 +195,4 @@ launcher_name:
 
 #更新 dart run flutter_native_splash:create
 # dart run flutter_launcher_icons
+#dart run launcher_name:main
