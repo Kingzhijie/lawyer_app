@@ -1,5 +1,9 @@
 import 'package:get/get.dart';
 
+import '../modules/addTaskPage/bindings/add_task_page_binding.dart';
+import '../modules/addTaskPage/views/add_task_page_view.dart';
+import '../modules/agencyCenterPage/bindings/agency_center_page_binding.dart';
+import '../modules/agencyCenterPage/views/agency_center_page_view.dart';
 import '../modules/agencyPage/bindings/agency_page_binding.dart';
 import '../modules/agencyPage/views/agency_page_view.dart';
 import '../modules/calendarPage/bindings/calendar_page_binding.dart';
@@ -92,6 +96,16 @@ class AppPages {
       name: _Paths.SEARCH_CASE_RSULT_SUB_PAGE,
       page: () => const SearchCaseRsultSubPageView(),
       binding: SearchCaseRsultSubPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.AGENCY_CENTER_PAGE,
+      page: () => const AgencyCenterPageView(),
+      binding: AgencyCenterPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_TASK_PAGE,
+      page: () => const AddTaskPageView(),
+      binding: AddTaskPageBinding(),
     ),
   ];
 }

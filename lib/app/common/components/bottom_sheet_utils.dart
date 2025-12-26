@@ -49,8 +49,7 @@ class BottomSheetUtils {
                   constraints: height == null
                       ? BoxConstraints(
                           minHeight: 30.toW, //设置最小高度（必要）
-                          maxHeight: MediaQuery.of(context).size.height -
-                              AppScreenUtil.navigationBarHeight //设置最大高度（必要）
+                          maxHeight: MediaQuery.of(context).size.height //设置最大高度（必要）
                           )
                       : null,
                   child: contentWidget,

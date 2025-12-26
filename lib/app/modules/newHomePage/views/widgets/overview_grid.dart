@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/routes/app_pages.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
+
+enum CaseTypeEnum {
+  caseCount('案件总数', Color(0xFFECF2FE)), //案件总数
+  agencyTask('待办任务', AppColors.color_FFFEF3E6), //代办任务
+  urgentTask('紧急任务', AppColors.color_FFFDECEE), //紧急任务
+  nonUrgentTask('非紧急任务', AppColors.color_FFE8F7F2), //非紧急任务
+  securityList('保全清单', Color(0xFFEBEBF8)), //保全清单
+  abnormal('异常', AppColors.color_FFFFEDEF); //异常
+  const CaseTypeEnum(this.name, this.bgColor);
+  final String name;
+  final Color bgColor;
+}
 
 class OverviewGrid extends StatelessWidget {
   const OverviewGrid({super.key});
@@ -10,18 +25,12 @@ class OverviewGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cards = [
-      _OverviewCardData('案件总数', '5', Assets.home.anjianZongs.path,
-          const Color(0xFFECF2FE)),
-      _OverviewCardData('待办任务', '17', Assets.home.dbrwIcon.path,
-          AppColors.color_FFFEF3E6),
-      _OverviewCardData('紧急任务', '6', Assets.home.jjrwIcon.path,
-          AppColors.color_FFFDECEE),
-      _OverviewCardData('非紧急任务', '11', Assets.home.fjjrwIcon.path,
-          AppColors.color_FFE8F7F2),
-      _OverviewCardData('保全清单', '8', Assets.home.bqqdIcon.path,
-          const Color(0xFFEBEBF8)),
-      _OverviewCardData('异常', '3', Assets.home.yichangIcon.path,
-          AppColors.color_FFFFEDEF),
+      _OverviewCardData(CaseTypeEnum.caseCount, '5', Assets.home.anjianZongs.path),
+      _OverviewCardData(CaseTypeEnum.agencyTask, '17', Assets.home.dbrwIcon.path),
+      _OverviewCardData(CaseTypeEnum.urgentTask, '6', Assets.home.jjrwIcon.path),
+      _OverviewCardData(CaseTypeEnum.nonUrgentTask, '11', Assets.home.fjjrwIcon.path),
+      _OverviewCardData(CaseTypeEnum.securityList, '8', Assets.home.bqqdIcon.path),
+      _OverviewCardData(CaseTypeEnum.abnormal, '3', Assets.home.yichangIcon.path),
     ];
 
     final double cardWidth =
@@ -41,11 +50,10 @@ class OverviewGrid extends StatelessWidget {
 }
 
 class _OverviewCardData {
-  final String title;
+  final CaseTypeEnum type;
   final String value;
   final String icon;
-  final Color bg;
-  _OverviewCardData(this.title, this.value, this.icon, this.bg);
+  _OverviewCardData(this.type, this.value, this.icon);
 }
 
 class _OverviewCard extends StatelessWidget {
@@ -64,7 +72,7 @@ class _OverviewCard extends StatelessWidget {
         top: 12.toW,
       ),
       decoration: BoxDecoration(
-        color: data.bg,
+        color: data.type.bgColor,
         borderRadius: BorderRadius.circular(12.toW),
       ),
       child: Column(
@@ -73,7 +81,7 @@ class _OverviewCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                data.title,
+                data.type.name,
                 style: TextStyle(
                   fontSize: 14.toSp,
                   color: AppColors.color_99000000,
@@ -107,7 +115,28 @@ class _OverviewCard extends StatelessWidget {
           )
         ],
       ),
-    );
+    ).withOnTap((){
+      switch (data.type) {
+        case CaseTypeEnum.caseCount:
+          Get.toNamed(Routes.AGENCY_CENTER_PAGE);
+        case CaseTypeEnum.agencyTask:
+          // TODO: Handle this case.
+          throw UnimplementedError();
+        case CaseTypeEnum.urgentTask:
+          // TODO: Handle this case.
+          throw UnimplementedError();
+        case CaseTypeEnum.nonUrgentTask:
+          // TODO: Handle this case.
+          throw UnimplementedError();
+        case CaseTypeEnum.securityList:
+          // TODO: Handle this case.
+          throw UnimplementedError();
+        case CaseTypeEnum.abnormal:
+          // TODO: Handle this case.
+          throw UnimplementedError();
+      }
+
+    });
   }
 }
 

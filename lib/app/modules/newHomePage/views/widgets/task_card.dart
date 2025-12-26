@@ -10,9 +10,8 @@ import '../../controllers/new_home_page_controller.dart';
 import 'remark_case_widget.dart';
 
 class TaskCard extends StatelessWidget {
-  final NewHomePageController controller;
-
-  const TaskCard({super.key, required this.controller});
+  final Function(int type) clickItemType; //0: 备注, 1:关联用户
+  const TaskCard({super.key, required this.clickItemType});
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +85,7 @@ class TaskCard extends StatelessWidget {
               Row(
                 children: [
                   CooperationPersonWidget(linkUserAction: (){
-                    controller.linkUserAlert();
+                    clickItemType(1);
                   },).withExpanded(),
                   Width(30.toW),
                   _smallButton('备注'),
@@ -190,7 +189,7 @@ class TaskCard extends StatelessWidget {
         style: TextStyle(fontSize: 14.toSp, color: AppColors.color_E6000000),
       ),
     ).withOnTap(() {
-      controller.addRemarkMethod();
+      clickItemType(0);
     });
   }
 }

@@ -8,6 +8,7 @@ import '../../../../common/constants/app_colors.dart';
 import '../../../../common/extension/widget_extension.dart';
 import '../../../../utils/screen_utils.dart';
 
+///创建案件
 class CreateCaseWidget extends StatefulWidget {
   const CreateCaseWidget({super.key});
 

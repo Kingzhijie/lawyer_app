@@ -14,13 +14,41 @@ import 'package:flutter/widgets.dart';
 class $AssetsCommonGen {
   const $AssetsCommonGen();
 
+  /// File path: assets/common/add_daib_task_icon.png
+  AssetGenImage get addDaibTaskIcon =>
+      const AssetGenImage('assets/common/add_daib_task_icon.png');
+
   /// File path: assets/common/app_logo.png
   AssetGenImage get appLogo =>
       const AssetGenImage('assets/common/app_logo.png');
 
+  /// File path: assets/common/calendar_choose_icon.png
+  AssetGenImage get calendarChooseIcon =>
+      const AssetGenImage('assets/common/calendar_choose_icon.png');
+
+  /// File path: assets/common/care_down_qs.png
+  AssetGenImage get careDownQs =>
+      const AssetGenImage('assets/common/care_down_qs.png');
+
+  /// File path: assets/common/caret_down_small.png
+  AssetGenImage get caretDownSmall =>
+      const AssetGenImage('assets/common/caret_down_small.png');
+
+  /// File path: assets/common/close_bg_ico.png
+  AssetGenImage get closeBgIco =>
+      const AssetGenImage('assets/common/close_bg_ico.png');
+
   /// File path: assets/common/close_tf_icon.png
   AssetGenImage get closeTfIcon =>
       const AssetGenImage('assets/common/close_tf_icon.png');
+
+  /// File path: assets/common/daiban_renwu_icon.png
+  AssetGenImage get daibanRenwuIcon =>
+      const AssetGenImage('assets/common/daiban_renwu_icon.png');
+
+  /// File path: assets/common/jinji_renwu_icon.png
+  AssetGenImage get jinjiRenwuIcon =>
+      const AssetGenImage('assets/common/jinji_renwu_icon.png');
 
   /// File path: assets/common/launch_img.png
   AssetGenImage get launchImg =>
@@ -30,12 +58,34 @@ class $AssetsCommonGen {
   AssetGenImage get lingbanIcon =>
       const AssetGenImage('assets/common/lingban_icon.png');
 
+  /// File path: assets/common/quanping_icon.png
+  AssetGenImage get quanpingIcon =>
+      const AssetGenImage('assets/common/quanping_icon.png');
+
+  /// File path: assets/common/weixuanzhong_anjian.png
+  AssetGenImage get weixuanzhongAnjian =>
+      const AssetGenImage('assets/common/weixuanzhong_anjian.png');
+
+  /// File path: assets/common/xuanzhong_anjian.png
+  AssetGenImage get xuanzhongAnjian =>
+      const AssetGenImage('assets/common/xuanzhong_anjian.png');
+
   /// List of all assets
   List<AssetGenImage> get values => [
+    addDaibTaskIcon,
     appLogo,
+    calendarChooseIcon,
+    careDownQs,
+    caretDownSmall,
+    closeBgIco,
     closeTfIcon,
+    daibanRenwuIcon,
+    jinjiRenwuIcon,
     launchImg,
     lingbanIcon,
+    quanpingIcon,
+    weixuanzhongAnjian,
+    xuanzhongAnjian,
   ];
 }
 

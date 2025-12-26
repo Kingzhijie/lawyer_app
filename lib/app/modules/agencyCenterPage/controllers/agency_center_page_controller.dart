@@ -1,27 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lawyer_app/app/modules/newHomePage/views/widgets/add_case_remark_widget.dart';
-import 'package:lawyer_app/app/modules/newHomePage/views/widgets/link_user_widget.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
-import 'package:lawyer_app/main.dart';
 
+import '../../../../main.dart';
 import '../../../common/components/bottom_sheet_utils.dart';
 import '../../../utils/screen_utils.dart';
-import '../views/widgets/cooperation_person_widget.dart';
-import '../views/widgets/create_case_widget.dart';
+import '../../newHomePage/views/widgets/add_case_remark_widget.dart';
+import '../../newHomePage/views/widgets/create_case_widget.dart';
 
-class NewHomePageController extends GetxController {
-  /// 顶部筛选 tab 下标：0 我的待办、1 我参与的、2 已逾期
+class AgencyCenterPageController extends GetxController {
+
+  /// 顶部筛选 tab 下标：0 全部、1 紧急任务、2 今日到期, 3. 已逾期
   final RxInt tabIndex = 0.obs;
 
   final TextEditingController textEditingController = TextEditingController();
 
-  void switchTab(int index) {
-    tabIndex.value = index;
+  @override
+  void onInit() {
+    super.onInit();
   }
 
-  void lookCalendarCaseAction() {
-    Get.toNamed(Routes.CALENDAR_PAGE);
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+  }
+
+  void switchTab(int index) {
+    tabIndex.value = index;
   }
 
   ///添加备注
@@ -41,11 +51,12 @@ class NewHomePageController extends GetxController {
         isShowCloseIcon: true,
         height: AppScreenUtil.screenHeight - 217.toW,
         isSetBottomInset: false,
-        contentWidget: LinkUserWidget());
+        contentWidget: CreateCaseWidget());
   }
 
-  void searchCaseAction() {
-    Get.toNamed(Routes.SEARCH_CASE_PAGE);
+  ///添加任务
+  void addTaskAction() {
+    Get.toNamed(Routes.ADD_TASK_PAGE);
   }
 
 }

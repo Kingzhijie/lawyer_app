@@ -15,6 +15,8 @@ abstract class Routes {
   static const SEARCH_CASE_PAGE = _Paths.SEARCH_CASE_PAGE;
   static const SEARCH_CASE_RSULT_PAGE = _Paths.SEARCH_CASE_RSULT_PAGE;
   static const SEARCH_CASE_RSULT_SUB_PAGE = _Paths.SEARCH_CASE_RSULT_SUB_PAGE;
+  static const AGENCY_CENTER_PAGE = _Paths.AGENCY_CENTER_PAGE;
+  static const ADD_TASK_PAGE = _Paths.ADD_TASK_PAGE;
 }
 
 abstract class _Paths {
@@ -31,4 +33,6 @@ abstract class _Paths {
   static const SEARCH_CASE_PAGE = '/search-case-page';
   static const SEARCH_CASE_RSULT_PAGE = '/search-case-rsult-page';
   static const SEARCH_CASE_RSULT_SUB_PAGE = '/search-case-rsult-sub-page';
+  static const AGENCY_CENTER_PAGE = '/agency-center-page';
+  static const ADD_TASK_PAGE = '/add-task-page';
 }

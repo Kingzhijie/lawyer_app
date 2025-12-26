@@ -136,7 +136,9 @@ class NewHomePageView extends GetView<NewHomePageController> {
               ),
             ],
           ),
-        ).withExpanded(),
+        ).withOnTap((){
+          controller.searchCaseAction();
+        }).withExpanded(),
         Width(9.toW),
         Container(
           width: 44.toW,
@@ -220,7 +222,14 @@ class NewHomePageView extends GetView<NewHomePageController> {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index){
-      return TaskCard(controller: controller).withMarginOnly(bottom: 12.toW);
+      return TaskCard(clickItemType: (type) {
+        if (type == 1){ //关联用户
+          controller.linkUserAlert();
+        }
+        if (type == 0){ //备注
+          controller.addRemarkMethod();
+        }
+      },).withMarginOnly(bottom: 12.toW);
     });
   }
 }
