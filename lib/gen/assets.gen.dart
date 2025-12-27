@@ -260,6 +260,25 @@ class $AssetsHomeGen {
   ];
 }
 
+class $AssetsMyGen {
+  const $AssetsMyGen();
+
+  /// File path: assets/my/about_us_icon.png
+  AssetGenImage get aboutUsIcon =>
+      const AssetGenImage('assets/my/about_us_icon.png');
+
+  /// File path: assets/my/invite_friend.png
+  AssetGenImage get inviteFriend =>
+      const AssetGenImage('assets/my/invite_friend.png');
+
+  /// File path: assets/my/vip_card_bg.png
+  AssetGenImage get vipCardBg =>
+      const AssetGenImage('assets/my/vip_card_bg.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [aboutUsIcon, inviteFriend, vipCardBg];
+}
+
 class $AssetsTabbarGen {
   const $AssetsTabbarGen();
 
@@ -288,6 +307,7 @@ class Assets {
 
   static const $AssetsCommonGen common = $AssetsCommonGen();
   static const $AssetsHomeGen home = $AssetsHomeGen();
+  static const $AssetsMyGen my = $AssetsMyGen();
   static const $AssetsTabbarGen tabbar = $AssetsTabbarGen();
 }
 

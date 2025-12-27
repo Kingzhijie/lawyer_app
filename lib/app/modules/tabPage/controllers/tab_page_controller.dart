@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
@@ -8,8 +9,12 @@ import '../../../utils/app_common_instance.dart';
 import '../../../utils/device_info_utils.dart';
 import '../../../utils/push/pushUtil.dart';
 import '../../../utils/storage_utils.dart';
+import '../../myPage/controllers/my_page_controller.dart';
 
 class TabPageController extends GetxController {
+
+  final GlobalKey<ScaffoldState> tabScaffoldKey = GlobalKey<ScaffoldState>();
+
   /// PageView 控制器
   late PageController pageController;
 
@@ -23,11 +28,18 @@ class TabPageController extends GetxController {
     super.onInit();
     _init();
     pageController = PageController(initialPage: currentIndex.value);
+
+    Get.lazyPut<MyPageController>(
+          () => MyPageController(),
+      fenix: true, // 允许控制器被销毁后重新创建
+    );
+
   }
 
   @override
   void onClose() {
     pageController.dispose();
+    Get.delete<MyPageController>(force: true);
     super.onClose();
   }
 
@@ -83,4 +95,13 @@ class TabPageController extends GetxController {
 
     return true;
   }
+
+  void openDrawer() {
+    tabScaffoldKey.currentState?.openDrawer();
+  }
+
+  void closeDrawer() {
+    tabScaffoldKey.currentState?.closeDrawer();
+  }
+
 }

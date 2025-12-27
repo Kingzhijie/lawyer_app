@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/modules/loginPage/controllers/login_page_controller.dart';
 import 'package:lawyer_app/app/modules/loginPage/views/login_page_view.dart';
+import 'package:lawyer_app/app/modules/myPage/views/my_page_view.dart';
 import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/new_home_page_view.dart';
 import 'package:lawyer_app/app/utils/app_common_instance.dart';
@@ -71,7 +72,13 @@ class TabPageView extends GetView<TabPageController> {
       }
 
       return Scaffold(
+        key: controller.tabScaffoldKey,
         backgroundColor: AppColors.color_white,
+        drawer: Drawer(
+          clipBehavior: Clip.none,
+          width: AppScreenUtil.screenWidth - 68.toW,
+          child: MyPageView(),
+        ),
         body: PageView(
           controller: controller.pageController,
           onPageChanged: controller.onPageChanged,

@@ -58,7 +58,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
             left: 16.toW,
             child: Column(
               children: [
-                _buildTopBar(),
+                _buildTopBar(context),
                 _buildSearchBar(),
               ],
             ),
@@ -68,7 +68,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
     );
   }
 
-  Widget _buildTopBar() {
+  Widget _buildTopBar(BuildContext context) {
     return Container(
       height: AppScreenUtil.navigationBarHeight,
       padding: EdgeInsets.only(top: AppScreenUtil.statusBarHeight),
@@ -84,11 +84,12 @@ class NewHomePageView extends GetView<NewHomePageController> {
             ),
             child: ClipOval(
               child: ImageUtils(
-                imageUrl: Assets.home.yuangaoIcon.path,
-                fit: BoxFit.cover,
+                imageUrl: Assets.home.defaultUserIcon.path,
               ),
             ),
-          ),
+          ).withOnTap(() {
+            controller.openMyPageDrawer();
+          }),
           Text(
             '灵伴',
             style: TextStyle(

@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/aboutUsPage/bindings/about_us_page_binding.dart';
+import '../modules/aboutUsPage/views/about_us_page_view.dart';
 import '../modules/addTaskPage/bindings/add_task_page_binding.dart';
 import '../modules/addTaskPage/views/add_task_page_view.dart';
 import '../modules/agencyCenterPage/bindings/agency_center_page_binding.dart';
@@ -18,6 +20,8 @@ import '../modules/loginCodePage/bindings/login_code_page_binding.dart';
 import '../modules/loginCodePage/views/login_code_page_view.dart';
 import '../modules/loginPage/bindings/login_page_binding.dart';
 import '../modules/loginPage/views/login_page_view.dart';
+import '../modules/myPage/bindings/my_page_binding.dart';
+import '../modules/myPage/views/my_page_view.dart';
 import '../modules/newHomePage/bindings/new_home_page_binding.dart';
 import '../modules/newHomePage/views/new_home_page_view.dart';
 import '../modules/searchCasePage/bindings/search_case_page_binding.dart';
@@ -28,6 +32,8 @@ import '../modules/searchCaseRsultSubPage/bindings/search_case_rsult_sub_page_bi
 import '../modules/searchCaseRsultSubPage/views/search_case_rsult_sub_page_view.dart';
 import '../modules/tabPage/bindings/tab_page_binding.dart';
 import '../modules/tabPage/views/tab_page_view.dart';
+import '../modules/userInfoPage/bindings/user_info_page_binding.dart';
+import '../modules/userInfoPage/views/user_info_page_view.dart';
 
 part 'app_routes.dart';
 
@@ -106,6 +112,21 @@ class AppPages {
       name: _Paths.ADD_TASK_PAGE,
       page: () => const AddTaskPageView(),
       binding: AddTaskPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.MY_PAGE,
+      page: () => const MyPageView(),
+      binding: MyPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.ABOUT_US_PAGE,
+      page: () => const AboutUsPageView(),
+      binding: AboutUsPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.USER_INFO_PAGE,
+      page: () => const UserInfoPageView(),
+      binding: UserInfoPageBinding(),
     ),
   ];
 }
