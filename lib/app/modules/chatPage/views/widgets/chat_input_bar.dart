@@ -27,7 +27,7 @@ class ChatInputBar extends StatelessWidget {
             offset: const Offset(0, 6),
           ),
         ],
-        borderRadius: BorderRadius.circular(12.toW)
+        borderRadius: BorderRadius.circular(12.toW),
       ),
       child: Obx(() {
         final hasText = controller.hasText.value;
@@ -35,7 +35,10 @@ class ChatInputBar extends StatelessWidget {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ImageUtils(imageUrl: Assets.common.addPhotoIcon.path, width: 24.toW),
+            ImageUtils(
+              imageUrl: Assets.common.addPhotoIcon.path,
+              width: 24.toW,
+            ),
             if (!hasVoice)
               Flexible(
                 child: Listener(
@@ -70,22 +73,42 @@ class ChatInputBar extends StatelessWidget {
                   child: Container(
                     alignment: Alignment.center,
                     padding: EdgeInsets.symmetric(vertical: 12.toW),
-                    child: Text('按住说话', style: TextStyle(color: AppColors.color_E6000000, fontSize: 16.toSp),),
+                    child: Text(
+                      '按住说话',
+                      style: TextStyle(
+                        color: AppColors.color_E6000000,
+                        fontSize: 16.toSp,
+                      ),
+                    ),
                   ),
                 ),
               ),
             if (!hasText)
-              ImageUtils(imageUrl: hasVoice ? Assets.common.jianpanIcon.path : Assets.common.voiceChangeIcon.path, width: 24.toW,).withOnTap((){
-                controller.handleVoicePressed();
-              }).withMarginOnly(right: 8.toW),
+              ImageUtils(
+                    imageUrl: hasVoice
+                        ? Assets.common.jianpanIcon.path
+                        : Assets.common.voiceChangeIcon.path,
+                    width: 24.toW,
+                  )
+                  .withOnTap(() {
+                    controller.handleVoicePressed();
+                  })
+                  .withMarginOnly(right: 8.toW),
 
-            ImageUtils(imageUrl: hasText ? Assets.home.sendIcon.path : Assets.common.addActionIcon.path, width: 24.toW,).withOnTap((){
-              if (hasText) {
-                controller.handleSendPressed();
-              } else {
-                controller.handleToolBtnClick();
-              }
-            }).withMarginOnly(left:hasText ? 8.toW : 0),
+            ImageUtils(
+                  imageUrl: hasText
+                      ? Assets.home.sendIcon.path
+                      : Assets.common.addActionIcon.path,
+                  width: 24.toW,
+                )
+                .withOnTap(() {
+                  if (hasText) {
+                    controller.handleSendPressed();
+                  } else {
+                    controller.handleToolBtnClick();
+                  }
+                })
+                .withMarginOnly(left: hasText ? 8.toW : 0),
           ],
         );
       }),
@@ -104,10 +127,7 @@ class _InputField extends StatelessWidget {
       focusNode: controller.inputFocusNode,
       minLines: 1,
       maxLines: 4,
-      style: TextStyle(
-        color: AppColors.color_E6000000,
-        fontSize: 16.toSp,
-      ),
+      style: TextStyle(color: AppColors.color_E6000000, fontSize: 16.toSp),
       // 1-4 行内自适应，高度到 4 行后内部滚动
       keyboardType: TextInputType.multiline,
       decoration: InputDecoration(

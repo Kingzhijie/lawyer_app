@@ -41,7 +41,7 @@ class ChatPageView extends GetView<ChatPageController> {
               children: [
                 Expanded(
                   child: Obx(
-                        () => ListView.builder(
+                    () => ListView.builder(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 16,
@@ -70,7 +70,12 @@ class ChatPageView extends GetView<ChatPageController> {
             ),
           ).withMarginOnly(top: AppScreenUtil.navigationBarHeight),
           // 录音界面覆盖层
-          const VoiceRecordingOverlay(),
+          Obx(() {
+            if (!controller.isRecording.value) {
+              return const SizedBox.shrink();
+            }
+            return const VoiceRecordingOverlay();
+          }),
         ],
       ),
     );
@@ -78,33 +83,39 @@ class ChatPageView extends GetView<ChatPageController> {
 
   Widget _buildTopBar(BuildContext context) {
     return Positioned(
-      left: 0, top: 0, right: 0,
-        child: Container(
-      height: AppScreenUtil.navigationBarHeight,
-      padding: EdgeInsets.only(top: AppScreenUtil.statusBarHeight),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: 34.toW,
-            height: 34.toW,
-            alignment: Alignment.centerRight,
-            child: Icon(Icons.arrow_back_ios, color: Colors.black, size: 22.toW),
-          ).withOnTap(() {
-            Get.back();
-          }),
-          Text(
-            'AI对话',
-            style: TextStyle(
-              fontSize: 18.toSp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.color_E6000000,
+      left: 0,
+      top: 0,
+      right: 0,
+      child: Container(
+        height: AppScreenUtil.navigationBarHeight,
+        padding: EdgeInsets.only(top: AppScreenUtil.statusBarHeight),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: 34.toW,
+              height: 34.toW,
+              alignment: Alignment.centerRight,
+              child: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+                size: 22.toW,
+              ),
+            ).withOnTap(() {
+              Get.back();
+            }),
+            Text(
+              'AI对话',
+              style: TextStyle(
+                fontSize: 18.toSp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.color_E6000000,
+              ),
             ),
-          ),
-          SizedBox(width: 34.toW),
-        ],
+            SizedBox(width: 34.toW),
+          ],
+        ),
       ),
-    ));
+    );
   }
-
 }

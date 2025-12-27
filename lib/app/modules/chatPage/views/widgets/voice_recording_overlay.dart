@@ -1,70 +1,125 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/utils/image_utils.dart';
+import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/gen/assets.gen.dart';
 import '../../controllers/chat_page_controller.dart';
 
-/// 录音界面覆盖层：显示波形动画和提示文字
+/// 录音界面覆盖层
 class VoiceRecordingOverlay extends StatelessWidget {
   const VoiceRecordingOverlay({super.key});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ChatPageController>();
-    
-    return Obx(() {
-      if (!controller.isRecording.value) {
-        return const SizedBox.shrink();
-      }
-      
-      return Positioned(
-        bottom: 0,
-        left: 0,
-        right: 0,
-        child: Container(
-          height: 140,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.white,
-                Color(0xFF4A90E2), // 蓝色
+
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Obx(() {
+        final isCancelMode = controller.isCancelMode.value;
+        final recognizedText = controller.recognizedText.value;
+        final amplitude = controller.recordingAmplitude.value;
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.toW),
+              topRight: Radius.circular(20.toW),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 30.toW),
+                // 顶部提示 "请说，我在听"
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ImageUtils(
+                      imageUrl: Assets.home.zhengzaiTingIcon.path,
+                      width: 20.toW,
+                    ),
+                    SizedBox(width: 7.toW),
+                    Text(
+                      '请说，我在听',
+                      style: TextStyle(
+                        fontSize: 18.toSp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.theme,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24.toW),
+                // 识别的文字内容
+                Container(
+                  constraints: BoxConstraints(
+                    minHeight: 200.toW,
+                    maxHeight: 400.toW,
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 24.toW),
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    recognizedText,
+                    style: TextStyle(
+                      fontSize: 20.toSp,
+                      color: AppColors.color_99000000,
+                      fontWeight: FontWeight.w500,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.toW),
+                // 底部提示文字
+                Text(
+                  isCancelMode ? '松开取消' : '松开发送，上滑取消',
+                  style: TextStyle(
+                    fontSize: 12.toSp,
+                    color: isCancelMode
+                        ? const Color(0xFFFF3E20)
+                        : AppColors.color_E6000000,
+                  ),
+                ),
+                SizedBox(height: 16.toW),
+                // 底部波形条
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 24.toW),
+                  height: 52.toW,
+                  decoration: BoxDecoration(
+                    color: isCancelMode
+                        ? const Color(0xFFFF3E20)
+                        : AppColors.theme,
+                    borderRadius: BorderRadius.circular(12.toW),
+                  ),
+                  child: Center(
+                    child: _WaveformAnimation(amplitude: amplitude),
+                  ),
+                ),
+                SizedBox(height: 20.toW),
               ],
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(flex: 2),
-              // 提示文字
-              Text(
-                controller.isCancelMode.value ? '松开取消' : '松手发送,上移取消',
-                style: TextStyle(
-                  color: controller.isCancelMode.value 
-                      ? Colors.red.shade300 
-                      : Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 10),
-              // 波形动画 - 固定高度避免文字抖动
-              SizedBox(
-                height: 36,
-                child: Center(
-                  child: _WaveformAnimation(amplitude: controller.recordingAmplitude.value),
-                ),
-              ),
-              const Spacer(flex: 3),
-            ],
-          ),
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 }
 
-/// 波形动画组件：根据录音振幅显示动态波形
+/// 波形动画组件
 class _WaveformAnimation extends StatefulWidget {
   const _WaveformAnimation({required this.amplitude});
 
@@ -77,14 +132,14 @@ class _WaveformAnimation extends StatefulWidget {
 class _WaveformAnimationState extends State<_WaveformAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  final List<double> _waveHeights = List.generate(20, (_) => 0.0);
+  final int _barCount = 30;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 600),
     )..repeat();
   }
 
@@ -95,57 +150,34 @@ class _WaveformAnimationState extends State<_WaveformAnimation>
   }
 
   @override
-  void didUpdateWidget(_WaveformAnimation oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.amplitude != oldWidget.amplitude) {
-      _updateWaveHeights();
-    }
-  }
-
-  void _updateWaveHeights() {
-    final baseHeight = 4.0 + widget.amplitude * 20.0;
-    final random = Random();
-    
-    for (int i = 0; i < _waveHeights.length; i++) {
-      // 中心波峰效果
-      final distanceFromCenter = (i - _waveHeights.length / 2).abs();
-      final factor = 1.0 - (distanceFromCenter / (_waveHeights.length / 2));
-      final variation = random.nextDouble() * 0.3 + 0.7;
-      _waveHeights[i] = baseHeight * factor * variation;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    _updateWaveHeights();
-    
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: List.generate(
-            _waveHeights.length,
-            (index) {
-              final height = _waveHeights[index];
-              final phase = (index / _waveHeights.length) * 2 * pi;
-              final animatedHeight = height * (0.7 + 0.3 * sin(_controller.value * 2 * pi + phase));
-              
-              return Container(
-                width: 4,
-                height: animatedHeight.clamp(6.0, 30.0),
-                margin: const EdgeInsets.symmetric(horizontal: 2.5),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              );
-            },
-          ),
+          children: List.generate(_barCount, (index) {
+            final baseHeight = 8.0 + widget.amplitude * 20.0;
+            final phase = (index / _barCount) * 2 * pi;
+            final animValue = sin(_controller.value * 2 * pi + phase);
+            final centerFactor =
+                1.0 - ((index - _barCount / 2).abs() / (_barCount / 2)) * 0.5;
+            final height =
+                baseHeight * centerFactor * (0.5 + 0.5 * animValue.abs());
+
+            return Container(
+              width: 3.toW,
+              height: height.clamp(4.0, 30.0),
+              margin: EdgeInsets.symmetric(horizontal: 2.toW),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(1.5.toW),
+              ),
+            );
+          }),
         );
       },
     );
   }
 }
-
