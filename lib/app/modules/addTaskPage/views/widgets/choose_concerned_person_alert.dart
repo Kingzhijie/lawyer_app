@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:lawyer_app/app/common/constants/app_colors.dart';
-import 'package:lawyer_app/app/utils/image_utils.dart';
-import 'package:lawyer_app/app/utils/screen_utils.dart';
-import 'package:lawyer_app/gen/assets.gen.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 
-import '../../../../common/components/bottom_sheet_utils.dart';
+import '../../../../../gen/assets.gen.dart';
+import '../../../../common/constants/app_colors.dart';
 import '../../../../common/extension/widget_extension.dart';
-import 'add_task_item.dart';
-import 'choose_concerned_person_alert.dart';
+import '../../../../utils/image_utils.dart';
+import '../../../../utils/screen_utils.dart';
 
-class ChooseCaseAlert extends StatefulWidget {
-  const ChooseCaseAlert({super.key});
+class ChooseConcernedPersonAlert extends StatefulWidget {
+  const ChooseConcernedPersonAlert({super.key});
 
   @override
-  State<ChooseCaseAlert> createState() => _ChooseCaseAlertState();
+  State<ChooseConcernedPersonAlert> createState() =>
+      _ChooseConcernedPersonAlertState();
 }
 
-class _ChooseCaseAlertState extends State<ChooseCaseAlert> {
+class _ChooseConcernedPersonAlertState
+    extends State<ChooseConcernedPersonAlert> {
   double viewTop = 114.toW;
+
+  List<String> datas = ['风没血', '李鹏', '赵雷', '周杰伦', '小明', '邓紫棋'];
+  List<String> selects = [];
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +35,7 @@ class _ChooseCaseAlertState extends State<ChooseCaseAlert> {
         ),
         child: Column(
           children: [
-            if (viewTop == 0)
-              SizedBox(height: AppScreenUtil.statusBarHeight),
+            if (viewTop == 0) SizedBox(height: AppScreenUtil.statusBarHeight),
             Container(
               height: 48.toW,
               alignment: Alignment.center,
@@ -77,7 +79,7 @@ class _ChooseCaseAlertState extends State<ChooseCaseAlert> {
                     ),
                   ),
                   Text(
-                    '选择案件',
+                    '选择当事人',
                     style: TextStyle(
                       color: AppColors.color_E6000000,
                       fontSize: 16.toSp,
@@ -99,83 +101,42 @@ class _ChooseCaseAlertState extends State<ChooseCaseAlert> {
                 ],
               ),
             ),
-            _setFilterWidget(),
             ListView.builder(
-              itemCount: 10,
-                padding: EdgeInsets.symmetric(horizontal: 16.toW, vertical: 16.toW),
-                itemBuilder: (context, index) {
-              return AddTaskItem(type: TaskEnum.choose);
-            }).withExpanded()
+              itemCount: datas.length,
+              padding: EdgeInsets.symmetric(
+                horizontal: 16.toW,
+                vertical: 16.toW,
+              ),
+              itemBuilder: (context, index) {
+                var name = datas[index];
+                return Container(
+                  height: 54.toW,
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: AppColors.color_line, width: 0.5))
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(name, style: TextStyle(color: AppColors.color_E6000000, fontSize: 16.toSp),),
+                      if (selects.contains(name))
+                      Icon(Icons.check, color: AppColors.theme, size: 20.toW)
+                    ],
+                  ),
+                ).withOnTap((){
+                  if (selects.contains(name)) {
+                    selects.remove(name);
+                  } else {
+                    selects.add(name);
+                  }
+                  setState(() {});
+                });
+              },
+            ).withExpanded(),
           ],
         ),
-      ).withOnTap((){}),
-    ).withOnTap((){
+      ).withOnTap(() {}),
+    ).withOnTap(() {
       Get.back();
     });
   }
-
-  Widget _setFilterWidget() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 8.toW, horizontal: 16.toW),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _setFilterItemWidget('当事人').withOnTap((){
-            _chooseConcernedAction();
-          }),
-          _setFilterItemWidget('任务类型'),
-          Container(
-            width: 44.toW,
-            height: 44.toW,
-            alignment: Alignment.center,
-            child: ImageUtils(
-              imageUrl: Assets.home.searchIcon.path,
-              width: 22.toW,
-              height: 22.toW,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _setFilterItemWidget(String name) {
-    return Container(
-      width: 140.toW,
-      height: 44.toW,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.toW),
-        border: Border.all(color: AppColors.color_line, width: 0.5),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 16.toW),
-      child: Row(
-        children: [
-          Text(
-            name,
-            style: TextStyle(
-              color: AppColors.color_66000000,
-              fontSize: 14.toSp,
-            ),
-          ).withExpanded(),
-          ImageUtils(
-            imageUrl: Assets.common.careDownQs.path,
-            width: 16.toW,
-            height: 16.toW,
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _chooseConcernedAction() {
-    BottomSheetUtils.show(
-      context,
-      isShowCloseIcon: false,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.transparent,
-      contentWidget: ChooseConcernedPersonAlert(),
-    );
-  }
-
 }

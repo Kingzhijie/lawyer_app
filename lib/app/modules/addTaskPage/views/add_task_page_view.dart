@@ -301,6 +301,7 @@ class AddTaskPageView extends GetView<AddTaskPageController> {
               return _buildAddCaseButton();
             } else {
               return AddTaskItem(
+                type: TaskEnum.close,
                 closeCardCallBack: () {
                   controller.selectedCase.value = null;
                 },

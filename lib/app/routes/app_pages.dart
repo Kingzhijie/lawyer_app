@@ -14,8 +14,6 @@ import '../modules/casePage/bindings/case_page_binding.dart';
 import '../modules/casePage/views/case_page_view.dart';
 import '../modules/chatPage/bindings/chat_page_binding.dart';
 import '../modules/chatPage/views/chat_page_view.dart';
-import '../modules/home/bindings/home_binding.dart';
-import '../modules/home/views/home_view.dart';
 import '../modules/loginCodePage/bindings/login_code_page_binding.dart';
 import '../modules/loginCodePage/views/login_code_page_view.dart';
 import '../modules/loginPage/bindings/login_page_binding.dart';
@@ -30,6 +28,10 @@ import '../modules/searchCaseRsultPage/bindings/search_case_rsult_page_binding.d
 import '../modules/searchCaseRsultPage/views/search_case_result_page_view.dart';
 import '../modules/searchCaseRsultSubPage/bindings/search_case_rsult_sub_page_binding.dart';
 import '../modules/searchCaseRsultSubPage/views/search_case_rsult_sub_page_view.dart';
+import '../modules/securityListDetailPage/bindings/security_list_detail_page_binding.dart';
+import '../modules/securityListDetailPage/views/security_list_detail_page_view.dart';
+import '../modules/securityListPage/bindings/security_list_page_binding.dart';
+import '../modules/securityListPage/views/security_list_page_view.dart';
 import '../modules/tabPage/bindings/tab_page_binding.dart';
 import '../modules/tabPage/views/tab_page_view.dart';
 import '../modules/userInfoPage/bindings/user_info_page_binding.dart';
@@ -43,11 +45,6 @@ class AppPages {
   static const INITIAL = Routes.TAB_PAGE;
 
   static final routes = [
-    GetPage(
-      name: _Paths.HOME,
-      page: () => const HomeView(),
-      binding: HomeBinding(),
-    ),
     GetPage(
       name: _Paths.TAB_PAGE,
       page: () => const TabPageView(),
@@ -127,6 +124,16 @@ class AppPages {
       name: _Paths.USER_INFO_PAGE,
       page: () => const UserInfoPageView(),
       binding: UserInfoPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.SECURITY_LIST_PAGE,
+      page: () => const SecurityListPageView(),
+      binding: SecurityListPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.SECURITY_LIST_DETAIL_PAGE,
+      page: () => const SecurityListDetailPageView(),
+      binding: SecurityListDetailPageBinding(),
     ),
   ];
 }

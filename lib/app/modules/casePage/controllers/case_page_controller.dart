@@ -1,9 +1,16 @@
 import 'package:get/get.dart';
 
-class CasePageController extends GetxController {
-  //TODO: Implement CasePageController
+import '../../../../main.dart';
+import '../../../common/components/bottom_sheet_utils.dart';
+import '../../../utils/object_utils.dart';
+import '../../../utils/screen_utils.dart';
+import '../../newHomePage/views/widgets/create_case_widget.dart';
+import '../../tabPage/controllers/tab_page_controller.dart';
 
-  final count = 0.obs;
+class CasePageController extends GetxController {
+
+  final RxInt tabIndex = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -19,5 +26,23 @@ class CasePageController extends GetxController {
     super.onClose();
   }
 
-  void increment() => count.value++;
+  void switchTab(int index) {
+    tabIndex.value = index;
+  }
+
+
+  void openMyPageDrawer() {
+    getFindController<TabPageController>()?.openDrawer();
+  }
+
+  //创建案件
+  void createCaseAction() {
+    BottomSheetUtils.show(currentContext,
+        radius: 12.toW,
+        isShowCloseIcon: true,
+        height: AppScreenUtil.screenHeight - 217.toW,
+        isSetBottomInset: false,
+        contentWidget: CreateCaseWidget());
+  }
+
 }

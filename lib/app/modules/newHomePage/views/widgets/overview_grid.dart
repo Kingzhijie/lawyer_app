@@ -129,8 +129,7 @@ class _OverviewCard extends StatelessWidget {
           // TODO: Handle this case.
           throw UnimplementedError();
         case CaseTypeEnum.securityList:
-          // TODO: Handle this case.
-          throw UnimplementedError();
+          Get.toNamed(Routes.SECURITY_LIST_PAGE);
         case CaseTypeEnum.abnormal:
           // TODO: Handle this case.
           throw UnimplementedError();

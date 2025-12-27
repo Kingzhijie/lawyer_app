@@ -8,15 +8,21 @@ import '../../../../utils/image_utils.dart';
 import '../../../../utils/screen_utils.dart';
 import '../../../newHomePage/views/widgets/cooperation_person_widget.dart';
 
+enum TaskEnum {
+  choose,
+  close,
+  none
+}
+
 class AddTaskItem extends StatelessWidget {
   final Function()? closeCardCallBack;
-  final bool? isChoose;
+  final TaskEnum type;
   final bool isSelect;
 
   const AddTaskItem({
     super.key,
     this.closeCardCallBack,
-    this.isChoose,
+    this.type = TaskEnum.none,
     this.isSelect = false,
   });
 
@@ -65,7 +71,7 @@ class AddTaskItem extends StatelessWidget {
               width: 58.toW,
             ),
           ),
-          if (isChoose == true)
+          if (type == TaskEnum.choose)
             Positioned(
               top: 0,
               right: 0,
@@ -77,7 +83,7 @@ class AddTaskItem extends StatelessWidget {
                 height: 32.toW,
               ),
             )
-          else
+          else if (type == TaskEnum.close)
             Positioned(
               right: 4.toW,
               top: 4.toW,

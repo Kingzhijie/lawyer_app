@@ -46,9 +46,9 @@ class ImageCropTool {
         Uint8List? bytes = byteData?.buffer.asUint8List();
         if (bytes != null) {
           File file = await _writeToFile(bytes, 'image_${DateTime.now().millisecondsSinceEpoch}.png');
-          Map<String, dynamic>? imgs = await NetUtils.uploadSingleImage(file.path);
+          // Map<String, dynamic>? imgs = await NetUtils.uploadSingleImage(file.path);
           LoadingTool.dismissLoading();
-          resultCallBack(imgs);
+          resultCallBack({'imageUrl':file.path});
         } else {
           LoadingTool.dismissLoading();
           resultCallBack(null);

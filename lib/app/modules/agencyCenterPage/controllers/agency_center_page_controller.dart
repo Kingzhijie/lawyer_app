@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/modules/newHomePage/views/widgets/link_user_widget.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 
 import '../../../../main.dart';
@@ -51,7 +52,7 @@ class AgencyCenterPageController extends GetxController {
         isShowCloseIcon: true,
         height: AppScreenUtil.screenHeight - 217.toW,
         isSetBottomInset: false,
-        contentWidget: CreateCaseWidget());
+        contentWidget: LinkUserWidget());
   }
 
   ///添加任务

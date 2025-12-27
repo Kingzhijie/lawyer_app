@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/home_controller.dart';
+import '../../controllers/chat_page_controller.dart';
 
 /// 录音界面覆盖层：显示波形动画和提示文字
 class VoiceRecordingOverlay extends StatelessWidget {
@@ -9,7 +9,7 @@ class VoiceRecordingOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<HomeController>();
+    final controller = Get.find<ChatPageController>();
     
     return Obx(() {
       if (!controller.isRecording.value) {

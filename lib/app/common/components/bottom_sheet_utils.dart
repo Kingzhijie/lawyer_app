@@ -23,6 +23,7 @@ class BottomSheetUtils {
       double? height,
       bool isShowCloseIcon = true,
       Color backgroundColor = Colors.white,
+        Color? barrierColor,
       Widget? contentWidget,
       bool isSetBottomInset = true,
       Function(dynamic value)? dismissCallBack}) {
@@ -35,6 +36,7 @@ class BottomSheetUtils {
         clipBehavior: Clip.antiAlias,
         backgroundColor: backgroundColor,
         isScrollControlled: true,
+        barrierColor: barrierColor,
         builder: (BuildContext context) {
           return Container(
             height: height,

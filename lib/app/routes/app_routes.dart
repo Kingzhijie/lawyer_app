@@ -3,7 +3,6 @@ part of 'app_pages.dart';
 
 abstract class Routes {
   Routes._();
-  static const HOME = _Paths.HOME;
   static const TAB_PAGE = _Paths.TAB_PAGE;
   static const CHAT_PAGE = _Paths.CHAT_PAGE;
   static const AGENCY_PAGE = _Paths.AGENCY_PAGE;
@@ -20,11 +19,12 @@ abstract class Routes {
   static const MY_PAGE = _Paths.MY_PAGE;
   static const ABOUT_US_PAGE = _Paths.ABOUT_US_PAGE;
   static const USER_INFO_PAGE = _Paths.USER_INFO_PAGE;
+  static const SECURITY_LIST_PAGE = _Paths.SECURITY_LIST_PAGE;
+  static const SECURITY_LIST_DETAIL_PAGE = _Paths.SECURITY_LIST_DETAIL_PAGE;
 }
 
 abstract class _Paths {
   _Paths._();
-  static const HOME = '/home';
   static const TAB_PAGE = '/tab-page';
   static const CHAT_PAGE = '/chat-page';
   static const AGENCY_PAGE = '/agency-page';
@@ -41,4 +41,6 @@ abstract class _Paths {
   static const MY_PAGE = '/my-page';
   static const ABOUT_US_PAGE = '/about-us-page';
   static const USER_INFO_PAGE = '/user-info-page';
+  static const SECURITY_LIST_PAGE = '/security-list-page';
+  static const SECURITY_LIST_DETAIL_PAGE = '/security-list-detail-page';
 }

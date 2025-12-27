@@ -36,7 +36,7 @@ class NewHomePageController extends GetxController {
   }
 
   void lookCalendarCaseAction() {
-    Get.toNamed(Routes.CALENDAR_PAGE);
+    getFindController<TabPageController>()?.changeIndex(2);
   }
 
   ///添加备注
@@ -65,7 +65,6 @@ class NewHomePageController extends GetxController {
 
   /// 打开我的页面底部抽屉
   void openMyPageDrawer() {
-    logPrint('1111');
     getFindController<TabPageController>()?.openDrawer();
   }
 

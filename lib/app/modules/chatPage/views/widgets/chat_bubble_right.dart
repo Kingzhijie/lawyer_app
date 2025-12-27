@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../controllers/home_controller.dart';
+import '../../controllers/chat_page_controller.dart';
+
 
 class ChatBubbleRight extends StatelessWidget {
   const ChatBubbleRight({super.key, required this.message});

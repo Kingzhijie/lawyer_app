@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 
 import '../../../utils/app_common_instance.dart';
@@ -15,6 +16,8 @@ class TabPageController extends GetxController {
 
   final GlobalKey<ScaffoldState> tabScaffoldKey = GlobalKey<ScaffoldState>();
 
+  var isShowVoice = false.obs;
+
   /// PageView 控制器
   late PageController pageController;
 
@@ -22,6 +25,7 @@ class TabPageController extends GetxController {
   final RxInt currentIndex = 0.obs;
 
   final isFinishInit = Rx<bool?>(null);
+  var isUpdate = false.obs;
 
   @override
   void onInit() {
@@ -54,11 +58,6 @@ class TabPageController extends GetxController {
   void onPageChanged(int index) {
     if (index == currentIndex.value) return;
     currentIndex.value = index;
-  }
-
-  /// 中间加号按钮点击
-  void onCenterTap() {
-    Get.toNamed(Routes.HOME);
   }
 
   ///工具初始化
@@ -102,6 +101,15 @@ class TabPageController extends GetxController {
 
   void closeDrawer() {
     tabScaffoldKey.currentState?.closeDrawer();
+  }
+
+  void forceRefreshTab(int index) {
+    currentIndex.value = index;
+    isUpdate.value = !isUpdate.value;
+  }
+
+  void pushChatPage(){
+    Get.toNamed(Routes.CHAT_PAGE);
   }
 
 }

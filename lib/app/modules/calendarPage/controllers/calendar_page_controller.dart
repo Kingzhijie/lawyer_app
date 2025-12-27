@@ -1,10 +1,17 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_advanced_calendar/flutter_advanced_calendar.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 
+import '../../../../main.dart';
+import '../../../common/components/bottom_sheet_utils.dart';
+import '../../../utils/screen_utils.dart';
+import '../../newHomePage/views/widgets/add_case_remark_widget.dart';
+
 class CalendarPageController extends GetxController {
   /// 日历控制器
   late final AdvancedCalendarController calendarController;
+  final TextEditingController textEditingController = TextEditingController();
 
   /// 当前选中的日期
   final Rx<DateTime> selectedDate = DateTime.now().obs;
@@ -92,6 +99,16 @@ class CalendarPageController extends GetxController {
   ///搜索
   void searchAction() {
     Get.toNamed(Routes.SEARCH_CASE_PAGE);
+  }
+
+  void addRemarkAction() {
+    textEditingController.text = '';
+    BottomSheetUtils.show(currentContext,
+        isShowCloseIcon: false,
+        radius: 12.toW,
+        contentWidget: AddCaseRemarkWidget(sendAction: (text){
+
+        },textEditingController: textEditingController));
   }
 
 }

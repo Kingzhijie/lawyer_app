@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/modules/tabPage/controllers/tab_page_controller.dart';
 import 'package:lawyer_app/app/utils/storage_utils.dart';
 
+import '../routes/app_pages.dart';
 import 'object_utils.dart';
 
 class AppInfoUtils {
@@ -35,7 +37,7 @@ class AppCommonUtils {
   static bool get getIsFirstInstall => StorageUtils.getIsFirstInstall().isEmpty;
 
   /// 退出登录, 统一处理, 需要移除的东西
-  static logout({bool isAlert = true, bool isImOffLine = false}) {
+  static void logout({bool isAlert = true}) {
     StorageUtils.removeString(StorageKey.accessToken);
     if (isAlert) {
       // AppDialog.singleItem(
@@ -61,17 +63,19 @@ class AppCommonUtils {
   }
 
   ///返回app主页
-  static backAppRootPage(){
-
+  static void backAppRootPage(){
+    logPrint('tuichudelu');
+    getFindController<TabPageController>()?.closeDrawer();
+    Get.until((route) => Get.currentRoute == Routes.TAB_PAGE);
+    changeTabHome();
   }
 
 
   /// 切换tab到主页
-  /// 切换tab到主页
   static void changeTabHome({int index = 0}) {
     var tabController = getFindController<TabPageController>();
-    tabController?.currentIndex.value = index;
-    // tabController?.currentIndex.refresh();
+    logPrint('tuichudelusssss===$tabController');
+    tabController?.forceRefreshTab(index);
   }
 
 }

@@ -2,7 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../controllers/home_controller.dart';
+import '../../controllers/chat_page_controller.dart';
+
 
 class ChatBubbleLeft extends StatelessWidget {
   const ChatBubbleLeft({
