@@ -14,6 +14,18 @@ import 'package:flutter/widgets.dart';
 class $AssetsCommonGen {
   const $AssetsCommonGen();
 
+  /// File path: assets/common/action_file_icon.png
+  AssetGenImage get actionFileIcon =>
+      const AssetGenImage('assets/common/action_file_icon.png');
+
+  /// File path: assets/common/action_img_icon.png
+  AssetGenImage get actionImgIcon =>
+      const AssetGenImage('assets/common/action_img_icon.png');
+
+  /// File path: assets/common/action_xiangji_icon.png
+  AssetGenImage get actionXiangjiIcon =>
+      const AssetGenImage('assets/common/action_xiangji_icon.png');
+
   /// File path: assets/common/add_action_icon.png
   AssetGenImage get addActionIcon =>
       const AssetGenImage('assets/common/add_action_icon.png');
@@ -88,6 +100,9 @@ class $AssetsCommonGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [
+    actionFileIcon,
+    actionImgIcon,
+    actionXiangjiIcon,
     addActionIcon,
     addDaibTaskIcon,
     addPhotoIcon,

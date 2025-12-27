@@ -61,6 +61,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
             navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
             navigatorObservers: [RouteHistoryObserver()],
+            locale: const Locale('zh', 'CH'),
             theme: ThemeData(
               dividerColor: Colors.transparent,
               scaffoldBackgroundColor: AppColors.color_white,

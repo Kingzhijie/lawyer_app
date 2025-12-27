@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bottom_panel.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
@@ -38,7 +39,9 @@ class ChatInputBar extends StatelessWidget {
             ImageUtils(
               imageUrl: Assets.common.addPhotoIcon.path,
               width: 24.toW,
-            ),
+            ).withOnTap((){
+              controller.clickAction(ActionType.photo);
+            }),
             if (!hasVoice)
               Flexible(
                 child: Listener(

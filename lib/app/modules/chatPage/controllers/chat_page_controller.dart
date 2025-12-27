@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bottom_panel.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:chat_bottom_container/chat_bottom_container.dart';
@@ -12,6 +14,8 @@ import 'package:lawyer_app/app/utils/toast_utils.dart';
 import 'package:record/record.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:vibration/vibration.dart';
+
+import '../../../utils/image_picker_util.dart';
 
 class UiMessage {
   UiMessage({
@@ -517,4 +521,36 @@ class ChatPageController extends GetxController {
     }
     return buffer.toString();
   }
+
+  /// 点击功能区按钮
+  Future<void> clickAction(ActionType type) async {
+    switch (type) {
+      case ActionType.camera:
+        var file = await ImagePickerUtil.takePhotoOrFromLibrary(
+          imageSource: ImageSourceType.camera,
+        );
+      case ActionType.photo:
+        var file = await ImagePickerUtil.takePhotoOrFromLibrary(
+          imageSource: ImageSourceType.gallery,
+        );
+      case ActionType.file:
+        try {
+          FilePickerResult? result = await FilePicker.platform.pickFiles(
+            type: FileType.any, // 所有类型
+            allowMultiple: false, // 单选
+          );
+          if (result != null && result.files.isNotEmpty) {
+            PlatformFile file = result.files.first;
+            logPrint('文件名: ${file.name}');
+            logPrint('文件大小: ${file.size} bytes');
+            logPrint('文件路径: ${file.path}');
+            logPrint('文件扩展名: ${file.extension}');
+          }
+        } catch(e) {
+          logPrint('选取错误===$e');
+        }
+
+    }
+  }
+
 }
