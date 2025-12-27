@@ -11,6 +11,7 @@ import 'package:lawyer_app/app/utils/permission_util.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
 import 'package:record/record.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:vibration/vibration.dart';
 
 class UiMessage {
   UiMessage({
@@ -335,7 +336,9 @@ class ChatPageController extends GetxController {
     if (isRecording.value) return;
 
     // 震动反馈 - 不使用 await，直接触发
-    HapticFeedback.mediumImpact();
+    if (await Vibration.hasVibrator()) {
+      Vibration.vibrate(duration: 50);
+    }
 
     // 先显示录音 UI
     _recordingStartPosition = startPosition;
