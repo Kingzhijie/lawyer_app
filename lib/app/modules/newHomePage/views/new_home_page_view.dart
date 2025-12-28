@@ -234,7 +234,9 @@ class NewHomePageView extends GetView<NewHomePageController> {
         if (type == 0){ //备注
           controller.addRemarkMethod();
         }
-      },).withMarginOnly(bottom: 12.toW);
+      },).withOnTap((){
+        controller.lookContractDetailPage();
+      }).withMarginOnly(bottom: 12.toW);
     });
   }
 

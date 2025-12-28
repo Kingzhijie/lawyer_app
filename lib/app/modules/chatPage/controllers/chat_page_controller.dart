@@ -24,6 +24,9 @@ class UiMessage {
     required this.isAi,
     required this.createdAt,
     this.hasAnimated = false,
+    this.thinkingProcess,
+    this.deepThinkingProcess,
+    this.thinkingSeconds,
   });
 
   final String id;
@@ -31,13 +34,24 @@ class UiMessage {
   final bool isAi;
   final DateTime createdAt;
   final bool hasAnimated;
+  final String? thinkingProcess; // 思考过程内容
+  final String? deepThinkingProcess; // 深度思考过程内容
+  final int? thinkingSeconds; // 思考用时
 
-  UiMessage copyWith({bool? hasAnimated}) => UiMessage(
+  UiMessage copyWith({
+    bool? hasAnimated,
+    String? thinkingProcess,
+    String? deepThinkingProcess,
+    int? thinkingSeconds,
+  }) => UiMessage(
     id: id,
     text: text,
     isAi: isAi,
     createdAt: createdAt,
     hasAnimated: hasAnimated ?? this.hasAnimated,
+    thinkingProcess: thinkingProcess ?? this.thinkingProcess,
+    deepThinkingProcess: deepThinkingProcess ?? this.deepThinkingProcess,
+    thinkingSeconds: thinkingSeconds ?? this.thinkingSeconds,
   );
 }
 
@@ -91,13 +105,15 @@ class ChatPageController extends GetxController {
     hasText.value = textController.text.trim().isNotEmpty;
   }
 
-  void handleSendPressed() {
+  void handleSendPressed({bool isFocus = true}) {
     final text = textController.text.trim();
     if (text.isEmpty) return;
     _addUserMessage(text);
     textController.clear();
     hasText.value = false;
-    inputFocusNode.requestFocus();
+    if (isFocus) {
+      inputFocusNode.requestFocus();
+    }
     _simulateAiReply(text);
     _scheduleScrollToBottom();
   }
@@ -198,6 +214,9 @@ class ChatPageController extends GetxController {
             text: '这里是模拟的 AI 回复：$userText',
             isAi: true,
             createdAt: DateTime.now(),
+            thinkingProcess: '正在分析您的问题，检索相关法律条文和案例参考，整理相关判例...',
+            deepThinkingProcess: '已完成深度分析，整理了相关的法律依据、司法解释和判例参考，正在生成详细回复...',
+            thinkingSeconds: 14,
           ),
         );
         _scheduleScrollToBottom();
@@ -546,11 +565,9 @@ class ChatPageController extends GetxController {
             logPrint('文件路径: ${file.path}');
             logPrint('文件扩展名: ${file.extension}');
           }
-        } catch(e) {
+        } catch (e) {
           logPrint('选取错误===$e');
         }
-
     }
   }
-
 }

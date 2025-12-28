@@ -68,4 +68,9 @@ class NewHomePageController extends GetxController {
     getFindController<TabPageController>()?.openDrawer();
   }
 
+  ///查看合同详情
+  void lookContractDetailPage() {
+    Get.toNamed(Routes.CONTRACT_DETAIL_PAGE);
+  }
+
 }

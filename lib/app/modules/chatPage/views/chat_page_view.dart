@@ -6,6 +6,7 @@ import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bottom_panel.
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bubble_left.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bubble_right.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_input_bar.dart';
+import 'package:lawyer_app/app/modules/chatPage/views/widgets/no_find_case_widget.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/voice_recording_overlay.dart';
 
 import '../../../../gen/assets.gen.dart';
@@ -42,9 +43,9 @@ class ChatPageView extends GetView<ChatPageController> {
                 Expanded(
                   child: Obx(
                     () => ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 16,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 15.toW,
+                        vertical: 16.toW,
                       ),
                       controller: controller.scrollController,
                       itemCount: controller.messages.length,

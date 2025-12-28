@@ -14,6 +14,8 @@ import '../modules/casePage/bindings/case_page_binding.dart';
 import '../modules/casePage/views/case_page_view.dart';
 import '../modules/chatPage/bindings/chat_page_binding.dart';
 import '../modules/chatPage/views/chat_page_view.dart';
+import '../modules/contractDetailPage/bindings/contract_detail_page_binding.dart';
+import '../modules/contractDetailPage/views/contract_detail_page_view.dart';
 import '../modules/loginCodePage/bindings/login_code_page_binding.dart';
 import '../modules/loginCodePage/views/login_code_page_view.dart';
 import '../modules/loginPage/bindings/login_page_binding.dart';
@@ -134,6 +136,11 @@ class AppPages {
       name: _Paths.SECURITY_LIST_DETAIL_PAGE,
       page: () => const SecurityListDetailPageView(),
       binding: SecurityListDetailPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.CONTRACT_DETAIL_PAGE,
+      page: () => const ContractDetailPageView(),
+      binding: ContractDetailPageBinding(),
     ),
   ];
 }

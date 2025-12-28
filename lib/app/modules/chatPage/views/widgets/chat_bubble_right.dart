@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lawyer_app/app/common/constants/app_colors.dart';
 
 import '../../controllers/chat_page_controller.dart';
 
@@ -10,8 +11,8 @@ class ChatBubbleRight extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const bubbleColor = Color(0xFFE6F0FF);
-    final textColor = Colors.blue.shade900;
+    const bubbleColor = Colors.white;
+    final textColor = AppColors.color_E6000000;
     const radius = BorderRadius.only(
       topLeft: Radius.circular(12),
       topRight: Radius.circular(12),
@@ -30,6 +31,13 @@ class ChatBubbleRight extends StatelessWidget {
             decoration: BoxDecoration(
               color: bubbleColor,
               borderRadius: radius,
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x0A000000),
+                  blurRadius: 14,
+                  offset: const Offset(0, 0),
+                ),
+              ]
             ),
             child: Text(
               message.text,

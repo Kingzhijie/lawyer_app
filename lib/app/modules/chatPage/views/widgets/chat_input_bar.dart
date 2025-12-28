@@ -106,7 +106,7 @@ class ChatInputBar extends StatelessWidget {
                 )
                 .withOnTap(() {
                   if (hasText) {
-                    controller.handleSendPressed();
+                    controller.handleSendPressed(isFocus: false);
                   } else {
                     controller.handleToolBtnClick();
                   }

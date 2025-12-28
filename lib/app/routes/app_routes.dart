@@ -21,6 +21,7 @@ abstract class Routes {
   static const USER_INFO_PAGE = _Paths.USER_INFO_PAGE;
   static const SECURITY_LIST_PAGE = _Paths.SECURITY_LIST_PAGE;
   static const SECURITY_LIST_DETAIL_PAGE = _Paths.SECURITY_LIST_DETAIL_PAGE;
+  static const CONTRACT_DETAIL_PAGE = _Paths.CONTRACT_DETAIL_PAGE;
 }
 
 abstract class _Paths {
@@ -43,4 +44,5 @@ abstract class _Paths {
   static const USER_INFO_PAGE = '/user-info-page';
   static const SECURITY_LIST_PAGE = '/security-list-page';
   static const SECURITY_LIST_DETAIL_PAGE = '/security-list-detail-page';
+  static const CONTRACT_DETAIL_PAGE = '/contract-detail-page';
 }
