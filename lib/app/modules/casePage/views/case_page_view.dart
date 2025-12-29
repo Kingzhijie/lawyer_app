@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../../../gen/assets.gen.dart';
 import '../../../common/components/common_app_bar.dart';
+import '../../../common/components/empty_content_widget.dart';
 import '../../../common/constants/app_colors.dart';
 import '../../../common/extension/widget_extension.dart';
 import '../../../utils/image_utils.dart';
@@ -42,18 +43,24 @@ class CasePageView extends GetView<CasePageController> {
             margin: EdgeInsets.only(
               top: AppScreenUtil.navigationBarHeight + 48.toW,
             ),
-            child: ListView.builder(
-              itemCount: 10,
-              padding: EdgeInsets.only(
-                left: 16.toW,
-                right: 16.toW,
-                top: 8.toW,
-                bottom: AppScreenUtil.bottomBarHeight + 90.toW,
-              ),
-              itemBuilder: (context, index) {
-                return AddTaskItem();
-              },
-            ),
+            child: Obx((){
+              if (controller.caseBaseInfoList.isEmpty) {
+                return EmptyContentWidget();
+              }
+              return ListView.builder(
+                itemCount: controller.caseBaseInfoList.length,
+                padding: EdgeInsets.only(
+                  left: 16.toW,
+                  right: 16.toW,
+                  top: 8.toW,
+                  bottom: AppScreenUtil.bottomBarHeight + 90.toW,
+                ),
+                itemBuilder: (context, index) {
+                  var model = controller.caseBaseInfoList.value[index];
+                  return AddTaskItem(model: model);
+                },
+              );
+            }),
           ),
         ],
       ),
@@ -99,7 +106,7 @@ class CasePageView extends GetView<CasePageController> {
   }
 
   Widget _buildTabs() {
-    final tabs = ['全部案件(12)', '待更新(10)', '进行中(9)', '已归档'];
+    final tabs = ['全部案件', '待更新', '进行中', '已归档'];
     return Obx(() {
       final current = controller.tabIndex.value;
       return SingleChildScrollView(

@@ -4,12 +4,15 @@ import 'package:lawyer_app/app/routes/app_pages.dart';
 import 'package:lawyer_app/app/utils/app_common_instance.dart';
 
 import '../../../common/components/dialog.dart';
+import '../../../http/apis.dart';
+import '../../../http/net/net_utils.dart';
+import '../../../http/net/tool/error_handle.dart';
 import '../../../utils/screen_utils.dart';
+import '../models/user_model.dart';
 
 class MyPageController extends GetxController {
-  //TODO: Implement MyPageController
 
-  final count = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -25,7 +28,6 @@ class MyPageController extends GetxController {
     super.onClose();
   }
 
-  void increment() => count.value++;
 
   /// 退出登录
   void logout() {
@@ -59,5 +61,6 @@ class MyPageController extends GetxController {
   void pushUserInfoPage() {
     Get.toNamed(Routes.USER_INFO_PAGE);
   }
+
   
 }

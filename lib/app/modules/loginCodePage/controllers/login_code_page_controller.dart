@@ -3,9 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/app/utils/storage_utils.dart';
 
+import '../../../http/apis.dart';
+import '../../../http/net/net_utils.dart';
+import '../../../http/net/tool/error_handle.dart';
 import '../../../utils/app_common_instance.dart';
+import '../../../utils/toast_utils.dart';
 
 class LoginCodePageController extends GetxController {
   /// 传入的手机号码
@@ -33,13 +38,7 @@ class LoginCodePageController extends GetxController {
 
     codeController.addListener(() {
       var text = codeController.text;
-      logPrint('验证码====$text');
       code.value = text;
-      if (text.length == 4) {
-        StorageUtils.setToken('token_test');
-        Get.back();
-        AppCommonUtils.changeTabHome();
-      }
     });
 
     _cursorTimer = Timer.periodic(const Duration(milliseconds: 600), (_) {
@@ -78,15 +77,44 @@ class LoginCodePageController extends GetxController {
 
   void resendCode() {
     if (countdown.value > 0) return;
-    // TODO: 调用重新发送验证码接口
-    _startCountdown();
+    NetUtils.post(Apis.sendSmsCode, params: {'mobile': phone, 'scene':  1}).then((data) {
+      if (data.code == NetCodeHandle.success) {
+        showToast('短信验证码已发送');
+        _startCountdown();
+      }
+    });
+  }
+
+  //登录
+  void loginAction() {
+
+    NetUtils.post(
+      Apis.smsLogin,
+      params: {
+        'mobile': phone,
+        'code': code.value,
+        'cid': AppInfoUtils.instance.pushClientId,
+      },
+    ).then((data) {
+      if (data.code == NetCodeHandle.success) {
+        String accessToken = data.data['accessToken'].toString();
+        String refreshToken = data.data['refreshToken'].toString();
+        int expiresTime = data.data['expiresTime'] ?? 0; //毫秒
+        if (!ObjectUtils.isEmptyString(accessToken)) {
+          StorageUtils.setToken(accessToken);
+          StorageUtils.setString(StorageKey.refreshToken, refreshToken);
+          if (expiresTime >0) {
+            StorageUtils.setInt(StorageKey.tokenExpiresTime, expiresTime);
+          }
+          Get.back();
+          AppCommonUtils.changeTabHome();
+        }
+      }
+    });
   }
 
   /// 当前输入的完整验证码（最多 4 位）
   String get verifyCode => code.value;
 
   String get displayPhone => '+86 $phone';
-
-
-
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/components/easy_refresher.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/modules/tabPage/controllers/tab_page_controller.dart';
@@ -8,6 +9,7 @@ import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
+import '../../../common/components/refresher_el.dart';
 import '../controllers/new_home_page_controller.dart';
 import 'widgets/home_voice_widget.dart';
 import 'widgets/overview_grid.dart';
@@ -32,41 +34,48 @@ class NewHomePageView extends GetView<NewHomePageController> {
               width: AppScreenUtil.screenWidth,
             ),
           ),
-          SingleChildScrollView(
-            padding: EdgeInsets.only(
-              bottom: AppScreenUtil.bottomBarHeight + 80.toW,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 12.toW),
-                    _buildOverviewTitle(),
-                    SizedBox(height: 12.toW),
-                    _buildOverviewGrid(),
-                    SizedBox(height: 18.toW),
-                    _buildTabs(),
-                    SizedBox(height: 12.toW),
-                  ],
-                ).withMarginOnly(left: 16.toW, right: 16.toW),
-                _buildTaskCardsList(),
-                SizedBox(height: 24.toW),
-              ],
-            ),
+          MSEasyRefresher(
+            controller: controller.easyRefreshController,
+            onRefresh: () {
+              controller.onRefresh();
+            },
+            onLoad: () {
+              controller.onLoadMore();
+            },
+            childBuilder: (context, physics) {
+              return _setContentWidget(physics);
+            },
           ).withMarginOnly(top: AppScreenUtil.navigationBarHeight + 50.toW),
           Positioned(
             top: 0,
             right: 16.toW,
             left: 16.toW,
-            child: Column(
-              children: [
-                _buildTopBar(context),
-                _buildSearchBar(),
-              ],
-            ),
+            child: Column(children: [_buildTopBar(context), _buildSearchBar()]),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _setContentWidget(ScrollPhysics physics){
+    return SingleChildScrollView(
+      physics: physics,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 12.toW),
+              _buildOverviewTitle(),
+              SizedBox(height: 12.toW),
+              _buildOverviewGrid(),
+              SizedBox(height: 18.toW),
+              _buildTabs(),
+              SizedBox(height: 12.toW),
+            ],
+          ).withMarginOnly(left: 16.toW, right: 16.toW),
+          _buildTaskCardsList(),
         ],
       ),
     );
@@ -87,8 +96,13 @@ class NewHomePageView extends GetView<NewHomePageController> {
               color: AppColors.color_white.withOpacity(0.9),
             ),
             child: ClipOval(
-              child: ImageUtils(
-                imageUrl: Assets.home.defaultUserIcon.path,
+              child: Obx(
+                () => ImageUtils(
+                  imageUrl:
+                      controller.userModel.value?.avatar ??
+                      Assets.home.defaultUserIcon.path,
+                  placeholderImagePath: Assets.home.defaultUserIcon.path,
+                ),
               ),
             ),
           ).withOnTap(() {
@@ -141,7 +155,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
               ),
             ],
           ),
-        ).withOnTap((){
+        ).withOnTap(() {
           controller.searchCaseAction();
         }).withExpanded(),
         Width(9.toW),
@@ -154,7 +168,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
             width: 25.toW,
             height: 25.toW,
           ),
-        ).withOnTap((){
+        ).withOnTap(() {
           controller.lookCalendarCaseAction();
         }),
       ],
@@ -173,7 +187,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
   }
 
   Widget _buildOverviewGrid() {
-    return const OverviewGrid();
+    return OverviewGrid(homePageController: controller);
   }
 
   Widget _buildTabs() {
@@ -223,21 +237,28 @@ class NewHomePageView extends GetView<NewHomePageController> {
     final items = List.generate(4, (index) => index);
     return ListView.builder(
       itemCount: items.length,
-        padding: EdgeInsets.zero,
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index){
-      return TaskCard(clickItemType: (type) {
-        if (type == 1){ //关联用户
-          controller.linkUserAlert();
-        }
-        if (type == 0){ //备注
-          controller.addRemarkMethod();
-        }
-      },).withOnTap((){
-        controller.lookContractDetailPage();
-      }).withMarginOnly(bottom: 12.toW);
-    });
+      padding: EdgeInsets.zero,
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return TaskCard(
+              clickItemType: (type) {
+                if (type == 1) {
+                  //关联用户
+                  controller.linkUserAlert();
+                }
+                if (type == 0) {
+                  //备注
+                  controller.addRemarkMethod();
+                }
+              },
+            )
+            .withOnTap(() {
+              controller.lookContractDetailPage();
+            })
+            .withMarginOnly(bottom: 12.toW);
+      },
+    );
   }
 
   Widget _setFloatingActionWidget() {
@@ -251,9 +272,8 @@ class NewHomePageView extends GetView<NewHomePageController> {
       ),
       alignment: Alignment.center,
       child: ImageUtils(imageUrl: Assets.home.voiceIcon.path, width: 30.toW),
-    ).withOnTap((){
+    ).withOnTap(() {
       getFindController<TabPageController>()?.pushChatPage();
     });
   }
-
 }

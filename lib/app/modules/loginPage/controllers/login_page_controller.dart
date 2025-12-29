@@ -27,9 +27,9 @@ class LoginPageController extends GetxController {
     }
     FocusManager.instance.primaryFocus?.unfocus();
     isSending.value = true;
-    NetUtils.post(Apis.sendSmsCode, params: {'mobile': phone}).then((data){
+    NetUtils.post(Apis.sendSmsCode, params: {'mobile': phone, 'scene':  1}, isLoading: false).then((data){
+      isSending.value = false;
       if (data.code == NetCodeHandle.success) {
-        isSending.value = false;
         showToast('短信验证码已发送');
         Get.toNamed(Routes.LOGIN_CODE_PAGE, arguments: phone);
       }

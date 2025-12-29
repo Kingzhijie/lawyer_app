@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
@@ -20,38 +21,42 @@ enum CaseTypeEnum {
 }
 
 class OverviewGrid extends StatelessWidget {
-  const OverviewGrid({super.key});
+  final NewHomePageController homePageController;
+  const OverviewGrid({super.key, required this.homePageController});
 
   @override
   Widget build(BuildContext context) {
-    final cards = [
-      _OverviewCardData(CaseTypeEnum.caseCount, '5', Assets.home.anjianZongs.path),
-      _OverviewCardData(CaseTypeEnum.agencyTask, '17', Assets.home.dbrwIcon.path),
-      _OverviewCardData(CaseTypeEnum.urgentTask, '6', Assets.home.jjrwIcon.path),
-      _OverviewCardData(CaseTypeEnum.nonUrgentTask, '11', Assets.home.fjjrwIcon.path),
-      _OverviewCardData(CaseTypeEnum.securityList, '8', Assets.home.bqqdIcon.path),
-      _OverviewCardData(CaseTypeEnum.abnormal, '3', Assets.home.yichangIcon.path),
-    ];
+
 
     final double cardWidth =
         (AppScreenUtil.screenWidth - 16.toW * 2 - 10.toW) / 2;
 
-    return Wrap(
-      spacing: 10.toW,
-      runSpacing: 10.toW,
-      children: cards
-          .map((c) => _OverviewCard(
-                data: c,
-                width: cardWidth,
-              ))
-          .toList(),
-    );
+    return Obx((){
+      final cards = [
+        _OverviewCardData(CaseTypeEnum.caseCount, homePageController.homeStatistics.value?.caseCount ?? 0, Assets.home.anjianZongs.path),
+        _OverviewCardData(CaseTypeEnum.agencyTask, homePageController.homeStatistics.value?.pendingTaskCount ?? 0, Assets.home.dbrwIcon.path),
+        _OverviewCardData(CaseTypeEnum.urgentTask, homePageController.homeStatistics.value?.urgentTaskCount ?? 0, Assets.home.jjrwIcon.path),
+        _OverviewCardData(CaseTypeEnum.nonUrgentTask, homePageController.homeStatistics.value?.nonLitigationTaskCount ?? 0, Assets.home.fjjrwIcon.path),
+        _OverviewCardData(CaseTypeEnum.securityList, homePageController.homeStatistics.value?.preservationListCount ?? 0, Assets.home.bqqdIcon.path),
+        _OverviewCardData(CaseTypeEnum.abnormal, homePageController.homeStatistics.value?.abnormalTaskCount ?? 0, Assets.home.yichangIcon.path),
+      ];
+      return Wrap(
+        spacing: 10.toW,
+        runSpacing: 10.toW,
+        children: cards
+            .map((c) => _OverviewCard(
+          data: c,
+          width: cardWidth,
+        ))
+            .toList(),
+      );
+    });
   }
 }
 
 class _OverviewCardData {
   final CaseTypeEnum type;
-  final String value;
+  final num value;
   final String icon;
   _OverviewCardData(this.type, this.value, this.icon);
 }
@@ -100,7 +105,7 @@ class _OverviewCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                data.value,
+                '${data.value}',
                 style: TextStyle(
                   fontSize: 20.toSp,
                   fontWeight: FontWeight.w700,

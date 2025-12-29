@@ -2,6 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/http/apis.dart';
+import 'package:lawyer_app/app/http/net/net_utils.dart';
+import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/modules/userInfoPage/views/widgets/edit_nickName_widget.dart';
 
 import '../../../../main.dart';
@@ -12,17 +15,30 @@ import '../../../common/constants/app_colors.dart';
 import '../../../utils/cache_utils.dart';
 import '../../../utils/image_crop_tool.dart';
 import '../../../utils/image_picker_util.dart';
+import '../../../utils/object_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../utils/toast_utils.dart';
+import '../../myPage/models/user_model.dart';
+import '../../newHomePage/controllers/new_home_page_controller.dart';
 
 class UserInfoPageController extends GetxController {
   final TextEditingController textEditingController = TextEditingController();
   final count = 0.obs;
-  final userIcon = ''.obs;
+
+  ///用户信息
+  var userModel = Rx<UserModel?>(null);
+
+  var userIcon = Rx<String?>(null);
+  var nickName = Rx<String?>(null);
 
   @override
   void onInit() {
     super.onInit();
+    var homeController = getFindController<NewHomePageController>();
+    userModel.value = homeController?.userModel.value;
+    textEditingController.text = userModel.value?.nickname ?? '';
+    userIcon.value = userModel.value?.avatar;
+    nickName.value = textEditingController.text;
   }
 
   @override
@@ -75,15 +91,13 @@ class UserInfoPageController extends GetxController {
     );
     Uint8List? imageByte = await file?.readAsBytes();
     if (imageByte != null) {
-      ImageCropTool.cropImageAction(imageByte, (result){
-        if (result?['imageUrl'] != null) {
-          userIcon.value = result!['imageUrl']!;
-          // userModel.value?.avatarId = result?['imageId'] ?? '';
-          // userModel.refresh();
+      ImageCropTool.cropImageAction(imageByte, (result, isSuc) {
+        userIcon.value = result;
+        if (isSuc) {
+          editUserInfo();
         }
       });
     }
-
   }
 
   /// 编辑昵称
@@ -94,10 +108,30 @@ class UserInfoPageController extends GetxController {
       isShowCloseIcon: false,
       radius: 12.toW,
       contentWidget: EditNicknameWidget(
-        sureAction: (text) {},
+        sureAction: (text) {
+          nickName.value = text;
+          editUserInfo();
+        },
         textEditingController: textEditingController,
       ),
     );
+  }
+
+  ///编辑用户基本信息
+  void editUserInfo() {
+    NetUtils.put(
+      Apis.editUserInfo,
+      params: {
+        'nickname': textEditingController.text,
+        'avatar': userIcon.value,
+        'sex': userModel.value?.sex ?? 1,
+      },
+    ).then((data) {
+      if (data.code == NetCodeHandle.success) {
+        showToast('用户信息更新成功');
+        getFindController<NewHomePageController>()?.getUserInfo();
+      }
+    });
   }
 
   /// 清理缓存

@@ -298,8 +298,7 @@ class ImageUtils extends StatelessWidget {
   }
 
   Widget _placeholderWidget({bool isErr = false}) {
-    String imgPath =
-        isErr ? (placeholderError ?? '') : (placeholderImagePath ?? '');
+    String imgPath = (placeholderImagePath ?? '');
     return Container(
       width: width,
       height: height,

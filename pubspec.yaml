@@ -115,6 +115,7 @@ dependencies:
   vibration: ^3.1.5
   #文件选取
   file_picker: ^10.3.8
+  easy_refresh: ^3.4.0
   #日历
   flutter_advanced_calendar:
     path: plugins/flutter_advanced_calendar-1.4.3

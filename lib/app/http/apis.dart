@@ -1,7 +1,7 @@
 
 class Apis {
   //上传图片
-  static String uploadSingleImage = '/common/uploadSingleImage';
+  static String uploadSingleImage = '/infra/file/upload';
   //上传音频
   static String uploadAudio = '/common/uploadAudio';
 
@@ -9,5 +9,23 @@ class Apis {
   static String sendSmsCode = '/member/auth/send-sms-code';
   ///验证码登录
   static String smsLogin = '/member/auth/sms-login';
+  ///刷新token
+  static String refreshToken = '/member/auth/refresh-token';
+
+  ///获取用户基本信息
+  static String getUserInfo = '/member/user/get';
+  ///编辑用户基本信息
+  static String editUserInfo = '/member/user/update';
+
+  ///首页数据看板
+  static String homeStatistics = '/legal/kanban/statistics';
+
+  ///创建案件基本信息
+  static String createCaseBasicInfo = '/legal/case-basic-info/create';
+
+  ///案件基本信息列表
+  static String caseBasicInfoList = '/legal/case-basic-info/page';
+
+
 
 }

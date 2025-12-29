@@ -49,7 +49,8 @@ class DioConfig {
     "app_version": DeviceInfo.version,
     "app_build": DeviceInfo.buildNumber,
     "device": Platform.operatingSystem,
-    'systemVersion': DeviceInfo.deviceSystemVersion
+    'systemVersion': DeviceInfo.deviceSystemVersion,
+    'tenant-id': 1
   };
 
 }

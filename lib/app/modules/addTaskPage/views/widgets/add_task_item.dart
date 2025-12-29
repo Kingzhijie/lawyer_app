@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/components/image_text_button.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../common/constants/app_colors.dart';
 import '../../../../common/extension/widget_extension.dart';
 import '../../../../utils/image_utils.dart';
 import '../../../../utils/screen_utils.dart';
+import '../../../casePage/models/case_base_info_model.dart';
 import '../../../newHomePage/views/widgets/cooperation_person_widget.dart';
 
-enum TaskEnum {
-  choose,
-  close,
-  none
-}
+enum TaskEnum { choose, close, none }
 
 class AddTaskItem extends StatelessWidget {
   final Function()? closeCardCallBack;
   final TaskEnum type;
   final bool isSelect;
+  final CaseBaseInfoModel? model;
 
   const AddTaskItem({
     super.key,
     this.closeCardCallBack,
     this.type = TaskEnum.none,
     this.isSelect = false,
+    this.model,
   });
 
   @override
@@ -32,7 +32,7 @@ class AddTaskItem extends StatelessWidget {
   }
 
   Widget _buildTodoItemWithTimeline() {
-    final bool isPlaintiff = false;
+    final num casePartyRole = model?.casePartyRole ?? 0; // 1:被告2原告
     return Container(
       margin: EdgeInsets.only(top: 8.toW, bottom: 8.toW),
       clipBehavior: Clip.hardEdge,
@@ -49,7 +49,7 @@ class AddTaskItem extends StatelessWidget {
         image: DecorationImage(
           fit: BoxFit.cover,
           image: AssetImage(
-            isPlaintiff
+            casePartyRole == 2
                 ? Assets.home.yuangaoBg.path
                 : Assets.home.beigaoBg.path,
           ),
@@ -61,16 +61,17 @@ class AddTaskItem extends StatelessWidget {
       child: Stack(
         children: [
           // 右上角角标
-          Positioned(
-            right: 10.toW,
-            top: 13.toW,
-            child: ImageUtils(
-              imageUrl: isPlaintiff
-                  ? Assets.home.yuangaoIcon.path
-                  : Assets.home.beigaoIcon.path,
-              width: 58.toW,
+          if (casePartyRole > 0)
+            Positioned(
+              right: 10.toW,
+              top: 13.toW,
+              child: ImageUtils(
+                imageUrl: casePartyRole == 2
+                    ? Assets.home.yuangaoIcon.path
+                    : Assets.home.beigaoIcon.path,
+                width: 58.toW,
+              ),
             ),
-          ),
           if (type == TaskEnum.choose)
             Positioned(
               top: 0,
@@ -83,21 +84,22 @@ class AddTaskItem extends StatelessWidget {
                 height: 32.toW,
               ),
             )
-          else if (type == TaskEnum.close)
-            Positioned(
-              right: 4.toW,
-              top: 4.toW,
-              child:
-                  ImageUtils(
-                    imageUrl: Assets.common.closeBgIco.path,
-                    width: 24.toW,
-                    height: 24.toW,
-                  ).withOnTap(() {
-                    if (closeCardCallBack != null) {
-                      closeCardCallBack!();
-                    }
-                  }),
-            ),
+          else
+            if (type == TaskEnum.close)
+              Positioned(
+                right: 4.toW,
+                top: 4.toW,
+                child:
+                ImageUtils(
+                  imageUrl: Assets.common.closeBgIco.path,
+                  width: 24.toW,
+                  height: 24.toW,
+                ).withOnTap(() {
+                  if (closeCardCallBack != null) {
+                    closeCardCallBack!();
+                  }
+                }),
+              ),
           // 卡片内容
           Padding(
             padding: EdgeInsets.all(14.toW),
@@ -106,29 +108,29 @@ class AddTaskItem extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 6.toW,
-                        vertical: 4.toW,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFE8F7F2),
-                        borderRadius: BorderRadius.circular(4.toW),
-                      ),
-                      child: Text(
-                        '进行中',
-                        style: TextStyle(
-                          color: Color(0xFF05A870),
-                          fontSize: 10.toSp,
-                          fontWeight: FontWeight.w500,
+                    if (getStatusName().isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6.toW,
+                          vertical: 4.toW,
                         ),
-                      ),
-                    ),
-                    SizedBox(width: 8.toW),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFE8F7F2),
+                          borderRadius: BorderRadius.circular(4.toW),
+                        ),
+                        child: Text(
+                          getStatusName(),
+                          style: TextStyle(
+                            color: Color(0xFF05A870),
+                            fontSize: 10.toSp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ).withMarginOnly(right: 8.toW),
                     ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: 170.toW),
                       child: Text(
-                        '张三诉讼李四合同纠纷案',
+                        model?.caseName ?? '',
                         maxLines: 1,
                         style: TextStyle(
                           fontSize: 15.toSp,
@@ -139,10 +141,11 @@ class AddTaskItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 12.toW),
-                _infoRow('案号：', '2023粤0102民初1234号'),
                 SizedBox(height: 6.toW),
-                _infoRow('当事人：', '张三原告, 李四被告'),
+                if (!ObjectUtils.isEmptyString(model?.caseNumber))
+                  _infoRow('案号：', model!.caseNumber!),
+                if (!ObjectUtils.isEmptyList(model?.casePartyResVOS))
+                  _infoRow('当事人：', getDangshirenName()),
                 SizedBox(height: 8.toW),
                 Row(
                   children: [
@@ -151,7 +154,7 @@ class AddTaskItem extends StatelessWidget {
                       imgUrl: Assets.common.daibanRenwuIcon.path,
                       width: 20.toW,
                       space: 6.toW,
-                      title: '待办任务: 4',
+                      title: '待办任务: ${model?.todoTaskCount ?? 0}',
                       style: TextStyle(
                         color: AppColors.color_E6000000,
                         fontSize: 13.toSp,
@@ -163,7 +166,7 @@ class AddTaskItem extends StatelessWidget {
                       imgUrl: Assets.common.jinjiRenwuIcon.path,
                       width: 20.toW,
                       space: 6.toW,
-                      title: '紧急: 4',
+                      title: '紧急: ${model?.emergencyTaskCount ?? 0}',
                       style: TextStyle(
                         color: AppColors.color_E6000000,
                         fontSize: 13.toSp,
@@ -214,6 +217,51 @@ class AddTaskItem extends StatelessWidget {
           ),
         ),
       ],
-    );
+    ).withMarginOnly(top: 6.toW);
   }
+
+  String getStatusName() {
+    if (model?.status == 0) {
+      return '待更新';
+    }
+    if (model?.status == 1) {
+      return '进行中';
+    }
+    if (model?.status == 3) {
+      return '已归档';
+    }
+    return '';
+  }
+
+
+  String getDangshirenName() {
+    String type = '';
+    if (!ObjectUtils.isEmptyList(model?.casePartyResVOS)) {
+      for (var e in model!.casePartyResVOS!) {
+        type =  '${type.isEmpty ? '' : '$type '}${e.name}(${getPartyRole(e.partyRole ?? 0)})';
+      }
+    }
+    return type;
+  }
+
+  String getPartyRole(num index) {
+    switch (index) {
+      case 1:
+        return '原告';
+      case 2:
+        return '被告';
+      case 3:
+        return '第三人 ';
+      case 4:
+        return '申请人';
+      case 5:
+        return '被申请人 ';
+      case 6:
+        return '委托人';
+      default:
+        return '';
+    }
+  }
+
+
 }

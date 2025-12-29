@@ -206,10 +206,10 @@ class ObjectUtils {
     return true;
   }
 
-  // static bool isImage(String url) {
-  //   final imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.HEIC'];
-  //   return imageExtensions.any((ext) => url.toLowerCase().endsWith(ext));
-  // }
+  static bool isImage(String url) {
+    final imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.HEIC'];
+    return imageExtensions.any((ext) => url.toLowerCase().endsWith(ext));
+  }
 
   static bool isVideo(String url) {
     final videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv', '.flv'];

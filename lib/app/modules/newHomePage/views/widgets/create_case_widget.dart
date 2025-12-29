@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:lawyer_app/app/common/components/image_text_button.dart';
+import 'package:lawyer_app/app/http/apis.dart';
+import 'package:lawyer_app/app/http/net/net_utils.dart';
+import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
 import '../../../../common/constants/app_colors.dart';
@@ -10,7 +14,8 @@ import '../../../../utils/screen_utils.dart';
 
 ///创建案件
 class CreateCaseWidget extends StatefulWidget {
-  const CreateCaseWidget({super.key});
+  final Function() createCaseSuccess;
+  const CreateCaseWidget({super.key, required this.createCaseSuccess});
 
   @override
   State<CreateCaseWidget> createState() => _CreateCaseWidgetState();
@@ -140,6 +145,9 @@ class _CreateCaseWidgetState extends State<CreateCaseWidget> {
                   ),
                 ),
               )
+              .withOnTap(() {
+                createCaseAction();
+              })
               .withOpacity(_isEnableClick() ? 1.0 : 0.5)
               .withMarginOnly(bottom: 10.toW),
         ],
@@ -220,5 +228,27 @@ class _CreateCaseWidgetState extends State<CreateCaseWidget> {
       return true;
     }
     return false;
+  }
+
+  //创建案件
+  void createCaseAction() {
+    if (!_isEnableClick()) {
+      return;
+    }
+    NetUtils.post(
+      Apis.createCaseBasicInfo,
+      params: {
+        'caseName': controller.text,
+        'caseType': ajxzs.indexOf(xingzhi!) + 1,  //案件类型，1-行政 2-民事 3-刑事 0-未知,示例值(1)
+        'casePartyRole': lichangs.indexOf(lichang!) + 1, //案件立场，1-被告 2-原告 0-未知,示例值(1)
+        'caseProcedure': sscxs.indexOf(chengxu!) + 1, //	诉讼程序，1-一审 2-二审 3-再审 0-未知,示例值(1)
+      },
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        showToast('创建案件成功');
+        widget.createCaseSuccess();
+        Navigator.pop(context);
+      }
+    });
   }
 }

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 import '../../utils/image_utils.dart';
 import '../../utils/loading.dart';
 import '../../utils/toast_utils.dart';
@@ -36,11 +37,14 @@ class NetUtils {
     Object? params,
     Map<String, dynamic>? queryParameters,
   }) {
-    return DioUtils.instance.requestNetwork(Method.get, url,
-        params: params,
-        queryParameters: queryParameters,
-        isLoading: isLoading,
-        isToastErrorMsg: isToastErrorMsg);
+    return DioUtils.instance.requestNetwork(
+      Method.get,
+      url,
+      params: params,
+      queryParameters: queryParameters,
+      isLoading: isLoading,
+      isToastErrorMsg: isToastErrorMsg,
+    );
   }
 
   /*
@@ -56,13 +60,18 @@ class NetUtils {
     bool isLoading = true,
     bool isToastErrorMsg = true,
     Object? params,
+    bool isCheckToken = false,
     Map<String, dynamic>? queryParameters,
   }) {
-    return DioUtils.instance.requestNetwork(Method.post, url,
-        params: params,
-        queryParameters: queryParameters,
-        isLoading: isLoading,
-        isToastErrorMsg: isToastErrorMsg);
+    return DioUtils.instance.requestNetwork(
+      Method.post,
+      url,
+      params: params,
+      queryParameters: queryParameters,
+      isLoading: isLoading,
+      isCheckToken: isCheckToken,
+      isToastErrorMsg: isToastErrorMsg,
+    );
   }
 
   /*
@@ -82,11 +91,14 @@ class NetUtils {
     Object? params,
     Map<String, dynamic>? queryParameters,
   }) {
-    return DioUtils.instance.requestNetwork(Method.patch, url,
-        params: params,
-        queryParameters: queryParameters,
-        isLoading: isLoading,
-        isToastErrorMsg: isToastErrorMsg);
+    return DioUtils.instance.requestNetwork(
+      Method.patch,
+      url,
+      params: params,
+      queryParameters: queryParameters,
+      isLoading: isLoading,
+      isToastErrorMsg: isToastErrorMsg,
+    );
   }
 
   /*
@@ -106,11 +118,14 @@ class NetUtils {
     Object? params,
     Map<String, dynamic>? queryParameters,
   }) {
-    return DioUtils.instance.requestNetwork(Method.put, url,
-        params: params,
-        queryParameters: queryParameters,
-        isLoading: isLoading,
-        isToastErrorMsg: isToastErrorMsg);
+    return DioUtils.instance.requestNetwork(
+      Method.put,
+      url,
+      params: params,
+      queryParameters: queryParameters,
+      isLoading: isLoading,
+      isToastErrorMsg: isToastErrorMsg,
+    );
   }
 
   /*
@@ -130,16 +145,23 @@ class NetUtils {
     Object? params,
     Map<String, dynamic>? queryParameters,
   }) {
-    return DioUtils.instance.requestNetwork(Method.delete, url,
-        params: params,
-        queryParameters: queryParameters,
-        isLoading: isLoading,
-        isToastErrorMsg: isToastErrorMsg);
+    return DioUtils.instance.requestNetwork(
+      Method.delete,
+      url,
+      params: params,
+      queryParameters: queryParameters,
+      isLoading: isLoading,
+      isToastErrorMsg: isToastErrorMsg,
+    );
   }
 
   /// 上传单张图片（使用Dio直接上传）
-  static Future<Map<String, dynamic>?> uploadSingleImage(String filePath,
-      {bool isVideo = false, XFile? xfile, Uint8List? xfileBytes}) async {
+  static Future<String?> uploadSingleImage(
+    String filePath, {
+    bool isVideo = false,
+    XFile? xfile,
+    Uint8List? xfileBytes,
+  }) async {
     try {
       LoadingTool.showLoading();
       final dio = DioUtils.instance.dio;
@@ -147,45 +169,50 @@ class NetUtils {
       FormData? formData;
 
       // 移动端原有逻辑
-      if (!isVideo) {
-          if (ImageUtils.getImageType(filePath) == ImageUtilsType.asset) {
-            final fileBytes = await FlutterImageCompress.compressAssetImage(
-              filePath,
-              quality: 100,
-              minWidth: 1080,
-              minHeight: 1080,
-              format: CompressFormat.jpeg,
+      if (ImageUtils.getImageType(filePath) == ImageUtilsType.asset) {
+        //本地图片
+        final fileBytes = await FlutterImageCompress.compressAssetImage(
+          filePath,
+          quality: 100,
+          minWidth: 1080,
+          minHeight: 1080,
+          format: CompressFormat.jpeg,
+        );
+        if (fileBytes != null) {
+          final MultipartFile multipartFile = MultipartFile.fromBytes(
+            fileBytes,
+            filename: '${DateTime.now().millisecond}_compressed.jpg',
+            contentType: MediaType('image', 'jpeg'),
+          );
+          formData = FormData.fromMap({
+            'file': multipartFile,
+          });
+        }
+      } else {
+        if (ObjectUtils.isImage(filePath)) {
+          //图片
+          final fileBytes = await FlutterImageCompress.compressWithFile(
+            filePath,
+            quality: 100,
+            minWidth: 1080,
+            minHeight: 1080,
+            format: CompressFormat.jpeg,
+          );
+          if (fileBytes != null) {
+            final MultipartFile multipartFile = MultipartFile.fromBytes(
+              fileBytes,
+              filename: '${DateTime.now().millisecond}_compressed.jpg',
+              contentType: MediaType('image', 'jpeg'),
             );
-            if (fileBytes != null) {
-              final MultipartFile multipartFile = MultipartFile.fromBytes(
-                fileBytes,
-                filename: '${DateTime.now().millisecond}_compressed.jpg',
-                contentType: MediaType('image', 'jpeg'),
-              );
-              formData = FormData.fromMap({
-                'image': multipartFile,
-              });
-            }
-          } else {
-            final compressedFile =
-                await FlutterImageCompress.compressAndGetFile(
-              filePath,
-              '${filePath}_compressed.jpg',
-              quality: 100,
-              minWidth: 1080,
-              minHeight: 1080,
-              format: CompressFormat.jpeg,
-            );
-            compressedPath = compressedFile?.path ?? filePath;
             formData = FormData.fromMap({
-              'image': await MultipartFile.fromFile(
-                compressedPath,
-                filename:
-                    'upload_${DateTime.now().millisecondsSinceEpoch}.${isVideo ? 'mp4' : 'jpg'}',
-              ),
+              'file': multipartFile,
             });
           }
+        } else {
+          compressedPath = filePath;
+          logPrint('上传其他类型的文件');
         }
+      }
 
       if (formData == null) {
         return null;
@@ -204,13 +231,8 @@ class NetUtils {
         if (data != null) {
           if (data['data'] != null) {
             logPrint("上传图片成功: " + data.toString());
-            final dataImage = data['data'];
-            if (dataImage['imageUrl'] != null) {
-              return {
-                'imageUrl': dataImage['imageUrl'],
-                'imageId': dataImage['imageId'],
-              };
-            }
+            final dataImage = data['data'].toString();
+            return dataImage;
           }
         }
       } else {
@@ -230,7 +252,7 @@ class NetUtils {
     try {
       LoadingTool.showLoading();
       final dio = DioUtils.instance.dio;
-      
+
       final formData = FormData.fromMap({
         'audio': await MultipartFile.fromFile(
           filePath,
@@ -247,9 +269,9 @@ class NetUtils {
           logPrint('音频上传进度: $progress%');
         },
       );
-      
+
       LoadingTool.dismissLoading();
-      
+
       if (response.statusCode == 200) {
         final data = response.data;
         if (data != null) {

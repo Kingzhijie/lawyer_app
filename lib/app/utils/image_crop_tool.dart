@@ -5,6 +5,7 @@ import 'package:croppy/croppy.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../main.dart';
@@ -14,13 +15,13 @@ import 'loading.dart';
 class ImageCropTool {
 
   static void cropImageAction(
-      Uint8List? imageBytes, Function(Map<String, dynamic>? map) resultCallBack) {
+      Uint8List? imageBytes, Function(String? url, bool isSuc) resultCallBack) {
     if (!kIsWeb) {
       croppyForceUseCassowaryDartImpl = true;
     }
 
     if (imageBytes == null) {
-      resultCallBack(null);
+      resultCallBack(null, false);
       return;
     }
 
@@ -46,12 +47,13 @@ class ImageCropTool {
         Uint8List? bytes = byteData?.buffer.asUint8List();
         if (bytes != null) {
           File file = await _writeToFile(bytes, 'image_${DateTime.now().millisecondsSinceEpoch}.png');
-          // Map<String, dynamic>? imgs = await NetUtils.uploadSingleImage(file.path);
+          resultCallBack(file.path, false);
+          String? img = await NetUtils.uploadSingleImage(file.path);
           LoadingTool.dismissLoading();
-          resultCallBack({'imageUrl':file.path});
+          resultCallBack(img, true);
         } else {
           LoadingTool.dismissLoading();
-          resultCallBack(null);
+          resultCallBack(null, false);
         }
         return result;
       },

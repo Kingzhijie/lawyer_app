@@ -5,6 +5,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../utils/screen_utils.dart';
 
@@ -60,9 +61,9 @@ class AppRefresher extends StatelessWidget {
     if (loadFooterHeight != null) {
       footerHeight = loadFooterHeight!;
     } else {
-      footerHeight = 40.toW + max(0, AppScreenUtil.bottomBarHeight);
+      footerHeight = 20.toW + max(0, AppScreenUtil.bottomBarHeight);
     }
-    Color color = Color(0x66FFFFFF);
+    Color color = AppColors.color_99000000;
     const double size = 20;
     return SmartRefresher(
       controller: controller,
@@ -102,11 +103,11 @@ class AppRefresher extends StatelessWidget {
             ? '没有更多了'
             : bottomTitle ?? '- 没有更多内容了 -',
         noMoreIcon: null,
-        spacing: 8,
+        spacing: 5.toW,
         textStyle: TextStyle(color: color, fontSize: 12.toSp),
         height: footerHeight,
         outerBuilder: (child) =>
-            SizedBox(height: 60, child: Center(child: child)),
+            SizedBox(height: 20, child: Center(child: child)),
       ),
       child: child,
     );

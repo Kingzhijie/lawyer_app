@@ -3,10 +3,13 @@ import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/components/common_app_bar.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/myPage/models/user_model.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
+import '../../../utils/object_utils.dart';
+import '../../newHomePage/controllers/new_home_page_controller.dart';
 import '../controllers/user_info_page_controller.dart';
 
 class UserInfoPageView extends GetView<UserInfoPageController> {
@@ -21,24 +24,27 @@ class UserInfoPageView extends GetView<UserInfoPageController> {
         backgroundColor: AppColors.color_FFF3F3F3,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 12.toW),
-              _buildUserProfileCard(),
-              SizedBox(height: 12.toW),
-              _buildPhoneNumberCard(),
-              SizedBox(height: 12.toW),
-              _buildClearCacheCard(),
-            ],
-          ).withMarginOnly(left: 16.toW, right: 16.toW, top: 12.toW),
-        ),
+        child: Obx((){
+          var userModel = controller.userModel.value;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 12.toW),
+                _buildUserProfileCard(userModel),
+                SizedBox(height: 12.toW),
+                _buildPhoneNumberCard(userModel),
+                SizedBox(height: 12.toW),
+                _buildClearCacheCard(),
+              ],
+            ).withMarginOnly(left: 16.toW, right: 16.toW, top: 12.toW),
+          );
+        }),
       ),
     );
   }
 
   /// 用户资料卡片
-  Widget _buildUserProfileCard() {
+  Widget _buildUserProfileCard(UserModel? userModel) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.color_white,
@@ -49,10 +55,11 @@ class UserInfoPageView extends GetView<UserInfoPageController> {
           _buildProfileRow(
             label: '头像',
             child: Obx(()=>ImageUtils(
-              imageUrl: controller.userIcon.value.isEmpty ? Assets.home.defaultUserIcon.path : controller.userIcon.value,
+              imageUrl: controller.userIcon.value ?? '',
               width: 48.toW,
               height: 48.toW,
               circularRadius: 24.toW,
+              placeholderImagePath: Assets.home.defaultUserIcon.path,
             )),
             onTap: () {
               controller.changeAvatar();
@@ -60,10 +67,10 @@ class UserInfoPageView extends GetView<UserInfoPageController> {
           ),
           _buildProfileRow(
             label: '昵称',
-            child: Row(
+            child: Obx(()=>Row(
               children: [
                 Text(
-                  '152****1244',
+                  controller.nickName.value ?? '',
                   style: TextStyle(
                     fontSize: 16.toSp,
                     color: AppColors.color_E6000000,
@@ -76,7 +83,7 @@ class UserInfoPageView extends GetView<UserInfoPageController> {
                   color: AppColors.color_FFC5C5C5,
                 ),
               ],
-            ),
+            )),
             onTap: () {
               controller.editNickname();
             },
@@ -87,7 +94,7 @@ class UserInfoPageView extends GetView<UserInfoPageController> {
   }
 
   /// 手机号码卡片
-  Widget _buildPhoneNumberCard() {
+  Widget _buildPhoneNumberCard(UserModel? userModel) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.color_white,
@@ -105,7 +112,7 @@ class UserInfoPageView extends GetView<UserInfoPageController> {
             ),
           ),
           Text(
-            '+86 152****1244',
+            '+86 ${userModel?.mobile ?? ''}',
             style: TextStyle(
               fontSize: 16.toSp,
               color: AppColors.color_E6000000,

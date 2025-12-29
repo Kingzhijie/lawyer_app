@@ -5,6 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class StorageKey {
   ///用户token
   static String get accessToken => 'accessToken';
+  ///用户刷新token
+  static String get refreshToken => 'refreshToken';
+  ///用户token过期时间
+  static String get tokenExpiresTime => 'tokenExpiresTime';
 
   ///是否首次安装
   static String get isFirstInstall => 'isFirstInstallApp';
@@ -57,6 +61,11 @@ class StorageUtils {
   /// 数据读取
   static String? getString<T>(String key) {
     return instance?.getString(key);
+  }
+
+  /// 数据读取 返回泛型
+  static int? getInt<T>(String key) {
+    return instance?.getInt(key);
   }
 
   // 字符串移除

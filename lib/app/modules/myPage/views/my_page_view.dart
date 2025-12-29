@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
@@ -41,55 +43,60 @@ class MyPageView extends GetView<MyPageController> {
 
   /// 用户信息区域
   Widget _buildUserInfo() {
-    return Row(
-      children: [
-        ImageUtils(
-          imageUrl: Assets.home.defaultUserIcon.path,
-          width: 48.toW,
-          height: 48.toW,
-          circularRadius: 24.toW,
-        ),
-        SizedBox(width: 12.toW),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '李徊一',
-                style: TextStyle(
-                  fontSize: 16.toSp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.color_E6000000,
+    return Obx((){
+      var homeController = getFindController<NewHomePageController>();
+      var userModel = homeController?.userModel.value;
+      return Row(
+        children: [
+          ImageUtils(
+            imageUrl: userModel?.avatar,
+            width: 48.toW,
+            height: 48.toW,
+            circularRadius: 24.toW,
+            placeholderImagePath: Assets.home.defaultUserIcon.path,
+          ),
+          SizedBox(width: 12.toW),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  userModel?.nickname ?? '',
+                  style: TextStyle(
+                    fontSize: 16.toSp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.color_E6000000,
+                  ),
                 ),
-              ),
-              SizedBox(height: 4.toW),
-              Text(
-                '137****4322',
-                style: TextStyle(
-                  fontSize: 13.toSp,
-                  color: AppColors.color_66000000,
+                SizedBox(height: 4.toW),
+                Text(
+                  userModel?.mobile ?? '',
+                  style: TextStyle(
+                    fontSize: 13.toSp,
+                    color: AppColors.color_66000000,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        Container(
-          width: 22.toW,
-          height: 22.toW,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(11.toW),
-            color: AppColors.color_FFF3F3F3
+          Container(
+            width: 22.toW,
+            height: 22.toW,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(11.toW),
+                color: AppColors.color_FFF3F3F3
+            ),
+            alignment: Alignment.center,
+            child: Icon(
+              Icons.arrow_forward_ios,
+              size: 12.toW,
+              color: AppColors.color_FFC5C5C5,
+            ),
           ),
-          alignment: Alignment.center,
-          child: Icon(
-            Icons.arrow_forward_ios,
-            size: 12.toW,
-            color: AppColors.color_FFC5C5C5,
-          ),
-        ),
-      ],
-    ).withOnTap(() {
-      controller.pushUserInfoPage();
+        ],
+      ).withOnTap(() {
+        controller.pushUserInfoPage();
+      });
     });
   }
 
