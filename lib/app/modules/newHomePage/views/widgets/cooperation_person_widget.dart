@@ -1,15 +1,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../common/constants/app_colors.dart';
 import '../../../../utils/image_utils.dart';
 import '../../../../utils/screen_utils.dart';
+import '../../../casePage/models/case_base_info_model.dart';
 ///关联用户
 class CooperationPersonWidget extends StatelessWidget {
   final Function() linkUserAction;
-  const CooperationPersonWidget({super.key, required this.linkUserAction});
+  final List<RelateUsers>? relateUsers;
+  const CooperationPersonWidget({super.key, required this.linkUserAction, this.relateUsers});
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +20,17 @@ class CooperationPersonWidget extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          _avatar(true),
-          _avatar(false),
-          _avatar(false),
-          _avatar(false, isAdd: true),
+          if (!ObjectUtils.isEmptyList(relateUsers))
+          Row(
+            children: relateUsers!.map((e)=>_avatar(model: e)).toList(),
+          ),
+          _avatar(isAdd: true),
         ],
       ),
     );
   }
 
-  Widget _avatar(bool isSender, {bool isAdd = false}) {
+  Widget _avatar({bool isAdd = false, RelateUsers? model}) {
     return Column(
       children: [
         Stack(
@@ -34,18 +38,19 @@ class CooperationPersonWidget extends StatelessWidget {
             ImageUtils(
               imageUrl: isAdd
                   ? Assets.home.addCrileIcon.path
-                  : Assets.home.defaultUserIcon.path,
+                  : model?.avatar ?? Assets.home.defaultUserIcon.path,
               width: 32.toW,
               height: 32.toW,
               circularRadius: 16.toW,
               borderColor: Colors.white,
               borderWidth: 1,
+              placeholderImagePath: Assets.home.defaultUserIcon.path,
             ).withOnTap((){
               if (isAdd) {
                 linkUserAction();
               }
             }),
-            if (isSender)
+            if (ObjectUtils.boolValue(model?.isSponsor))
               Positioned(
                 left: 3.toW,
                 right: 3.toW,

@@ -102,6 +102,7 @@ class LoginCodePageController extends GetxController {
         int expiresTime = data.data['expiresTime'] ?? 0; //毫秒
         if (!ObjectUtils.isEmptyString(accessToken)) {
           StorageUtils.setToken(accessToken);
+          StorageUtils.setString(StorageKey.userId, data.data['userId'].toString());
           StorageUtils.setString(StorageKey.refreshToken, refreshToken);
           if (expiresTime >0) {
             StorageUtils.setInt(StorageKey.tokenExpiresTime, expiresTime);

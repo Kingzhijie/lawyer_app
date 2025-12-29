@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/components/image_text_button.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
+import 'package:lawyer_app/app/utils/storage_utils.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../common/constants/app_colors.dart';
@@ -84,22 +86,21 @@ class AddTaskItem extends StatelessWidget {
                 height: 32.toW,
               ),
             )
-          else
-            if (type == TaskEnum.close)
-              Positioned(
-                right: 4.toW,
-                top: 4.toW,
-                child:
-                ImageUtils(
-                  imageUrl: Assets.common.closeBgIco.path,
-                  width: 24.toW,
-                  height: 24.toW,
-                ).withOnTap(() {
-                  if (closeCardCallBack != null) {
-                    closeCardCallBack!();
-                  }
-                }),
-              ),
+          else if (type == TaskEnum.close)
+            Positioned(
+              right: 4.toW,
+              top: 4.toW,
+              child:
+                  ImageUtils(
+                    imageUrl: Assets.common.closeBgIco.path,
+                    width: 24.toW,
+                    height: 24.toW,
+                  ).withOnTap(() {
+                    if (closeCardCallBack != null) {
+                      closeCardCallBack!();
+                    }
+                  }),
+            ),
           // 卡片内容
           Padding(
             padding: EdgeInsets.all(14.toW),
@@ -115,13 +116,13 @@ class AddTaskItem extends StatelessWidget {
                           vertical: 4.toW,
                         ),
                         decoration: BoxDecoration(
-                          color: Color(0xFFE8F7F2),
+                          color: getStatusBgColor(),
                           borderRadius: BorderRadius.circular(4.toW),
                         ),
                         child: Text(
                           getStatusName(),
                           style: TextStyle(
-                            color: Color(0xFF05A870),
+                            color: getStatusTextColor(),
                             fontSize: 10.toSp,
                             fontWeight: FontWeight.w500,
                           ),
@@ -146,48 +147,69 @@ class AddTaskItem extends StatelessWidget {
                   _infoRow('案号：', model!.caseNumber!),
                 if (!ObjectUtils.isEmptyList(model?.casePartyResVOS))
                   _infoRow('当事人：', getDangshirenName()),
-                SizedBox(height: 8.toW),
-                Row(
-                  children: [
-                    ImageText(
-                      position: Position.left,
-                      imgUrl: Assets.common.daibanRenwuIcon.path,
-                      width: 20.toW,
-                      space: 6.toW,
-                      title: '待办任务: ${model?.todoTaskCount ?? 0}',
+                if (model?.status != 0)
+                  Row(
+                    children: [
+                      ImageText(
+                        position: Position.left,
+                        imgUrl: Assets.common.daibanRenwuIcon.path,
+                        width: 20.toW,
+                        space: 6.toW,
+                        title: '待办任务: ${model?.todoTaskCount ?? 0}',
+                        style: TextStyle(
+                          color: AppColors.color_E6000000,
+                          fontSize: 13.toSp,
+                        ),
+                      ),
+                      Width(20.toW),
+                      ImageText(
+                        position: Position.left,
+                        imgUrl: Assets.common.jinjiRenwuIcon.path,
+                        width: 20.toW,
+                        space: 6.toW,
+                        title: '紧急: ${model?.emergencyTaskCount ?? 0}',
+                        style: TextStyle(
+                          color: AppColors.color_E6000000,
+                          fontSize: 13.toSp,
+                        ),
+                      ),
+                    ],
+                  ).withMarginOnly(top: 8.toW)
+                else if (model?.createTime != null)
+                  RichText(
+                    text: TextSpan(
+                      text: '创建时间: ',
                       style: TextStyle(
-                        color: AppColors.color_E6000000,
+                        color: AppColors.color_66000000,
                         fontSize: 13.toSp,
                       ),
+                      children: [
+                        TextSpan(
+                          text:
+                              '${DateTimeUtils.getFormatData(time: model!.createTime!.toInt(), format: 'yyyy-MM-dd')}',
+                          style: TextStyle(
+                            color: AppColors.color_E6000000,
+                            fontSize: 13.toSp,
+                          ),
+                        ),
+                      ],
                     ),
-                    Width(20.toW),
-                    ImageText(
-                      position: Position.left,
-                      imgUrl: Assets.common.jinjiRenwuIcon.path,
-                      width: 20.toW,
-                      space: 6.toW,
-                      title: '紧急: ${model?.emergencyTaskCount ?? 0}',
-                      style: TextStyle(
-                        color: AppColors.color_E6000000,
-                        fontSize: 13.toSp,
-                      ),
-                    ),
-                  ],
-                ),
+                  ).withMarginOnly(top: 8.toW),
                 SizedBox(height: 16.toW),
                 Row(
                   children: [
                     CooperationPersonWidget(
+                      relateUsers: model?.relateUsers,
                       linkUserAction: () {},
                     ).withExpanded(),
-                    Width(30.toW),
-                    Text(
-                      '我参与的',
-                      style: TextStyle(
-                        color: AppColors.color_66000000,
-                        fontSize: 14.toSp,
-                      ),
-                    ),
+                    if (_isMyJoin())
+                      Text(
+                        '我参与的',
+                        style: TextStyle(
+                          color: AppColors.color_66000000,
+                          fontSize: 14.toSp,
+                        ),
+                      ).withMarginOnly(left: 30.toW),
                   ],
                 ),
               ],
@@ -227,18 +249,44 @@ class AddTaskItem extends StatelessWidget {
     if (model?.status == 1) {
       return '进行中';
     }
-    if (model?.status == 3) {
+    if (model?.status == 2) {
       return '已归档';
     }
     return '';
   }
 
+  Color getStatusBgColor() {
+    if (model?.status == 0) {
+      return Color(0xFFFEF3E6);
+    }
+    if (model?.status == 1) {
+      return Color(0xFFE8F7F2);
+    }
+    if (model?.status == 2) {
+      return Color(0xFFFEF3E6);
+    }
+    return Color(0xFFFEF3E6);
+  }
+
+  Color getStatusTextColor() {
+    if (model?.status == 0) {
+      return Color(0xFFED7B2F);
+    }
+    if (model?.status == 1) {
+      return Color(0xFF05A870);
+    }
+    if (model?.status == 2) {
+      return Color(0xFFED7B2F);
+    }
+    return Color(0xFFED7B2F);
+  }
 
   String getDangshirenName() {
     String type = '';
     if (!ObjectUtils.isEmptyList(model?.casePartyResVOS)) {
       for (var e in model!.casePartyResVOS!) {
-        type =  '${type.isEmpty ? '' : '$type '}${e.name}(${getPartyRole(e.partyRole ?? 0)})';
+        type =
+            '${type.isEmpty ? '' : '$type '}${e.name}(${getPartyRole(e.partyRole ?? 0)})';
       }
     }
     return type;
@@ -263,5 +311,13 @@ class AddTaskItem extends StatelessWidget {
     }
   }
 
-
+  bool _isMyJoin() {
+    var currentUserId = StorageUtils.getString(StorageKey.userId);
+    bool isCurrentUserInList =
+        model?.relateUsers?.any(
+          (user) => user.id.toString() == currentUserId,
+        ) ??
+        false;
+    return isCurrentUserInList;
+  }
 }

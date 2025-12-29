@@ -2,11 +2,12 @@
 /// @Date: 2023-12-09
 /// @Description: 下拉刷新组件
 
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:pull_to_refresh_new/pull_to_refresh.dart';
 import '../../utils/screen_utils.dart';
 
 
@@ -81,13 +82,13 @@ class AppRefresher extends StatelessWidget {
                 : Icons.arrow_downward,
             color: color,
             size: size),
+        height: 40.toW,
         releaseText: '释放刷新',
         refreshingText: '刷新中',
         releaseIcon: Icon(Icons.refresh, color: color, size: size),
         completeText: '刷新完成',
         completeIcon: Icon(Icons.done, color: color, size: size),
         failedText: '刷新失败，下拉重试',
-        failedIcon: null,
         spacing: 8,
         textStyle: TextStyle(color: color, fontSize: 12.toSp),
       ),
@@ -107,7 +108,7 @@ class AppRefresher extends StatelessWidget {
         textStyle: TextStyle(color: color, fontSize: 12.toSp),
         height: footerHeight,
         outerBuilder: (child) =>
-            SizedBox(height: 20, child: Center(child: child)),
+            SizedBox(height: 40.toW, child: Center(child: child)),
       ),
       child: child,
     );

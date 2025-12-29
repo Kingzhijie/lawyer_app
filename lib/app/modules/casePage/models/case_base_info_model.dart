@@ -13,18 +13,19 @@
 
 class CaseBaseInfoModel {
   CaseBaseInfoModel({
-      this.id, 
-      this.status, 
-      this.caseName, 
-      this.caseType, 
-      this.casePartyRole, 
-      this.caseProcedure, 
-      this.caseNumber, 
-      this.createTime, 
-      this.todoTaskCount, 
-      this.emergencyTaskCount, 
-      this.relateUsers, 
-      this.casePartyResVOS,});
+    this.id,
+    this.status,
+    this.caseName,
+    this.caseType,
+    this.casePartyRole,
+    this.caseProcedure,
+    this.caseNumber,
+    this.createTime,
+    this.todoTaskCount,
+    this.emergencyTaskCount,
+    this.relateUsers,
+    this.casePartyResVOS,
+  });
 
   CaseBaseInfoModel.fromJson(dynamic json) {
     id = json['id'];
@@ -50,6 +51,7 @@ class CaseBaseInfoModel {
       });
     }
   }
+
   num? id;
   num? status; //0-待更新 1-进行中 2-已归档
   String? caseName;
@@ -62,31 +64,35 @@ class CaseBaseInfoModel {
   num? emergencyTaskCount;
   List<RelateUsers>? relateUsers;
   List<CasePartyResVos>? casePartyResVOS;
-CaseBaseInfoModel copyWith({  num? id,
-  num? status,
-  String? caseName,
-  num? caseType,
-  num? casePartyRole,
-  num? caseProcedure,
-  String? caseNumber,
-  num? createTime,
-  num? todoTaskCount,
-  num? emergencyTaskCount,
-  List<RelateUsers>? relateUsers,
-  List<CasePartyResVos>? casePartyResVOS,
-}) => CaseBaseInfoModel(  id: id ?? this.id,
-  status: status ?? this.status,
-  caseName: caseName ?? this.caseName,
-  caseType: caseType ?? this.caseType,
-  casePartyRole: casePartyRole ?? this.casePartyRole,
-  caseProcedure: caseProcedure ?? this.caseProcedure,
-  caseNumber: caseNumber ?? this.caseNumber,
-  createTime: createTime ?? this.createTime,
-  todoTaskCount: todoTaskCount ?? this.todoTaskCount,
-  emergencyTaskCount: emergencyTaskCount ?? this.emergencyTaskCount,
-  relateUsers: relateUsers ?? this.relateUsers,
-  casePartyResVOS: casePartyResVOS ?? this.casePartyResVOS,
-);
+
+  CaseBaseInfoModel copyWith({
+    num? id,
+    num? status,
+    String? caseName,
+    num? caseType,
+    num? casePartyRole,
+    num? caseProcedure,
+    String? caseNumber,
+    num? createTime,
+    num? todoTaskCount,
+    num? emergencyTaskCount,
+    List<RelateUsers>? relateUsers,
+    List<CasePartyResVos>? casePartyResVOS,
+  }) => CaseBaseInfoModel(
+    id: id ?? this.id,
+    status: status ?? this.status,
+    caseName: caseName ?? this.caseName,
+    caseType: caseType ?? this.caseType,
+    casePartyRole: casePartyRole ?? this.casePartyRole,
+    caseProcedure: caseProcedure ?? this.caseProcedure,
+    caseNumber: caseNumber ?? this.caseNumber,
+    createTime: createTime ?? this.createTime,
+    todoTaskCount: todoTaskCount ?? this.todoTaskCount,
+    emergencyTaskCount: emergencyTaskCount ?? this.emergencyTaskCount,
+    relateUsers: relateUsers ?? this.relateUsers,
+    casePartyResVOS: casePartyResVOS ?? this.casePartyResVOS,
+  );
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = id;
@@ -107,7 +113,6 @@ CaseBaseInfoModel copyWith({  num? id,
     }
     return map;
   }
-
 }
 
 /// id : 26584
@@ -115,26 +120,25 @@ CaseBaseInfoModel copyWith({  num? id,
 /// partyRole : 0
 
 class CasePartyResVos {
-  CasePartyResVos({
-      this.id, 
-      this.name, 
-      this.partyRole,});
+  CasePartyResVos({this.id, this.name, this.partyRole});
 
   CasePartyResVos.fromJson(dynamic json) {
     id = json['id'];
     name = json['name'];
     partyRole = json['partyRole'];
   }
+
   num? id;
   String? name;
   num? partyRole;
-CasePartyResVos copyWith({  num? id,
-  String? name,
-  num? partyRole,
-}) => CasePartyResVos(  id: id ?? this.id,
-  name: name ?? this.name,
-  partyRole: partyRole ?? this.partyRole,
-);
+
+  CasePartyResVos copyWith({num? id, String? name, num? partyRole}) =>
+      CasePartyResVos(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        partyRole: partyRole ?? this.partyRole,
+      );
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = id;
@@ -142,7 +146,6 @@ CasePartyResVos copyWith({  num? id,
     map['partyRole'] = partyRole;
     return map;
   }
-
 }
 
 /// id : 26584
@@ -152,37 +155,48 @@ CasePartyResVos copyWith({  num? id,
 
 class RelateUsers {
   RelateUsers({
-      this.id, 
-      this.mobile, 
-      this.nickname, 
-      this.avatar,});
+    this.id,
+    this.mobile,
+    this.nickname,
+    this.avatar,
+    this.isSponsor, //是否发起人 true-是 false-否
+  });
 
   RelateUsers.fromJson(dynamic json) {
     id = json['id'];
     mobile = json['mobile'];
     nickname = json['nickname'];
     avatar = json['avatar'];
+    isSponsor = json['isSponsor'];
   }
+
   num? id;
   String? mobile;
   String? nickname;
   String? avatar;
-RelateUsers copyWith({  num? id,
-  String? mobile,
-  String? nickname,
-  String? avatar,
-}) => RelateUsers(  id: id ?? this.id,
-  mobile: mobile ?? this.mobile,
-  nickname: nickname ?? this.nickname,
-  avatar: avatar ?? this.avatar,
-);
+  bool? isSponsor;
+
+  RelateUsers copyWith({
+    num? id,
+    String? mobile,
+    String? nickname,
+    String? avatar,
+    bool? isSponsor,
+  }) => RelateUsers(
+    id: id ?? this.id,
+    mobile: mobile ?? this.mobile,
+    nickname: nickname ?? this.nickname,
+    avatar: avatar ?? this.avatar,
+    isSponsor: isSponsor ?? this.isSponsor,
+  );
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = id;
     map['mobile'] = mobile;
     map['nickname'] = nickname;
     map['avatar'] = avatar;
+    map['isSponsor'] = isSponsor;
     return map;
   }
-
 }

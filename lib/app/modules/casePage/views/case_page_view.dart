@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../../../gen/assets.gen.dart';
 import '../../../common/components/common_app_bar.dart';
+import '../../../common/components/easy_refresher.dart';
 import '../../../common/components/empty_content_widget.dart';
 import '../../../common/constants/app_colors.dart';
 import '../../../common/extension/widget_extension.dart';
@@ -47,17 +48,29 @@ class CasePageView extends GetView<CasePageController> {
               if (controller.caseBaseInfoList.isEmpty) {
                 return EmptyContentWidget();
               }
-              return ListView.builder(
-                itemCount: controller.caseBaseInfoList.length,
-                padding: EdgeInsets.only(
-                  left: 16.toW,
-                  right: 16.toW,
-                  top: 8.toW,
-                  bottom: AppScreenUtil.bottomBarHeight + 90.toW,
-                ),
-                itemBuilder: (context, index) {
-                  var model = controller.caseBaseInfoList.value[index];
-                  return AddTaskItem(model: model);
+
+              return  MSEasyRefresher(
+                controller: controller.easyRefreshController,
+                onRefresh: () {
+                  controller.onRefresh();
+                },
+                onLoad: () {
+                  controller.onLoadMore();
+                },
+                childBuilder: (context, physics) {
+                  return ListView.builder(
+                    itemCount: controller.caseBaseInfoList.length,
+                    physics: physics,
+                    padding: EdgeInsets.only(
+                      left: 16.toW,
+                      right: 16.toW,
+                      top: 8.toW,
+                    ),
+                    itemBuilder: (context, index) {
+                      var model = controller.caseBaseInfoList.value[index];
+                      return AddTaskItem(model: model);
+                    },
+                  );;
                 },
               );
             }),
