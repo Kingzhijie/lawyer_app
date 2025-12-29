@@ -45,13 +45,6 @@ class _MSEasyRefresherState extends State<MSEasyRefresher> {
   @override
   Widget build(BuildContext context) {
     return EasyRefresh.builder(
-      // 在开始刷新时立即触发刷新
-      refreshOnStart: false,
-      // 刷新完成后重置刷新状态
-      resetAfterRefresh: true,
-      // 同时触发刷新和加载的回调函数
-      simultaneously: true,
-      canLoadAfterNoMore: false,
       // 加载回调函数
       onLoad: widget.onLoad,
       // 刷新回调函数
