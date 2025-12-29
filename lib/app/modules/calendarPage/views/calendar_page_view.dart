@@ -24,8 +24,8 @@ class CalendarPageView extends GetView<CalendarPageController> {
           final date = controller.currentDisplayMonth.value;
           return Row(
             children: [
-              Icon(Icons.arrow_back_ios, size: 22.toW, color: Colors.black).withMarginOnly(left: 6.toW),
-              Width(4.toW),
+              // Icon(Icons.arrow_back_ios, size: 22.toW, color: Colors.black).withMarginOnly(left: 6.toW),
+              Width(10.toW),
               Text('${date.year}年${date.month}月', style: TextStyle(color: Colors.black, fontSize: 17.toSp, fontWeight: FontWeight.w600))
             ],
           );
@@ -33,11 +33,9 @@ class CalendarPageView extends GetView<CalendarPageController> {
           Get.back();
         }),
       )),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.only(top: 10.toW),
-          child: Column(children: [_buildCalendarSection(), _buildTodoList()]),
-        ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(top: 12.toW, bottom: AppScreenUtil.bottomBarHeight + 50.toW),
+        child: Column(children: [_buildCalendarSection(), _buildTodoList()]),
       ),
     );
   }
@@ -204,7 +202,9 @@ class CalendarPageView extends GetView<CalendarPageController> {
       ),
       itemCount: tasks.length,
       itemBuilder: (context, index) {
-        return TodayWaitWorkWidget(task: tasks[index]);
+        return TodayWaitWorkWidget(task: tasks[index], addRemarkAction: (){
+          controller.addRemarkAction();
+        },);
       },
     );
   }

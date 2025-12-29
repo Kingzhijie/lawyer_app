@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
+import 'package:lawyer_app/app/modules/myPage/controllers/my_page_controller.dart';
+import 'package:lawyer_app/app/modules/myPage/views/my_page_view.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/widgets/add_case_remark_widget.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/widgets/link_user_widget.dart';
+import 'package:lawyer_app/app/modules/tabPage/controllers/tab_page_controller.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/main.dart';
 
 import '../../../common/components/bottom_sheet_utils.dart';
 import '../../../utils/screen_utils.dart';
+import '../views/widgets/cooperation_person_widget.dart';
 import '../views/widgets/create_case_widget.dart';
 
 class NewHomePageController extends GetxController {
@@ -19,8 +25,18 @@ class NewHomePageController extends GetxController {
     tabIndex.value = index;
   }
 
+  @override
+  void onInit() {
+    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+  }
+
   void lookCalendarCaseAction() {
-    Get.toNamed(Routes.CALENDAR_PAGE);
+    getFindController<TabPageController>()?.changeIndex(2);
   }
 
   ///添加备注
@@ -40,7 +56,21 @@ class NewHomePageController extends GetxController {
         isShowCloseIcon: true,
         height: AppScreenUtil.screenHeight - 217.toW,
         isSetBottomInset: false,
-        contentWidget: CreateCaseWidget());
+        contentWidget: LinkUserWidget());
+  }
+
+  void searchCaseAction() {
+    Get.toNamed(Routes.SEARCH_CASE_PAGE);
+  }
+
+  /// 打开我的页面底部抽屉
+  void openMyPageDrawer() {
+    getFindController<TabPageController>()?.openDrawer();
+  }
+
+  ///查看合同详情
+  void lookContractDetailPage() {
+    Get.toNamed(Routes.CONTRACT_DETAIL_PAGE);
   }
 
 }

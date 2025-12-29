@@ -9,7 +9,8 @@ import '../../../../utils/screen_utils.dart';
 class TodayWaitWorkWidget extends StatelessWidget {
   final Map<String, dynamic> task;
   final bool isShowTime;
-  const TodayWaitWorkWidget({super.key, required this.task, this.isShowTime = true});
+  final Function()? addRemarkAction;
+  const TodayWaitWorkWidget({super.key, required this.task, this.isShowTime = true, this.addRemarkAction});
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +176,10 @@ class TodayWaitWorkWidget extends StatelessWidget {
         text,
         style: TextStyle(fontSize: 13.toSp, color: AppColors.color_E6000000),
       ),
-    );
+    ).withOnTap((){
+      if (addRemarkAction!=null){
+        addRemarkAction!();
+      }
+    });
   }
 }

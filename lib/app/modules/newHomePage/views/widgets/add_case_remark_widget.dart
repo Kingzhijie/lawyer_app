@@ -40,7 +40,7 @@ class AddCaseRemarkWidget extends StatelessWidget {
                   color: AppColors.color_E6000000,
                   fontSize: 16.toSp,
                 ),
-                // controller: _controller,
+                controller: textEditingController,
                 autofocus: true,
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(

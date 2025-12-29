@@ -6,7 +6,7 @@ import '../../../../../gen/assets.gen.dart';
 import '../../../../common/constants/app_colors.dart';
 import '../../../../utils/image_utils.dart';
 import '../../../../utils/screen_utils.dart';
-
+///关联用户
 class CooperationPersonWidget extends StatelessWidget {
   final Function() linkUserAction;
   const CooperationPersonWidget({super.key, required this.linkUserAction});

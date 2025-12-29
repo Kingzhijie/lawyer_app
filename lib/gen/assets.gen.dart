@@ -14,13 +14,65 @@ import 'package:flutter/widgets.dart';
 class $AssetsCommonGen {
   const $AssetsCommonGen();
 
+  /// File path: assets/common/action_file_icon.png
+  AssetGenImage get actionFileIcon =>
+      const AssetGenImage('assets/common/action_file_icon.png');
+
+  /// File path: assets/common/action_img_icon.png
+  AssetGenImage get actionImgIcon =>
+      const AssetGenImage('assets/common/action_img_icon.png');
+
+  /// File path: assets/common/action_xiangji_icon.png
+  AssetGenImage get actionXiangjiIcon =>
+      const AssetGenImage('assets/common/action_xiangji_icon.png');
+
+  /// File path: assets/common/add_action_icon.png
+  AssetGenImage get addActionIcon =>
+      const AssetGenImage('assets/common/add_action_icon.png');
+
+  /// File path: assets/common/add_daib_task_icon.png
+  AssetGenImage get addDaibTaskIcon =>
+      const AssetGenImage('assets/common/add_daib_task_icon.png');
+
+  /// File path: assets/common/add_photo_icon.png
+  AssetGenImage get addPhotoIcon =>
+      const AssetGenImage('assets/common/add_photo_icon.png');
+
   /// File path: assets/common/app_logo.png
   AssetGenImage get appLogo =>
       const AssetGenImage('assets/common/app_logo.png');
 
+  /// File path: assets/common/calendar_choose_icon.png
+  AssetGenImage get calendarChooseIcon =>
+      const AssetGenImage('assets/common/calendar_choose_icon.png');
+
+  /// File path: assets/common/care_down_qs.png
+  AssetGenImage get careDownQs =>
+      const AssetGenImage('assets/common/care_down_qs.png');
+
+  /// File path: assets/common/caret_down_small.png
+  AssetGenImage get caretDownSmall =>
+      const AssetGenImage('assets/common/caret_down_small.png');
+
+  /// File path: assets/common/close_bg_ico.png
+  AssetGenImage get closeBgIco =>
+      const AssetGenImage('assets/common/close_bg_ico.png');
+
   /// File path: assets/common/close_tf_icon.png
   AssetGenImage get closeTfIcon =>
       const AssetGenImage('assets/common/close_tf_icon.png');
+
+  /// File path: assets/common/daiban_renwu_icon.png
+  AssetGenImage get daibanRenwuIcon =>
+      const AssetGenImage('assets/common/daiban_renwu_icon.png');
+
+  /// File path: assets/common/jianpan_icon.png
+  AssetGenImage get jianpanIcon =>
+      const AssetGenImage('assets/common/jianpan_icon.png');
+
+  /// File path: assets/common/jinji_renwu_icon.png
+  AssetGenImage get jinjiRenwuIcon =>
+      const AssetGenImage('assets/common/jinji_renwu_icon.png');
 
   /// File path: assets/common/launch_img.png
   AssetGenImage get launchImg =>
@@ -30,12 +82,45 @@ class $AssetsCommonGen {
   AssetGenImage get lingbanIcon =>
       const AssetGenImage('assets/common/lingban_icon.png');
 
+  /// File path: assets/common/quanping_icon.png
+  AssetGenImage get quanpingIcon =>
+      const AssetGenImage('assets/common/quanping_icon.png');
+
+  /// File path: assets/common/voice_change_icon.png
+  AssetGenImage get voiceChangeIcon =>
+      const AssetGenImage('assets/common/voice_change_icon.png');
+
+  /// File path: assets/common/weixuanzhong_anjian.png
+  AssetGenImage get weixuanzhongAnjian =>
+      const AssetGenImage('assets/common/weixuanzhong_anjian.png');
+
+  /// File path: assets/common/xuanzhong_anjian.png
+  AssetGenImage get xuanzhongAnjian =>
+      const AssetGenImage('assets/common/xuanzhong_anjian.png');
+
   /// List of all assets
   List<AssetGenImage> get values => [
+    actionFileIcon,
+    actionImgIcon,
+    actionXiangjiIcon,
+    addActionIcon,
+    addDaibTaskIcon,
+    addPhotoIcon,
     appLogo,
+    calendarChooseIcon,
+    careDownQs,
+    caretDownSmall,
+    closeBgIco,
     closeTfIcon,
+    daibanRenwuIcon,
+    jianpanIcon,
+    jinjiRenwuIcon,
     launchImg,
     lingbanIcon,
+    quanpingIcon,
+    voiceChangeIcon,
+    weixuanzhongAnjian,
+    xuanzhongAnjian,
   ];
 }
 
@@ -152,6 +237,10 @@ class $AssetsHomeGen {
   AssetGenImage get unSelectCrileIcon =>
       const AssetGenImage('assets/home/un_select_crile_icon.png');
 
+  /// File path: assets/home/voice_icon.png
+  AssetGenImage get voiceIcon =>
+      const AssetGenImage('assets/home/voice_icon.png');
+
   /// File path: assets/home/yichang_icon.png
   AssetGenImage get yichangIcon =>
       const AssetGenImage('assets/home/yichang_icon.png');
@@ -171,6 +260,10 @@ class $AssetsHomeGen {
   /// File path: assets/home/yuangao_notice_bg.png
   AssetGenImage get yuangaoNoticeBg =>
       const AssetGenImage('assets/home/yuangao_notice_bg.png');
+
+  /// File path: assets/home/zhengzai_ting_icon.png
+  AssetGenImage get zhengzaiTingIcon =>
+      const AssetGenImage('assets/home/zhengzai_ting_icon.png');
 
   /// List of all assets
   List<AssetGenImage> get values => [
@@ -202,26 +295,65 @@ class $AssetsHomeGen {
     susongfeiIcon,
     unNoticeIcon,
     unSelectCrileIcon,
+    voiceIcon,
     yichangIcon,
     yuangaoBg,
     yuangaoIcon,
     yuangaoLongBg,
     yuangaoNoticeBg,
+    zhengzaiTingIcon,
+  ];
+}
+
+class $AssetsMyGen {
+  const $AssetsMyGen();
+
+  /// File path: assets/my/about_us_icon.png
+  AssetGenImage get aboutUsIcon =>
+      const AssetGenImage('assets/my/about_us_icon.png');
+
+  /// File path: assets/my/budongchan_icon.png
+  AssetGenImage get budongchanIcon =>
+      const AssetGenImage('assets/my/budongchan_icon.png');
+
+  /// File path: assets/my/cheliang_icon.png
+  AssetGenImage get cheliangIcon =>
+      const AssetGenImage('assets/my/cheliang_icon.png');
+
+  /// File path: assets/my/invite_friend.png
+  AssetGenImage get inviteFriend =>
+      const AssetGenImage('assets/my/invite_friend.png');
+
+  /// File path: assets/my/vip_card_bg.png
+  AssetGenImage get vipCardBg =>
+      const AssetGenImage('assets/my/vip_card_bg.png');
+
+  /// File path: assets/my/zijian_icon.png
+  AssetGenImage get zijianIcon =>
+      const AssetGenImage('assets/my/zijian_icon.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+    aboutUsIcon,
+    budongchanIcon,
+    cheliangIcon,
+    inviteFriend,
+    vipCardBg,
+    zijianIcon,
   ];
 }
 
 class $AssetsTabbarGen {
   const $AssetsTabbarGen();
 
-  /// File path: assets/tabbar/add_center.png
-  AssetGenImage get addCenter =>
-      const AssetGenImage('assets/tabbar/add_center.png');
-
   /// File path: assets/tabbar/case_n.png
   AssetGenImage get caseN => const AssetGenImage('assets/tabbar/case_n.png');
 
-  /// File path: assets/tabbar/chat_n.png
-  AssetGenImage get chatN => const AssetGenImage('assets/tabbar/chat_n.png');
+  /// File path: assets/tabbar/case_s.png
+  AssetGenImage get caseS => const AssetGenImage('assets/tabbar/case_s.png');
+
+  /// File path: assets/tabbar/home_n.png
+  AssetGenImage get homeN => const AssetGenImage('assets/tabbar/home_n.png');
 
   /// File path: assets/tabbar/home_s.png
   AssetGenImage get homeS => const AssetGenImage('assets/tabbar/home_s.png');
@@ -229,8 +361,11 @@ class $AssetsTabbarGen {
   /// File path: assets/tabbar/wait_n.png
   AssetGenImage get waitN => const AssetGenImage('assets/tabbar/wait_n.png');
 
+  /// File path: assets/tabbar/wait_s.png
+  AssetGenImage get waitS => const AssetGenImage('assets/tabbar/wait_s.png');
+
   /// List of all assets
-  List<AssetGenImage> get values => [addCenter, caseN, chatN, homeS, waitN];
+  List<AssetGenImage> get values => [caseN, caseS, homeN, homeS, waitN, waitS];
 }
 
 class Assets {
@@ -238,6 +373,7 @@ class Assets {
 
   static const $AssetsCommonGen common = $AssetsCommonGen();
   static const $AssetsHomeGen home = $AssetsHomeGen();
+  static const $AssetsMyGen my = $AssetsMyGen();
   static const $AssetsTabbarGen tabbar = $AssetsTabbarGen();
 }
 

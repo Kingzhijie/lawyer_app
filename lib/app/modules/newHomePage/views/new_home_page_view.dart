@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/tabPage/controllers/tab_page_controller.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
 import '../controllers/new_home_page_controller.dart';
+import 'widgets/home_voice_widget.dart';
 import 'widgets/overview_grid.dart';
 import 'widgets/task_card.dart';
 
@@ -16,6 +19,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: _setFloatingActionWidget(),
       body: Stack(
         children: [
           // 背景
@@ -58,7 +62,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
             left: 16.toW,
             child: Column(
               children: [
-                _buildTopBar(),
+                _buildTopBar(context),
                 _buildSearchBar(),
               ],
             ),
@@ -68,7 +72,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
     );
   }
 
-  Widget _buildTopBar() {
+  Widget _buildTopBar(BuildContext context) {
     return Container(
       height: AppScreenUtil.navigationBarHeight,
       padding: EdgeInsets.only(top: AppScreenUtil.statusBarHeight),
@@ -84,11 +88,12 @@ class NewHomePageView extends GetView<NewHomePageController> {
             ),
             child: ClipOval(
               child: ImageUtils(
-                imageUrl: Assets.home.yuangaoIcon.path,
-                fit: BoxFit.cover,
+                imageUrl: Assets.home.defaultUserIcon.path,
               ),
             ),
-          ),
+          ).withOnTap(() {
+            controller.openMyPageDrawer();
+          }),
           Text(
             '灵伴',
             style: TextStyle(
@@ -136,7 +141,9 @@ class NewHomePageView extends GetView<NewHomePageController> {
               ),
             ],
           ),
-        ).withExpanded(),
+        ).withOnTap((){
+          controller.searchCaseAction();
+        }).withExpanded(),
         Width(9.toW),
         Container(
           width: 44.toW,
@@ -220,7 +227,33 @@ class NewHomePageView extends GetView<NewHomePageController> {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index){
-      return TaskCard(controller: controller).withMarginOnly(bottom: 12.toW);
+      return TaskCard(clickItemType: (type) {
+        if (type == 1){ //关联用户
+          controller.linkUserAlert();
+        }
+        if (type == 0){ //备注
+          controller.addRemarkMethod();
+        }
+      },).withOnTap((){
+        controller.lookContractDetailPage();
+      }).withMarginOnly(bottom: 12.toW);
     });
   }
+
+  Widget _setFloatingActionWidget() {
+    return Container(
+      width: 52.toW,
+      height: 52.toW,
+      margin: EdgeInsets.only(bottom: AppScreenUtil.bottomBarHeight + 90.toW),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(26.toW),
+        color: AppColors.color_E6000000,
+      ),
+      alignment: Alignment.center,
+      child: ImageUtils(imageUrl: Assets.home.voiceIcon.path, width: 30.toW),
+    ).withOnTap((){
+      getFindController<TabPageController>()?.pushChatPage();
+    });
+  }
+
 }
