@@ -11,7 +11,7 @@ class AuthInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final String accessToken = StorageUtils.getToken();
     logPrint('accessToken===$accessToken');
-    options.headers['authorization'] = accessToken;
+    options.headers['Authorization'] = accessToken;
     // options.headers['App-brand'] = base64Encode(utf8.encode(DeviceInfo.brand ?? ''));
     // options.headers['Device-type'] = PlatformUtils.platform;
     // options.headers['platformID'] = PlatformUtils.isIOS ? 1 : 2;

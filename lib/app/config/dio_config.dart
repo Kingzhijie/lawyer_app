@@ -1,15 +1,19 @@
+import 'dart:io';
+
+import '../utils/device_info_utils.dart';
+
 enum Env { test, dev, product }
 
 class DioConfig {
   /// 环境配置
-  static const Env env = Env.product;
+  static const Env env = Env.test;
 
   ///项目api基地址
   static String get baseURL {
     switch (DioConfig.env) {
       case Env.test:
         // return 'http://192.168.101.225:9000';
-        return 'http://192.168.101.238:9501';
+        return 'http://101.37.88.57/app-api';
       case Env.dev:
         return 'https://api.miliyue.com';
       case Env.product:
@@ -42,6 +46,10 @@ class DioConfig {
   static Map<String, dynamic> httpHeaders = {
     "Accept": "application/json, text/plain, */*",
     'Content-Type': 'application/json',
+    "app_version": DeviceInfo.version,
+    "app_build": DeviceInfo.buildNumber,
+    "device": Platform.operatingSystem,
+    'systemVersion': DeviceInfo.deviceSystemVersion
   };
 
 }

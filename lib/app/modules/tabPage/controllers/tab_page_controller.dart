@@ -72,13 +72,11 @@ class TabPageController extends GetxController {
     /// 设备信息
     await DeviceInfo.appVersion();
 
-    if (AppCommonUtils.isLogin || Platform.isIOS) { //登录或者iOS申请推送权限
-      AppInfoUtils.instance.appLoginInitPush = true;
-      bool isSuc = await PushUtil.initPushSDK();
-      if (isSuc) {
-        PushUtil.addEventHandler();
-      }
+    bool isSuc = await PushUtil.initPushSDK();
+    if (isSuc) {
+      PushUtil.addEventHandler();
     }
+
     await DeviceInfo.deviceInfo();
 
     return true;

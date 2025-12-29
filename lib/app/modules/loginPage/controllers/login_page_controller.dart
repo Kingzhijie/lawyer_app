@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/http/apis.dart';
+import 'package:lawyer_app/app/http/net/net_utils.dart';
+import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
 
@@ -23,13 +26,16 @@ class LoginPageController extends GetxController {
       return;
     }
     FocusManager.instance.primaryFocus?.unfocus();
-
     isSending.value = true;
-    // TODO: 调用发送验证码接口
-    await Future.delayed(const Duration(milliseconds: 600));
-    isSending.value = false;
-    showToast('短信验证码已发送');
-    Get.toNamed(Routes.LOGIN_CODE_PAGE, arguments: phone);
+    NetUtils.post(Apis.sendSmsCode, params: {'mobile': phone}).then((data){
+      if (data.code == NetCodeHandle.success) {
+        isSending.value = false;
+        showToast('短信验证码已发送');
+        Get.toNamed(Routes.LOGIN_CODE_PAGE, arguments: phone);
+      }
+    });
+
+
   }
 
   void lookProtocol(String text) {

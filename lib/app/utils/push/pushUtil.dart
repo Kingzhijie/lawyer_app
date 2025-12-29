@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:getuiflut/getuiflut.dart';
+import 'package:lawyer_app/app/utils/app_common_instance.dart';
 
 import '../../http/net/tool/logger.dart';
 import '../device_info_utils.dart';
@@ -91,6 +92,7 @@ class PushUtil {
     pushUtil.addEventHandler(
       onReceiveClientId: (String message) async {
         logPrint("flutter onReceiveClientId: $message");
+        AppInfoUtils.instance.pushClientId = message;
         // PushUtil.setAlias('mi4672364mi');
       },
       onReceiveOnlineState: (String online) async {

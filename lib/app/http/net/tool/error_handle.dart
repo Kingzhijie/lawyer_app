@@ -4,7 +4,7 @@ import 'logger.dart';
 
 class NetCodeHandle {
   ///请求成功
-  static const int success = 0;
+  static const int success = 200;
   /// 未授权, 未登录
   static const int unauthorized = 403;
   static const int success_not_content = 204;
