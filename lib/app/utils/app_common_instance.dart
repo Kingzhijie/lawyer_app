@@ -74,7 +74,6 @@ class AppCommonUtils {
   /// 切换tab到主页
   static void changeTabHome({int index = 0}) {
     var tabController = getFindController<TabPageController>();
-    logPrint('tuichudelusssss===$tabController');
     tabController?.forceRefreshTab(index);
   }
 
