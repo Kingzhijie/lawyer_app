@@ -18,9 +18,9 @@ class CasePageController extends GetxController {
 
   int pageNo = 1;
 
-  final EasyRefreshController easyRefreshController= EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true
+  final EasyRefreshController easyRefreshController = EasyRefreshController(
+    controlFinishRefresh: true,
+    controlFinishLoad: true,
   );
 
   final caseBaseInfoList = RxList<CaseBaseInfoModel>([]);
@@ -60,9 +60,7 @@ class CasePageController extends GetxController {
       isShowCloseIcon: true,
       height: AppScreenUtil.screenHeight - 217.toW,
       isSetBottomInset: false,
-      contentWidget: CreateCaseWidget(createCaseSuccess: () {
-
-      }),
+      contentWidget: CreateCaseWidget(createCaseSuccess: () {}),
     );
   }
 
@@ -71,11 +69,15 @@ class CasePageController extends GetxController {
     Map<String, dynamic> parameters = {
       'page': pageNo,
       'pageSize': 10,
-      'status': tabIndex.value == 0 ? null : (tabIndex.value-1) //0-待更新 1-进行中 2-已归档, null: 全部
+      'status': tabIndex.value == 0
+          ? null
+          : (tabIndex.value - 1), //0-待更新 1-进行中 2-已归档, null: 全部
     };
-    var result = await NetUtils.get(Apis.caseBasicInfoList,
-        isLoading: false,
-        queryParameters: parameters);
+    var result = await NetUtils.get(
+      Apis.caseBasicInfoList,
+      isLoading: false,
+      queryParameters: parameters,
+    );
     LoadingTool.dismissLoading();
     if (result.code == NetCodeHandle.success) {
       var list = (result.data['list'] as List)
@@ -85,26 +87,27 @@ class CasePageController extends GetxController {
         caseBaseInfoList.value = list;
         finishRefresh();
       } else {
-        caseBaseInfoList.value += list;
+        caseBaseInfoList.addAll(list);
       }
-      finishLoad(caseBaseInfoList.value.length == result.data['total']);
+      bool isNoMore =
+          caseBaseInfoList.length >= result.data['total'];
+      delay(500, (){
+        finishLoad(isNoMore);
+      });
     } else {
-      if (isRefresh) {
-        finishRefresh();
-      }
-      finishLoad(false);
+      finishRefresh();
+      finishLoad(true);
     }
   }
 
-
-  void onRefresh() {
+  void onRefresh() async {
     pageNo = 1;
-    getCaseListData(true);
+    await getCaseListData(true);
   }
 
-  void onLoadMore() {
+  void onLoadMore() async {
     pageNo += 1;
-    getCaseListData(false);
+    await getCaseListData(false);
   }
 
   /// 下拉刷新完成
@@ -122,5 +125,6 @@ class CasePageController extends GetxController {
       easyRefreshController.finishLoad();
     }
   }
+
 
 }

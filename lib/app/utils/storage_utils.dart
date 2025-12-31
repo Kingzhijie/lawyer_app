@@ -9,6 +9,8 @@ class StorageKey {
   static String get refreshToken => 'refreshToken';
   ///用户token过期时间
   static String get tokenExpiresTime => 'tokenExpiresTime';
+  ///用户id
+  static String get userId => 'userId';
 
   ///是否首次安装
   static String get isFirstInstall => 'isFirstInstallApp';

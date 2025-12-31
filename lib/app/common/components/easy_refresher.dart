@@ -25,14 +25,14 @@ class MSEasyRefresher extends StatefulWidget {
   final EasyRefreshController? controller;
 
   /// 加载回调函数
-  final FutureOr<dynamic> Function()? onLoad;
+  final FutureOr Function()? onLoad;
 
   /// 刷新回调函数
-  final FutureOr<dynamic> Function()? onRefresh;
+  final FutureOr Function()? onRefresh;
 
   /// 构建子组件的回调函数
   final Widget Function(BuildContext context, ScrollPhysics physics)
-      childBuilder;
+  childBuilder;
 
   /// 指示器的位置，默认为上方
   final IndicatorPosition indicatorPosition;
@@ -45,13 +45,6 @@ class _MSEasyRefresherState extends State<MSEasyRefresher> {
   @override
   Widget build(BuildContext context) {
     return EasyRefresh.builder(
-      // 在开始刷新时立即触发刷新
-      refreshOnStart: false,
-      // 刷新完成后重置刷新状态
-      resetAfterRefresh: true,
-      // 同时触发刷新和加载的回调函数
-      simultaneously: true,
-      canLoadAfterNoMore: false,
       // 加载回调函数
       onLoad: widget.onLoad,
       // 刷新回调函数
@@ -59,7 +52,8 @@ class _MSEasyRefresherState extends State<MSEasyRefresher> {
       // 指定刷新时的头部组件
       header: ClassicHeader(
         hitOver: true,
-        safeArea: true,
+        safeArea: false,
+        triggerOffset: 40,
         processedDuration: Duration.zero,
         showMessage: false,
         showText: true,
@@ -71,10 +65,11 @@ class _MSEasyRefresherState extends State<MSEasyRefresher> {
         dragText: "下拉刷新",
         processedText: "刷新成功",
         failedText: "刷新失败",
-        iconTheme: IconThemeData(
-          color: AppColors.color_FFC5C5C5
+        iconTheme: IconThemeData(color: AppColors.color_FFC5C5C5),
+        textStyle: TextStyle(
+          color: AppColors.color_99000000,
+          fontSize: 12.toSp,
         ),
-        textStyle: TextStyle(color: AppColors.color_99000000, fontSize: 12.toSp),
       ),
 
       // 指定加载时的底部组件
@@ -93,10 +88,11 @@ class _MSEasyRefresherState extends State<MSEasyRefresher> {
         dragText: "上拉加载",
         failedText: "加载失败",
         noMoreText: "没有更多内容",
-        iconTheme: IconThemeData(
-          color: AppColors.color_FFC5C5C5
+        iconTheme: IconThemeData(color: AppColors.color_FFC5C5C5),
+        textStyle: TextStyle(
+          color: AppColors.color_99000000,
+          fontSize: 12.toSp,
         ),
-        textStyle: TextStyle(color: AppColors.color_99000000, fontSize: 12.toSp),
       ),
       controller: widget.controller,
       childBuilder: widget.childBuilder,

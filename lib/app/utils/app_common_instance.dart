@@ -39,6 +39,9 @@ class AppCommonUtils {
   /// 退出登录, 统一处理, 需要移除的东西
   static void logout({bool isAlert = true}) {
     StorageUtils.removeString(StorageKey.accessToken);
+    StorageUtils.removeString(StorageKey.refreshToken);
+    StorageUtils.removeString(StorageKey.tokenExpiresTime);
+    StorageUtils.removeString(StorageKey.userId);
     if (isAlert) {
       // AppDialog.singleItem(
       //   title: S.of(currentContext).alert,

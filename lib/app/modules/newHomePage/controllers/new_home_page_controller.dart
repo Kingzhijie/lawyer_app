@@ -15,7 +15,6 @@ import 'package:lawyer_app/app/modules/tabPage/controllers/tab_page_controller.d
 import 'package:lawyer_app/app/routes/app_pages.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/main.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../common/components/bottom_sheet_utils.dart';
 import '../../../utils/screen_utils.dart';
