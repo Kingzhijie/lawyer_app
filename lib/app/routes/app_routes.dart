@@ -23,6 +23,8 @@ abstract class Routes {
   static const SECURITY_LIST_DETAIL_PAGE = _Paths.SECURITY_LIST_DETAIL_PAGE;
   static const CONTRACT_DETAIL_PAGE = _Paths.CONTRACT_DETAIL_PAGE;
   static const CASE_DETAIL_PAGE = _Paths.CASE_DETAIL_PAGE;
+  static const EDIT_CONCERNED_PERSON_PAGE = _Paths.EDIT_CONCERNED_PERSON_PAGE;
+  static const ATTORNEYS_FEE_PAGE = _Paths.ATTORNEYS_FEE_PAGE;
 }
 
 abstract class _Paths {
@@ -47,4 +49,6 @@ abstract class _Paths {
   static const SECURITY_LIST_DETAIL_PAGE = '/security-list-detail-page';
   static const CONTRACT_DETAIL_PAGE = '/contract-detail-page';
   static const CASE_DETAIL_PAGE = '/case-detail-page';
+  static const EDIT_CONCERNED_PERSON_PAGE = '/edit-concerned-person-page';
+  static const ATTORNEYS_FEE_PAGE = '/attorneys-fee-page';
 }

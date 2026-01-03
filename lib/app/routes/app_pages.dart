@@ -8,6 +8,8 @@ import '../modules/agencyCenterPage/bindings/agency_center_page_binding.dart';
 import '../modules/agencyCenterPage/views/agency_center_page_view.dart';
 import '../modules/agencyPage/bindings/agency_page_binding.dart';
 import '../modules/agencyPage/views/agency_page_view.dart';
+import '../modules/attorneysFeePage/bindings/attorneys_fee_page_binding.dart';
+import '../modules/attorneysFeePage/views/attorneys_fee_page_view.dart';
 import '../modules/calendarPage/bindings/calendar_page_binding.dart';
 import '../modules/calendarPage/views/calendar_page_view.dart';
 import '../modules/caseDetailPage/bindings/case_detail_page_binding.dart';
@@ -18,6 +20,8 @@ import '../modules/chatPage/bindings/chat_page_binding.dart';
 import '../modules/chatPage/views/chat_page_view.dart';
 import '../modules/contractDetailPage/bindings/contract_detail_page_binding.dart';
 import '../modules/contractDetailPage/views/contract_detail_page_view.dart';
+import '../modules/editConcernedPersonPage/bindings/edit_concerned_person_page_binding.dart';
+import '../modules/editConcernedPersonPage/views/edit_concerned_person_page_view.dart';
 import '../modules/loginCodePage/bindings/login_code_page_binding.dart';
 import '../modules/loginCodePage/views/login_code_page_view.dart';
 import '../modules/loginPage/bindings/login_page_binding.dart';
@@ -148,6 +152,16 @@ class AppPages {
       name: _Paths.CASE_DETAIL_PAGE,
       page: () => const CaseDetailPageView(),
       binding: CaseDetailPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.EDIT_CONCERNED_PERSON_PAGE,
+      page: () => const EditConcernedPersonPageView(),
+      binding: EditConcernedPersonPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.ATTORNEYS_FEE_PAGE,
+      page: () => const AttorneysFeePageView(),
+      binding: AttorneysFeePageBinding(),
     ),
   ];
 }

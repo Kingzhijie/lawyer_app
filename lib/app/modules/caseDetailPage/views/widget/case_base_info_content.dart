@@ -154,7 +154,9 @@ class CaseBaseInfoContent extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  controller.editConcernedPerson();
+                },
                 child: Text(
                   '编辑',
                   style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),
@@ -475,7 +477,9 @@ class CaseBaseInfoContent extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  controller.attorneysFeePage();
+                },
                 child: Text(
                   '编辑',
                   style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),

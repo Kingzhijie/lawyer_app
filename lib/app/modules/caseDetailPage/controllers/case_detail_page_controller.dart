@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/modules/casePage/controllers/case_page_controller.dart';
+import 'package:lawyer_app/app/routes/app_pages.dart';
 
 import '../../../common/components/tabPage/label_tab_bar.dart';
 import '../../agencyCenterPage/controllers/agency_center_page_controller.dart';
@@ -80,4 +81,15 @@ class CaseDetailPageController extends GetxController {
       Get.delete<AgencyCenterPageController>(tag: tag, force: true);
     }
   }
+
+  ///关联当事人
+  void editConcernedPerson() {
+    Get.toNamed(Routes.EDIT_CONCERNED_PERSON_PAGE);
+  }
+
+  ///代理律师费
+  void attorneysFeePage() {
+    Get.toNamed(Routes.ATTORNEYS_FEE_PAGE);
+  }
+
 }
