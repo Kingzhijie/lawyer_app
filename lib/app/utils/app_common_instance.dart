@@ -57,7 +57,7 @@ class AppCommonUtils {
       //       fontSize: 13.toSp,
       //       fontWeight: FontWeight.w500),
       //   onCancel: () {
-      //     backAppRootPage();
+          backAppRootPage();
       //   },
       // ).showAlert();
     } else {

@@ -1,23 +1,9 @@
 import 'package:get/get.dart';
 
 class ContractDetailPageController extends GetxController {
-  //TODO: Implement ContractDetailPageController
+  final RxInt trialIndex = 0.obs; // 0-一审, 1-二审, 2-再审
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  void switchTrial(int index) {
+    trialIndex.value = index;
   }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }
