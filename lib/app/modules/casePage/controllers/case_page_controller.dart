@@ -1,5 +1,6 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/routes/app_pages.dart';
 import 'package:lawyer_app/app/utils/loading.dart';
 
 import '../../../../main.dart';
@@ -127,4 +128,10 @@ class CasePageController extends GetxController {
       easyRefreshController.finishLoad();
     }
   }
+
+  ////查看案件详情
+  void lookCaseDetail(CaseBaseInfoModel model) {
+    Get.toNamed(Routes.CASE_DETAIL_PAGE);
+  }
+
 }

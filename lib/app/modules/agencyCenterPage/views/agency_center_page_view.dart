@@ -12,29 +12,35 @@ import '../../../common/components/easy_refresher.dart';
 import '../../newHomePage/views/widgets/task_card.dart';
 import '../controllers/agency_center_page_controller.dart';
 
-class AgencyCenterPageView extends GetView<AgencyCenterPageController> {
-  const AgencyCenterPageView({super.key});
+class AgencyCenterPageView extends StatelessWidget {
+  final String? tag;
+  const AgencyCenterPageView({super.key, this.tag});
+
+  AgencyCenterPageController get controller =>
+      Get.find<AgencyCenterPageController>(tag: tag);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: _setFloatingActionWidget(),
+      floatingActionButton: tag == null ? _setFloatingActionWidget() : null,
       body: Stack(
         children: [
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            child: ImageUtils(
-              imageUrl: Assets.home.homeBg.path,
-              width: AppScreenUtil.screenWidth,
+          if (tag == null) ...[
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              child: ImageUtils(
+                imageUrl: Assets.home.homeBg.path,
+                width: AppScreenUtil.screenWidth,
+              ),
             ),
-          ),
-          _setNavigationBar(),
+            _setNavigationBar(),
+          ],
           Positioned(
             left: 0,
             right: 0,
-            top: AppScreenUtil.navigationBarHeight,
+            top: tag == null ? AppScreenUtil.navigationBarHeight : 0,
             child: Column(children: [_setFilterWidget(), _buildTabs()]),
           ),
           _buildTaskCardsList(),
@@ -127,6 +133,7 @@ class AgencyCenterPageView extends GetView<AgencyCenterPageController> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.toW),
+        border: Border.all(color: AppColors.color_line, width: 0.4)
       ),
       padding: EdgeInsets.symmetric(horizontal: 16.toW),
       child: Row(
@@ -222,7 +229,7 @@ class AgencyCenterPageView extends GetView<AgencyCenterPageController> {
           ),
         );
       },
-    ).withMarginOnly(top: 110.toW + AppScreenUtil.navigationBarHeight);
+    ).withMarginOnly(top: 110.toW + (tag == null ? AppScreenUtil.navigationBarHeight : 0));
   }
 
   Widget _setFloatingActionWidget() {

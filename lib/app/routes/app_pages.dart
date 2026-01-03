@@ -10,6 +10,8 @@ import '../modules/agencyPage/bindings/agency_page_binding.dart';
 import '../modules/agencyPage/views/agency_page_view.dart';
 import '../modules/calendarPage/bindings/calendar_page_binding.dart';
 import '../modules/calendarPage/views/calendar_page_view.dart';
+import '../modules/caseDetailPage/bindings/case_detail_page_binding.dart';
+import '../modules/caseDetailPage/views/case_detail_page_view.dart';
 import '../modules/casePage/bindings/case_page_binding.dart';
 import '../modules/casePage/views/case_page_view.dart';
 import '../modules/chatPage/bindings/chat_page_binding.dart';
@@ -141,6 +143,11 @@ class AppPages {
       name: _Paths.CONTRACT_DETAIL_PAGE,
       page: () => const ContractDetailPageView(),
       binding: ContractDetailPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.CASE_DETAIL_PAGE,
+      page: () => const CaseDetailPageView(),
+      binding: CaseDetailPageBinding(),
     ),
   ];
 }

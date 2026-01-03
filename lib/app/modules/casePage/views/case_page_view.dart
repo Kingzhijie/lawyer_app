@@ -46,12 +46,12 @@ class CasePageView extends GetView<CasePageController> {
             margin: EdgeInsets.only(
               top: AppScreenUtil.navigationBarHeight + 48.toW,
             ),
-            child: Obx((){
+            child: Obx(() {
               if (controller.caseBaseInfoList.isEmpty) {
                 return EmptyContentWidget();
               }
 
-              return  MSEasyRefresher(
+              return MSEasyRefresher(
                 controller: controller.easyRefreshController,
                 onRefresh: () {
                   controller.onRefresh();
@@ -70,9 +70,12 @@ class CasePageView extends GetView<CasePageController> {
                     ),
                     itemBuilder: (context, index) {
                       var model = controller.caseBaseInfoList.value[index];
-                      return AddTaskItem(model: model);
+                      return AddTaskItem(model: model).withOnTap(() {
+                        controller.lookCaseDetail(model);
+                      });
                     },
-                  );;
+                  );
+                  ;
                 },
               );
             }),
@@ -100,12 +103,12 @@ class CasePageView extends GetView<CasePageController> {
               shape: BoxShape.circle,
               color: AppColors.color_white.withOpacity(0.9),
             ),
-            child: Obx((){
+            child: Obx(() {
               var homeController = getFindController<NewHomePageController>();
               return ClipOval(
                 child: ImageUtils(
                   imageUrl:
-                  homeController?.userModel.value?.avatar ??
+                      homeController?.userModel.value?.avatar ??
                       Assets.home.defaultUserIcon.path,
                   placeholderImagePath: Assets.home.defaultUserIcon.path,
                 ),
@@ -206,9 +209,8 @@ class CasePageView extends GetView<CasePageController> {
           ),
         ],
       ),
-    ).withOnTap((){
+    ).withOnTap(() {
       controller.createCaseAction();
     });
   }
-
 }
