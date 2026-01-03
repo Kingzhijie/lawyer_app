@@ -9,16 +9,16 @@ import 'image_text_button.dart';
 
 class EmptyContentWidget extends StatelessWidget {
   final String? content;
-  final double? bottom;
+  final double? top;
   final String? icon;
 
-  const EmptyContentWidget({super.key, this.content, this.bottom, this.icon});
+  const EmptyContentWidget({super.key, this.content, this.top, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.only(bottom: bottom ?? 100.toW),
+      padding: EdgeInsets.symmetric(vertical: top ?? 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

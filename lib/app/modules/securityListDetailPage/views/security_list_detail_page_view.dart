@@ -29,13 +29,11 @@ class SecurityListDetailPageView
           ),
           _buildTopBar(),
 
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [_buildCaseInfoCard(), _buildSecurityListSection()],
-              ),
-            ).withMarginOnly(top: AppScreenUtil.navigationBarHeight),
-          ),
+          SingleChildScrollView(
+            child: Column(
+              children: [_buildCaseInfoCard(), _buildSecurityListSection()],
+            ),
+          ).withMarginOnly(top: AppScreenUtil.navigationBarHeight)
         ],
       ),
     );

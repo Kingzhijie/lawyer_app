@@ -123,10 +123,8 @@ class _OverviewCard extends StatelessWidget {
     ).withOnTap((){
       switch (data.type) {
         case CaseTypeEnum.caseCount:
-          Get.toNamed(Routes.AGENCY_CENTER_PAGE);
         case CaseTypeEnum.agencyTask:
-          // TODO: Handle this case.
-          throw UnimplementedError();
+        Get.toNamed(Routes.AGENCY_CENTER_PAGE);
         case CaseTypeEnum.urgentTask:
           // TODO: Handle this case.
           throw UnimplementedError();

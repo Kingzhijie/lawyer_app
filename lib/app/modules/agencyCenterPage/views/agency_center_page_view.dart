@@ -4,9 +4,11 @@ import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
+import '../../../common/components/easy_refresher.dart';
 import '../../newHomePage/views/widgets/task_card.dart';
 import '../controllers/agency_center_page_controller.dart';
 
@@ -81,27 +83,44 @@ class AgencyCenterPageView extends GetView<AgencyCenterPageController> {
   Widget _setFilterWidget() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.toW, horizontal: 16.toW),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _setFilterItemWidget('当事人'),
-          _setFilterItemWidget('任务类型'),
-          Container(
-            width: 44.toW,
-            height: 44.toW,
-            alignment: Alignment.center,
-            child: ImageUtils(
-              imageUrl: Assets.home.searchIcon.path,
-              width: 22.toW,
-              height: 22.toW,
+      child: Obx(
+        () => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _setFilterItemWidget('当事人').withOnTap(() {
+              controller.chooseConcernedAction(0);
+            }),
+            _setFilterItemWidget(
+              controller.taskTypeModel.value?.name ?? '任务类型',
+              textColor:
+                  !ObjectUtils.isEmptyString(
+                    controller.taskTypeModel.value?.name,
+                  )
+                  ? AppColors.color_E6000000
+                  : AppColors.color_66000000,
+            ).withOnTap(() {
+              controller.chooseConcernedAction(1);
+            }),
+            Container(
+              width: 44.toW,
+              height: 44.toW,
+              alignment: Alignment.center,
+              child: ImageUtils(
+                imageUrl: Assets.home.searchIcon.path,
+                width: 22.toW,
+                height: 22.toW,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _setFilterItemWidget(String name) {
+  Widget _setFilterItemWidget(
+    String name, {
+    Color textColor = AppColors.color_66000000,
+  }) {
     return Container(
       width: 140.toW,
       height: 44.toW,
@@ -114,10 +133,7 @@ class AgencyCenterPageView extends GetView<AgencyCenterPageController> {
         children: [
           Text(
             name,
-            style: TextStyle(
-              color: AppColors.color_66000000,
-              fontSize: 14.toSp,
-            ),
+            style: TextStyle(color: textColor, fontSize: 14.toSp),
           ).withExpanded(),
           ImageUtils(
             imageUrl: Assets.common.careDownQs.path,
@@ -173,23 +189,38 @@ class AgencyCenterPageView extends GetView<AgencyCenterPageController> {
   }
 
   Widget _buildTaskCardsList() {
-    final items = List.generate(4, (index) => index);
-    return ListView.builder(
-      itemCount: items.length,
-      padding: EdgeInsets.only(top: 10.toW),
-      itemBuilder: (context, index) {
-        return TaskCard(
-          clickItemType: (type) {
-            if (type == 1) {
-              //关联用户
-              controller.linkUserAlert();
-            }
-            if (type == 0) {
-              //备注
-              controller.addRemarkMethod();
-            }
-          },
-        ).withMarginOnly(bottom: 12.toW);
+    return MSEasyRefresher(
+      controller: controller.easyRefreshController,
+      onRefresh: () {
+        controller.onRefresh();
+      },
+      onLoad: () {
+        controller.onLoadMore();
+      },
+      childBuilder: (context, physics) {
+        return Obx(
+          () => ListView.builder(
+            physics: physics,
+            itemCount: controller.caseTaskList.length,
+            padding: EdgeInsets.only(top: 10.toW),
+            itemBuilder: (context, index) {
+              var model = controller.caseTaskList.value[index];
+              return TaskCard(
+                model: model,
+                clickItemType: (type) {
+                  if (type == 1) {
+                    //关联用户
+                    controller.linkUserAlert();
+                  }
+                  if (type == 0) {
+                    //备注
+                    controller.addRemarkMethod(model);
+                  }
+                },
+              ).withMarginOnly(bottom: 12.toW);
+            },
+          ),
+        );
       },
     ).withMarginOnly(top: 110.toW + AppScreenUtil.navigationBarHeight);
   }
@@ -227,7 +258,7 @@ class AgencyCenterPageView extends GetView<AgencyCenterPageController> {
           ),
         ],
       ),
-    ).withOnTap((){
+    ).withOnTap(() {
       controller.addTaskAction();
     });
   }

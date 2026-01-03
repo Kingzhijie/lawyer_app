@@ -1,17 +1,26 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
 import '../../../../common/components/bottom_sheet_utils.dart';
+import '../../../../common/components/easy_refresher.dart';
 import '../../../../common/extension/widget_extension.dart';
+import '../../../../http/apis.dart';
+import '../../../../http/net/net_utils.dart';
+import '../../../../http/net/tool/error_handle.dart';
+import '../../../../utils/object_utils.dart';
+import '../../../casePage/models/case_base_info_model.dart';
 import 'add_task_item.dart';
 import 'choose_concerned_person_alert.dart';
 
 class ChooseCaseAlert extends StatefulWidget {
-  const ChooseCaseAlert({super.key});
+  final Function(CaseBaseInfoModel selectModel) chooseCaseCallBack;
+  const ChooseCaseAlert({super.key, required this.chooseCaseCallBack});
 
   @override
   State<ChooseCaseAlert> createState() => _ChooseCaseAlertState();
@@ -19,6 +28,79 @@ class ChooseCaseAlert extends StatefulWidget {
 
 class _ChooseCaseAlertState extends State<ChooseCaseAlert> {
   double viewTop = 114.toW;
+
+  List<CaseBaseInfoModel> caseBaseInfoList = [];
+  int pageNo = 1;
+  final EasyRefreshController easyRefreshController = EasyRefreshController(
+    controlFinishRefresh: true,
+    controlFinishLoad: true,
+  );
+
+  CaseBaseInfoModel? selectModel;
+
+  @override
+  void initState() {
+    super.initState();
+    getCaseListData(true);
+  }
+
+  ///获取数据
+  Future<void> getCaseListData(bool isRefresh) async {
+    Map<String, dynamic> parameters = {
+      'page': pageNo,
+      'pageSize': 10,
+      'status': null,
+    };
+    var result = await NetUtils.get(
+      Apis.caseBasicInfoList,
+      isLoading: false,
+      queryParameters: parameters,
+    );
+    if (result.code == NetCodeHandle.success) {
+      var list = (result.data['list'] as List)
+          .map((e) => CaseBaseInfoModel.fromJson(e))
+          .toList();
+      if (isRefresh) {
+        caseBaseInfoList = list;
+        finishRefresh();
+      } else {
+        caseBaseInfoList.addAll(list);
+      }
+      bool isNoMore = caseBaseInfoList.length >= result.data['total'];
+      delay(500, () {
+        finishLoad(isNoMore);
+      });
+      setState(() {});
+    } else {
+      finishRefresh();
+      finishLoad(true);
+    }
+  }
+
+  void onRefresh() async {
+    pageNo = 1;
+    await getCaseListData(true);
+  }
+
+  void onLoadMore() async {
+    pageNo += 1;
+    await getCaseListData(false);
+  }
+
+  /// 下拉刷新完成
+  void finishRefresh() {
+    easyRefreshController.finishRefresh();
+    easyRefreshController.resetFooter();
+  }
+
+  /// 上拉加载完成
+  void finishLoad(bool isLast) {
+    if (isLast) {
+      easyRefreshController.finishLoad(IndicatorResult.noMore);
+    } else {
+      easyRefreshController.finishLoad();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +114,7 @@ class _ChooseCaseAlertState extends State<ChooseCaseAlert> {
         ),
         child: Column(
           children: [
-            if (viewTop == 0)
-              SizedBox(height: AppScreenUtil.statusBarHeight),
+            if (viewTop == 0) SizedBox(height: AppScreenUtil.statusBarHeight),
             Container(
               height: 48.toW,
               alignment: Alignment.center,
@@ -95,21 +176,57 @@ class _ChooseCaseAlertState extends State<ChooseCaseAlert> {
                         fontSize: 16.toSp,
                       ),
                     ),
-                  ),
+                  ).withOnTap((){
+                    if (selectModel == null) {
+                      showToast('请选择案件');
+                      return;
+                    }
+                    Navigator.pop(context);
+                    widget.chooseCaseCallBack(selectModel!);
+                  }),
                 ],
               ),
             ),
             _setFilterWidget(),
-            ListView.builder(
-              itemCount: 10,
-                padding: EdgeInsets.symmetric(horizontal: 16.toW, vertical: 16.toW),
-                itemBuilder: (context, index) {
-              return AddTaskItem(type: TaskEnum.choose);
-            }).withExpanded()
+            MSEasyRefresher(
+              controller: easyRefreshController,
+              onRefresh: () {
+                onRefresh();
+              },
+              onLoad: () {
+                onLoadMore();
+              },
+              childBuilder: (context, physics) {
+                return ListView.builder(
+                  physics: physics,
+                  itemCount: caseBaseInfoList.length,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.toW,
+                    vertical: 16.toW,
+                  ),
+                  itemBuilder: (context, index) {
+                    CaseBaseInfoModel model = caseBaseInfoList[index];
+                    return AddTaskItem(
+                      type: TaskEnum.choose,
+                      model: model,
+                      isSelect: model.isSelect ?? false
+                    ).withOnTap((){
+                      caseBaseInfoList.forEach((e){
+                        e.isSelect = false;
+                      });
+                      setState(() {
+                        model.isSelect = true;
+                      });
+                      selectModel = model;
+                    });
+                  },
+                );
+              },
+            ).withExpanded(),
           ],
         ),
-      ).withOnTap((){}),
-    ).withOnTap((){
+      ).withOnTap(() {}),
+    ).withOnTap(() {
       Get.back();
     });
   }
@@ -120,7 +237,7 @@ class _ChooseCaseAlertState extends State<ChooseCaseAlert> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _setFilterItemWidget('当事人').withOnTap((){
+          _setFilterItemWidget('当事人').withOnTap(() {
             _chooseConcernedAction();
           }),
           _setFilterItemWidget('任务类型'),
@@ -177,5 +294,4 @@ class _ChooseCaseAlertState extends State<ChooseCaseAlert> {
       contentWidget: ChooseConcernedPersonAlert(),
     );
   }
-
 }

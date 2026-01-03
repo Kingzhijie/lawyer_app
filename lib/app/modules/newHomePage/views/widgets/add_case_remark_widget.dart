@@ -54,7 +54,9 @@ class AddCaseRemarkWidget extends StatelessWidget {
                   ),
                 ),
                 onChanged: (text) {},
-                onSubmitted: (text) {},
+                onSubmitted: (text) {
+                  sendAction(textEditingController.text);
+                },
               ),
             ),
             SizedBox(width: 12.toW),

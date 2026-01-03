@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/components/easy_refresher.dart';
+import 'package:lawyer_app/app/common/components/empty_content_widget.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/modules/tabPage/controllers/tab_page_controller.dart';
@@ -57,7 +58,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
     );
   }
 
-  Widget _setContentWidget(ScrollPhysics physics){
+  Widget _setContentWidget(ScrollPhysics physics) {
     return SingleChildScrollView(
       physics: physics,
       child: Column(
@@ -75,7 +76,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
               SizedBox(height: 12.toW),
             ],
           ).withMarginOnly(left: 16.toW, right: 16.toW),
-          _buildTaskCardsList(),
+          Obx(()=>_buildTaskCardsList()),
         ],
       ),
     );
@@ -191,9 +192,13 @@ class NewHomePageView extends GetView<NewHomePageController> {
   }
 
   Widget _buildTabs() {
-    final tabs = ['我的待办 (12)', '我参与的 (12)', '已逾期 (12)', '未逾期 (12)'];
     return Obx(() {
       final current = controller.tabIndex.value;
+      final tabs = [
+        '我的待办 (${controller.homeStatistics.value?.wddbCount ?? 0})',
+        '我参与的 (${controller.homeStatistics.value?.myjoinTaskCount ?? 0})',
+        '已逾期 (${controller.homeStatistics.value?.yuqiTaskCount ?? 0})',
+      ];
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -234,28 +239,32 @@ class NewHomePageView extends GetView<NewHomePageController> {
   }
 
   Widget _buildTaskCardsList() {
-    final items = List.generate(4, (index) => index);
+    if (controller.caseTaskList.isEmpty) {
+      return EmptyContentWidget(content: '暂无数据', top: 100.toW);
+    }
     return ListView.builder(
-      itemCount: items.length,
+      itemCount: controller.caseTaskList.length,
       padding: EdgeInsets.zero,
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
+        var model = controller.caseTaskList.value[index];
         return TaskCard(
-              clickItemType: (type) {
-                if (type == 1) {
-                  //关联用户
-                  controller.linkUserAlert();
-                }
-                if (type == 0) {
-                  //备注
-                  controller.addRemarkMethod();
-                }
-              },
-            )
+          model: model,
+          clickItemType: (type) {
+            if (type == 1) {
+              //关联用户
+              controller.linkUserAlert(model);
+            }
+            if (type == 0) {
+              //备注
+              controller.addRemarkMethod(model);
+            }
+          },
+        )
             .withOnTap(() {
-              controller.lookContractDetailPage();
-            })
+          controller.lookContractDetailPage();
+        })
             .withMarginOnly(bottom: 12.toW);
       },
     );

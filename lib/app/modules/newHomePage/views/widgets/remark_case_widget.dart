@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/components/image_text_button.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
+import '../../models/case_task_model.dart';
+
 class RemarkCaseWidget extends StatelessWidget {
-  const RemarkCaseWidget({super.key});
+  final List<Notes>? notes;
+  const RemarkCaseWidget({super.key, this.notes});
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +53,12 @@ class RemarkCaseWidget extends StatelessWidget {
                 ],
               ),
               ListView.builder(
-                itemCount: 3,
+                itemCount: notes?.length ?? 0,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
+                  var model = notes![index];
                   bool isHiddenLine = index == 3 - 1;
                   return Container(
                     decoration: BoxDecoration(
@@ -72,7 +77,7 @@ class RemarkCaseWidget extends StatelessWidget {
                       children: [
                         RichText(
                           text: TextSpan(
-                            text: '何佳丽',
+                            text: model.createBy ??'',
                             style: TextStyle(
                               color: AppColors.color_99000000,
                               fontSize: 10.toSp,
@@ -80,7 +85,7 @@ class RemarkCaseWidget extends StatelessWidget {
                             ),
                             children: [
                               TextSpan(
-                                text: '   2025-12-10 12:10',
+                                text: '   ${DateTimeUtils.formatTimestamp(model?.time ?? 0)}',
                                 style: TextStyle(
                                   color: AppColors.color_42000000,
                                   fontSize: 10.toSp,
@@ -92,7 +97,7 @@ class RemarkCaseWidget extends StatelessWidget {
                         ),
                         Height(3.toW),
                         Text(
-                          '打电话和大家看看,卡老师的到了',
+                          model.content ?? '',
                           style: TextStyle(
                             color: AppColors.color_E6000000,
                             fontSize: 10.toSp,

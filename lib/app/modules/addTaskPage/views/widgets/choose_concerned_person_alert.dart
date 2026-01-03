@@ -8,8 +8,18 @@ import '../../../../common/extension/widget_extension.dart';
 import '../../../../utils/image_utils.dart';
 import '../../../../utils/screen_utils.dart';
 
+
+class ChooseTypeModel {
+  String? name;
+  int? id;
+  ChooseTypeModel({this.name, this.id});
+}
+
 class ChooseConcernedPersonAlert extends StatefulWidget {
-  const ChooseConcernedPersonAlert({super.key});
+  final List<ChooseTypeModel>? models;
+  final String? title;
+  final Function(ChooseTypeModel? model)? chooseAction;
+  const ChooseConcernedPersonAlert({super.key, this.models, this.title, this.chooseAction});
 
   @override
   State<ChooseConcernedPersonAlert> createState() =>
@@ -20,8 +30,13 @@ class _ChooseConcernedPersonAlertState
     extends State<ChooseConcernedPersonAlert> {
   double viewTop = 114.toW;
 
-  List<String> datas = ['风没血', '李鹏', '赵雷', '周杰伦', '小明', '邓紫棋'];
-  List<String> selects = [];
+  ChooseTypeModel? selectModel;
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +94,7 @@ class _ChooseConcernedPersonAlertState
                     ),
                   ),
                   Text(
-                    '选择当事人',
+                    widget.title ?? '请选择',
                     style: TextStyle(
                       color: AppColors.color_E6000000,
                       fontSize: 16.toSp,
@@ -97,18 +112,23 @@ class _ChooseConcernedPersonAlertState
                         fontSize: 16.toSp,
                       ),
                     ),
-                  ),
+                  ).withOnTap((){
+                    if (widget.chooseAction!=null){
+                      widget.chooseAction!(selectModel);
+                    }
+                    Navigator.pop(context);
+                  }),
                 ],
               ),
             ),
             ListView.builder(
-              itemCount: datas.length,
+              itemCount: widget.models?.length ?? 0,
               padding: EdgeInsets.symmetric(
                 horizontal: 16.toW,
                 vertical: 16.toW,
               ),
               itemBuilder: (context, index) {
-                var name = datas[index];
+                var model = widget.models![index];
                 return Container(
                   height: 54.toW,
                   decoration: BoxDecoration(
@@ -117,16 +137,16 @@ class _ChooseConcernedPersonAlertState
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(name, style: TextStyle(color: AppColors.color_E6000000, fontSize: 16.toSp),),
-                      if (selects.contains(name))
+                      Text(model.name ?? '', style: TextStyle(color: AppColors.color_E6000000, fontSize: 16.toSp),),
+                      if (selectModel == model)
                       Icon(Icons.check, color: AppColors.theme, size: 20.toW)
                     ],
                   ),
                 ).withOnTap((){
-                  if (selects.contains(name)) {
-                    selects.remove(name);
+                  if (selectModel == model) {
+                    selectModel = null;
                   } else {
-                    selects.add(name);
+                    selectModel = model;
                   }
                   setState(() {});
                 });
@@ -134,7 +154,7 @@ class _ChooseConcernedPersonAlertState
             ).withExpanded(),
           ],
         ),
-      ).withOnTap(() {}),
+      ),
     ).withOnTap(() {
       Get.back();
     });

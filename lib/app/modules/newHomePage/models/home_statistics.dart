@@ -12,7 +12,7 @@ class HomeStatistics {
       this.urgentTaskCount, 
       this.nonLitigationTaskCount, 
       this.preservationListCount, 
-      this.abnormalTaskCount,});
+      this.abnormalTaskCount, this.myjoinTaskCount, this.yuqiTaskCount});
 
   HomeStatistics.fromJson(dynamic json) {
     caseCount = json['caseCount'];
@@ -21,6 +21,8 @@ class HomeStatistics {
     nonLitigationTaskCount = json['nonLitigationTaskCount'];
     preservationListCount = json['preservationListCount'];
     abnormalTaskCount = json['abnormalTaskCount'];
+    myjoinTaskCount = json['myjoinTaskCount'];
+    yuqiTaskCount = json['yuqiTaskCount'];
   }
   num? caseCount;
   num? pendingTaskCount;
@@ -28,24 +30,33 @@ class HomeStatistics {
   num? nonLitigationTaskCount;
   num? preservationListCount;
   num? abnormalTaskCount;
+  num? myjoinTaskCount;
+  num? yuqiTaskCount;
+  num? wddbCount;
 HomeStatistics copyWith({  num? caseCount,
   num? pendingTaskCount,
   num? urgentTaskCount,
   num? nonLitigationTaskCount,
   num? preservationListCount,
   num? abnormalTaskCount,
+  num? yuqiTaskCount,
+  num? myjoinTaskCount
 }) => HomeStatistics(  caseCount: caseCount ?? this.caseCount,
   pendingTaskCount: pendingTaskCount ?? this.pendingTaskCount,
   urgentTaskCount: urgentTaskCount ?? this.urgentTaskCount,
   nonLitigationTaskCount: nonLitigationTaskCount ?? this.nonLitigationTaskCount,
   preservationListCount: preservationListCount ?? this.preservationListCount,
   abnormalTaskCount: abnormalTaskCount ?? this.abnormalTaskCount,
+  yuqiTaskCount: yuqiTaskCount ?? this.yuqiTaskCount,
+  myjoinTaskCount: myjoinTaskCount ?? this.myjoinTaskCount,
 );
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['caseCount'] = caseCount;
     map['pendingTaskCount'] = pendingTaskCount;
     map['urgentTaskCount'] = urgentTaskCount;
+    map['myjoinTaskCount'] = myjoinTaskCount;
+    map['yuqiTaskCount'] = yuqiTaskCount;
     map['nonLitigationTaskCount'] = nonLitigationTaskCount;
     map['preservationListCount'] = preservationListCount;
     map['abnormalTaskCount'] = abnormalTaskCount;

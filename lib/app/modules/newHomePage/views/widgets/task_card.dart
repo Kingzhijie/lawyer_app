@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/widgets/cooperation_person_widget.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
 import '../../controllers/new_home_page_controller.dart';
+import '../../models/case_task_model.dart';
 import 'remark_case_widget.dart';
 
 class TaskCard extends StatelessWidget {
   final Function(int type) clickItemType; //0: 备注, 1:关联用户
-  const TaskCard({super.key, required this.clickItemType});
+  final CaseTaskModel? model;
+
+  const TaskCard({super.key, required this.clickItemType, this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +43,16 @@ class TaskCard extends StatelessWidget {
               Row(
                 children: [
                   ImageUtils(
-                    imageUrl: Assets.home.baoquanIcon.path,
+                    imageUrl: model?.logo,
                     width: 32.toW,
                     height: 32.toW,
+                    circularRadius: 6.toW,
                   ),
                   SizedBox(width: 8.toW),
                   ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: 170.toW),
                     child: Text(
-                      '缴纳诉讼费',
+                      model?.title ?? '',
                       maxLines: 1,
                       style: TextStyle(
                         fontSize: 16.toSp,
@@ -56,42 +62,53 @@ class TaskCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 6.toW),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 6.toW,
-                      vertical: 3.toW,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFFDECEE),
-                      borderRadius: BorderRadius.circular(4.toW),
-                    ),
-                    child: Text(
-                      '紧急',
-                      style: TextStyle(
-                        fontSize: 10.toSp,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFFE34D59),
+                  if (ObjectUtils.boolValue(model?.isEmergency))
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 6.toW,
+                        vertical: 3.toW,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFFDECEE),
+                        borderRadius: BorderRadius.circular(4.toW),
+                      ),
+                      child: Text(
+                        '紧急',
+                        style: TextStyle(
+                          fontSize: 10.toSp,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFFE34D59),
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
               SizedBox(height: 16.toW),
-              _infoRow('案件：', '张三诉讼李四合同纠纷案'),
-              _infoRow('截止：', '2025-12-31'),
-              _infoRow('承办人（法官）：', '李世斌'),
-              _infoRow('电话：', '13759200942'),
+              _infoRow('案件：', '${model?.caseName ?? ''}'),
+              if (model?.dueAt != null)
+                _infoRow(
+                  '截止：',
+                  '${DateTimeUtils.formatTimestamp(model?.dueAt ?? 0)}',
+                ),
+              if (!ObjectUtils.isEmptyString(model?.handler))
+                _infoRow('承办人（法官）：', model?.handler ?? ''),
+              if (model?.handlerPhone != null)
+                _infoRow('电话：', model?.handlerPhone ?? ''),
               SizedBox(height: 8.toW),
               Row(
                 children: [
-                  CooperationPersonWidget(linkUserAction: (){
-                    clickItemType(1);
-                  },).withExpanded(),
+                  CooperationPersonWidget(
+                    relateUsers: model?.relateUsers,
+                    linkUserAction: () {
+                      clickItemType(1);
+                    },
+                  ).withExpanded(),
                   Width(30.toW),
                   _smallButton('备注'),
                 ],
               ),
-              RemarkCaseWidget()
+              if (!ObjectUtils.isEmpty(model?.notes))
+              RemarkCaseWidget(notes: model?.notes),
             ],
           ).withPaddingAll(14.toW),
         ],
@@ -99,7 +116,7 @@ class TaskCard extends StatelessWidget {
     );
   }
 
-  List<Widget> setChildren(){
+  List<Widget> setChildren() {
     return [
       Positioned(
         left: 0,
@@ -131,7 +148,9 @@ class TaskCard extends StatelessWidget {
         top: 0,
         right: 0,
         child: ImageUtils(
-          imageUrl: Assets.home.yuangaoNoticeBg.path,
+          imageUrl: model?.partyRole == 1
+              ? Assets.home.yuangaoNoticeBg.path
+              : Assets.home.beigaoNoticeBg.path,
           width: 300.toW,
           fit: BoxFit.contain,
         ),
@@ -140,7 +159,9 @@ class TaskCard extends StatelessWidget {
         top: 0,
         right: 0,
         child: ImageUtils(
-          imageUrl: Assets.home.noticeIcon.path,
+          imageUrl: ObjectUtils.boolValue(model?.isAddCalendar)
+              ? Assets.home.noticeNormalIcon.path
+              : Assets.home.unNoticeIcon.path,
           width: 30.toW,
           height: 30.toW,
         ),
@@ -149,7 +170,9 @@ class TaskCard extends StatelessWidget {
         top: 16.toW,
         right: 13.toW,
         child: ImageUtils(
-          imageUrl: Assets.home.yuangaoIcon.path,
+          imageUrl: model?.partyRole == 1
+              ? Assets.home.yuangaoIcon.path
+              : Assets.home.beigaoIcon.path,
           width: 69.toW,
         ),
       ),

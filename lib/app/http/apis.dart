@@ -26,6 +26,20 @@ class Apis {
   ///案件基本信息列表
   static String caseBasicInfoList = '/legal/case-basic-info/page';
 
+  ///获取案件任务分页
+  static String getTaskPage = '/legal/task/page';
+
+  ///获取案件数量
+  static String getTaskCount = '/legal/task/get-count';
+
+  ///创建案件任务
+  static String createCaseTask = '/legal/task/create';
+
+  ///设置任务的备注
+  static String setTaskRemark = '/legal/task/remark';
+
+
+
 
 
 }

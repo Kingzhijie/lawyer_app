@@ -60,7 +60,11 @@ class CasePageController extends GetxController {
       isShowCloseIcon: true,
       height: AppScreenUtil.screenHeight - 217.toW,
       isSetBottomInset: false,
-      contentWidget: CreateCaseWidget(createCaseSuccess: () {}),
+      contentWidget: CreateCaseWidget(
+        createCaseSuccess: () {
+          getCaseListData(true);
+        },
+      ),
     );
   }
 
@@ -87,11 +91,10 @@ class CasePageController extends GetxController {
         caseBaseInfoList.value = list;
         finishRefresh();
       } else {
-        caseBaseInfoList.addAll(list);
+        caseBaseInfoList.value.addAll(list);
       }
-      bool isNoMore =
-          caseBaseInfoList.length >= result.data['total'];
-      delay(500, (){
+      bool isNoMore = caseBaseInfoList.length >= result.data['total'];
+      delay(500, () {
         finishLoad(isNoMore);
       });
     } else {
@@ -116,7 +119,6 @@ class CasePageController extends GetxController {
     easyRefreshController.resetFooter();
   }
 
-
   /// 上拉加载完成
   void finishLoad(bool isLast) {
     if (isLast) {
@@ -125,6 +127,4 @@ class CasePageController extends GetxController {
       easyRefreshController.finishLoad();
     }
   }
-
-
 }

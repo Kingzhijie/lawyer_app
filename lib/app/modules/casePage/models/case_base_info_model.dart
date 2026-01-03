@@ -64,6 +64,7 @@ class CaseBaseInfoModel {
   num? emergencyTaskCount;
   List<RelateUsers>? relateUsers;
   List<CasePartyResVos>? casePartyResVOS;
+  bool? isSelect;
 
   CaseBaseInfoModel copyWith({
     num? id,

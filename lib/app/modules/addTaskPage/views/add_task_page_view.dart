@@ -297,13 +297,14 @@ class AddTaskPageView extends GetView<AddTaskPageController> {
           ),
           SizedBox(height: 12.toW),
           Obx(() {
-            if (controller.selectedCase.value == null) {
+            if (controller.selectModel.value == null) {
               return _buildAddCaseButton();
             } else {
               return AddTaskItem(
                 type: TaskEnum.close,
+                model: controller.selectModel.value,
                 closeCardCallBack: () {
-                  controller.selectedCase.value = null;
+                  controller.selectModel.value = null;
                 },
               );
             }

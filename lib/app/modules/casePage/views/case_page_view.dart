@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 
 import '../../../../gen/assets.gen.dart';
 import '../../../common/components/common_app_bar.dart';
@@ -98,9 +100,17 @@ class CasePageView extends GetView<CasePageController> {
               shape: BoxShape.circle,
               color: AppColors.color_white.withOpacity(0.9),
             ),
-            child: ClipOval(
-              child: ImageUtils(imageUrl: Assets.home.defaultUserIcon.path),
-            ),
+            child: Obx((){
+              var homeController = getFindController<NewHomePageController>();
+              return ClipOval(
+                child: ImageUtils(
+                  imageUrl:
+                  homeController?.userModel.value?.avatar ??
+                      Assets.home.defaultUserIcon.path,
+                  placeholderImagePath: Assets.home.defaultUserIcon.path,
+                ),
+              );
+            }),
           ).withOnTap(() {
             controller.openMyPageDrawer();
           }),

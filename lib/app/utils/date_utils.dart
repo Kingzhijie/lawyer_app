@@ -304,6 +304,15 @@ class DateTimeUtils {
     return DateFormat(format).parse(data);
   }
 
+  ///timestamp毫秒,
+  static String formatTimestamp(num timestamp, {String format = "yyyy-MM-DD"}) {
+    // 转换为 DateTime
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt());
+    // 格式化为字符串
+    String formattedDate = DateFormat(format).format(dateTime);
+    return formattedDate;
+  }
+
   ///获取当前日期返回DateTime
   static DateTime getNowDateTime() {
     return DateTime.now();
