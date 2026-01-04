@@ -155,6 +155,18 @@ class NetUtils {
     );
   }
 
+  /// 上传文件媒体, 等（使用Dio直接上传）
+  static Future<String?> uploadSingleFile(String filePath) async {
+    LoadingTool.showLoading();
+    FormData? formData;
+    final MultipartFile multipartFile = await MultipartFile.fromFile(
+      filePath,
+    );
+    formData = FormData.fromMap({'file': multipartFile});
+    logPrint('上传其他类型的文件');
+    return _uploadMethod(formData);
+  }
+
   /// 上传单张图片（使用Dio直接上传）
   static Future<String?> uploadSingleImage(
     String filePath, {
@@ -164,7 +176,6 @@ class NetUtils {
   }) async {
     try {
       LoadingTool.showLoading();
-      final dio = DioUtils.instance.dio;
       FormData? formData;
 
       // 移动端原有逻辑
@@ -183,64 +194,28 @@ class NetUtils {
             filename: '${DateTime.now().millisecond}_compressed.jpg',
             contentType: MediaType('image', 'jpeg'),
           );
-          formData = FormData.fromMap({
-            'file': multipartFile,
-          });
+          formData = FormData.fromMap({'file': multipartFile});
         }
       } else {
-        if (ObjectUtils.isImage(filePath)) {
-          //图片
-          final fileBytes = await FlutterImageCompress.compressWithFile(
-            filePath,
-            quality: 100,
-            minWidth: 1080,
-            minHeight: 1080,
-            format: CompressFormat.jpeg,
+        //图片
+        final fileBytes = await FlutterImageCompress.compressWithFile(
+          filePath,
+          quality: 100,
+          minWidth: 1080,
+          minHeight: 1080,
+          format: CompressFormat.jpeg,
+        );
+        if (fileBytes != null) {
+          final MultipartFile multipartFile = MultipartFile.fromBytes(
+            fileBytes,
+            filename: '${DateTime.now().millisecond}_compressed.jpg',
+            contentType: MediaType('image', 'jpeg'),
           );
-          if (fileBytes != null) {
-            final MultipartFile multipartFile = MultipartFile.fromBytes(
-              fileBytes,
-              filename: '${DateTime.now().millisecond}_compressed.jpg',
-              contentType: MediaType('image', 'jpeg'),
-            );
-            formData = FormData.fromMap({
-              'file': multipartFile,
-            });
-          }
-        } else {
-          final MultipartFile multipartFile = await MultipartFile.fromFile(filePath);
-          formData = FormData.fromMap({
-            'file': multipartFile,
-          });
-          logPrint('上传其他类型的文件');
+          formData = FormData.fromMap({'file': multipartFile});
         }
       }
+      return _uploadMethod(formData);
 
-      if (formData == null) {
-        return null;
-      }
-      final response = await dio.post(
-        DioConfig.baseURL + Apis.uploadSingleImage,
-        data: formData,
-        onSendProgress: (int sent, int total) {
-          final progress = (sent / total * 100).toStringAsFixed(0);
-          logPrint('上传进度: $progress%');
-        },
-      );
-      LoadingTool.dismissLoading();
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data != null) {
-          if (data['data'] != null) {
-            logPrint("上传成功: " + data.toString());
-            final dataImage = data['data'].toString();
-            return dataImage;
-          }
-        }
-      } else {
-        showToast('上传失败');
-      }
-      return null;
     } catch (e) {
       LoadingTool.dismissLoading();
       logPrint('图片上传失败: $e');
@@ -249,54 +224,37 @@ class NetUtils {
     }
   }
 
-  /// 上传音频文件
-  static Future<Map<String, dynamic>?> uploadAudio(String filePath) async {
-    try {
-      LoadingTool.showLoading();
-      final dio = DioUtils.instance.dio;
-
-      final formData = FormData.fromMap({
-        'audio': await MultipartFile.fromFile(
-          filePath,
-          filename: 'audio_${DateTime.now().millisecondsSinceEpoch}.m4a',
-          contentType: MediaType('audio', 'm4a'),
-        ),
-      });
-
-      final response = await dio.post(
-        DioConfig.baseURL + Apis.uploadAudio,
-        data: formData,
-        onSendProgress: (int sent, int total) {
-          final progress = (sent / total * 100).toStringAsFixed(0);
-          logPrint('音频上传进度: $progress%');
-        },
-      );
-
-      LoadingTool.dismissLoading();
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data != null) {
-          if (data['data'] != null) {
-            logPrint("上传音频成功: ${data.toString()}");
-            final dataAudio = data['data'];
-            if (dataAudio['audioUrl'] != null) {
-              return {
-                'audioUrl': dataAudio['audioUrl'],
-                'audioId': dataAudio['audioId'],
-              };
-            }
-          }
-        }
-      } else {
-        showToast('上传失败');
-      }
-      return null;
-    } catch (e) {
-      LoadingTool.dismissLoading();
-      logPrint('音频上传失败: $e');
-      showToast('上传失败');
+  ///上传
+  static Future<String?> _uploadMethod(FormData? formData) async {
+    if (formData == null) {
       return null;
     }
+    final dio = DioUtils.instance.dio;
+    final response = await dio.post(
+      DioConfig.baseURL + Apis.uploadSingleImage,
+      data: formData,
+      options: Options(
+        receiveTimeout: const Duration(seconds: 60), // 上传文件需要更长的接收超时时间
+      ),
+      onSendProgress: (int sent, int total) {
+        final progress = (sent / total * 100).toStringAsFixed(0);
+        logPrint('上传进度: $progress%');
+      },
+    );
+    LoadingTool.dismissLoading();
+    if (response.statusCode == 200) {
+      final data = response.data;
+      if (data != null) {
+        if (data['data'] != null) {
+          logPrint("上传成功: " + data.toString());
+          final dataImage = data['data'].toString();
+          return dataImage;
+        }
+      }
+    } else {
+      showToast('上传失败');
+    }
+    return null;
   }
+
 }

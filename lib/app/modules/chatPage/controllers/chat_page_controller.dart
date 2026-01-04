@@ -572,6 +572,11 @@ class ChatPageController extends GetxController {
             logPrint('文件大小: ${file.size} bytes');
             logPrint('文件路径: ${file.path}');
             logPrint('文件扩展名: ${file.extension}');
+
+            NetUtils.uploadSingleFile(file.path!).then((result){
+              logPrint('result====$result');
+            });
+
           }
         } catch (e) {
           logPrint('选取错误===$e');
@@ -584,14 +589,14 @@ class ChatPageController extends GetxController {
   void getSystemConfig(){
     NetUtils.get(Apis.systemConfig).then((result){
       if (result.code == NetCodeHandle.success) {
-        var model = ChatSystemConfig.fromJson(result.data ?? {});
-        getAgentUIConfig(model.id);
+        var id = result.data?['sys_def_agent'];
+        getAgentUIConfig(id);
       }
     });
   }
 
   ///获取Ai智能图UI配置
-  void getAgentUIConfig(num? id){
+  void getAgentUIConfig(id){
     NetUtils.get(Apis.agentUIConfig, queryParameters: {'id': id}, isLoading: false).then((result){
       if (result.code == NetCodeHandle.success) {
         var model = ChatAgentUiConfig.fromJson(result.data ?? {});

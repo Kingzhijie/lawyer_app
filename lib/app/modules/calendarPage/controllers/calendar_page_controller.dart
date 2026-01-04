@@ -20,7 +20,7 @@ class CalendarPageController extends GetxController {
   final Rx<DateTime> currentDisplayMonth = DateTime.now().obs;
 
   /// 日历是否展开
-  final RxBool isCalendarExpanded = true.obs;
+  final RxBool isCalendarExpanded = false.obs; // 初始状态改为收起
 
   /// 有事件的日期列表（示例数据）
   /// 根据UI图，17、18（今日）、19、20有事件
@@ -35,7 +35,7 @@ class CalendarPageController extends GetxController {
     final now = DateTime.now();
     final currentMonth = now.month;
     final currentYear = now.year;
-    
+
     // 只设置当前月份的17、18、19、20号
     eventDates.value = [
       DateTime(currentYear, currentMonth, 17),
@@ -48,9 +48,17 @@ class CalendarPageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    calendarController = AdvancedCalendarController.today();
-    calendarController.addListener(_onCalendarChanged);
     _initEventDates();
+
+    // 初始化日历控制器，设置为今天
+    final today = DateTime.now();
+    calendarController = AdvancedCalendarController.today();
+
+    // 确保初始选中日期是今天
+    selectedDate.value = today;
+    currentDisplayMonth.value = DateTime(today.year, today.month, 1);
+
+    calendarController.addListener(_onCalendarChanged);
   }
 
   @override
@@ -76,7 +84,6 @@ class CalendarPageController extends GetxController {
     currentDisplayMonth.value = DateTime(monthDate.year, monthDate.month, 1);
   }
 
-
   /// 选择日期
   void selectDate(DateTime date) {
     calendarController.value = date;
@@ -85,10 +92,12 @@ class CalendarPageController extends GetxController {
 
   /// 判断日期是否有事件
   bool hasEvent(DateTime date) {
-    return eventDates.any((eventDate) =>
-        eventDate.year == date.year &&
-        eventDate.month == date.month &&
-        eventDate.day == date.day);
+    return eventDates.any(
+      (eventDate) =>
+          eventDate.year == date.year &&
+          eventDate.month == date.month &&
+          eventDate.day == date.day,
+    );
   }
 
   /// 切换日历展开/收起状态
@@ -103,12 +112,14 @@ class CalendarPageController extends GetxController {
 
   void addRemarkAction() {
     textEditingController.text = '';
-    BottomSheetUtils.show(currentContext,
-        isShowCloseIcon: false,
-        radius: 12.toW,
-        contentWidget: AddCaseRemarkWidget(sendAction: (text){
-
-        },textEditingController: textEditingController));
+    BottomSheetUtils.show(
+      currentContext,
+      isShowCloseIcon: false,
+      radius: 12.toW,
+      contentWidget: AddCaseRemarkWidget(
+        sendAction: (text) {},
+        textEditingController: textEditingController,
+      ),
+    );
   }
-
 }
