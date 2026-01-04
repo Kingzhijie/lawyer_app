@@ -1,13 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_detail_model.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 
 class CaseBaseInfoWidget extends StatelessWidget {
-  const CaseBaseInfoWidget({super.key});
+  final CaseDetailModel caseDetail;
+  const CaseBaseInfoWidget({super.key, required this.caseDetail});
 
   @override
   Widget build(BuildContext context) {
+    var caseTypeText = '未知';
+    switch (caseDetail.caseBase!.caseType) {
+      case 1:
+        caseTypeText = '行政';
+        break;
+      case 2:
+        caseTypeText = '民事';
+        break;
+      case 3:
+        caseTypeText = '刑事';
+        break;
+      default:
+    }
+    final roles = caseDetail.caseBase!.casePartyResVos ?? [];
+    var roleText = '';
+    for (var item in roles) {
+      if (item.name != null && item.name!.isNotEmpty) {
+        roleText += '${item.name}(${getRuleText(item.partyRole ?? 0)})';
+      }
+    }
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW),
       decoration: BoxDecoration(
@@ -32,7 +54,6 @@ class CaseBaseInfoWidget extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 8.toW),
             child: Row(
               children: [
-                // 质保标签
                 Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: 8.toW,
@@ -43,7 +64,7 @@ class CaseBaseInfoWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4.toW),
                   ),
                   child: Text(
-                    '质保',
+                    caseDetail.caseBase?.casePartyRole == 2 ? '原告' : '被告',
                     style: TextStyle(
                       fontSize: 12.toSp,
                       color: Colors.white,
@@ -72,7 +93,7 @@ class CaseBaseInfoWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4.toW),
                   ),
                   child: Text(
-                    '行政',
+                    caseTypeText,
                     style: TextStyle(
                       fontSize: 12.toSp,
                       color: AppColors.color_99000000,
@@ -105,17 +126,35 @@ class CaseBaseInfoWidget extends StatelessWidget {
           ),
           SizedBox(height: 8.toW),
           // 案件详细信息
-          _buildInfoRow('案号:', '2023粤0105民初1234号'),
+          _buildInfoRow('案号:', caseDetail.caseBase?.caseNumber ?? '-'),
           SizedBox(height: 12.toW),
-          _buildInfoRow('案由:', '合同纠纷'),
+          _buildInfoRow(
+            '案由:',
+            caseDetail.caseBase?.caseReason != null &&
+                    caseDetail.caseBase!.caseReason!.isNotEmpty
+                ? caseDetail.caseBase!.caseReason!
+                : '-',
+          ),
           SizedBox(height: 12.toW),
-          _buildInfoRow('受理法院:', '广州市天河区人民法院'),
+          _buildInfoRow(
+            '受理法院:',
+            caseDetail.caseBase?.receivingUnit != null &&
+                    caseDetail.caseBase!.receivingUnit!.isNotEmpty
+                ? caseDetail.caseBase!.receivingUnit!
+                : '-',
+          ),
           SizedBox(height: 12.toW),
-          _buildInfoRow('当事人:', '张三(原告) 李四(被告)'),
+          _buildInfoRow('当事人:', roleText),
           SizedBox(height: 12.toW),
-          _buildInfoRow('承办人:', '李林顿'),
+          _buildInfoRow(
+            '承办人:',
+            caseDetail.caseBase?.handler != null &&
+                    caseDetail.caseBase!.handler!.isNotEmpty
+                ? caseDetail.caseBase!.handler!
+                : '-',
+          ),
           SizedBox(height: 12.toW),
-          _buildInfoRow('电话:', '13754398543'),
+          _buildInfoRow('电话:', caseDetail.caseBase?.handlerPhone ?? '-'),
         ],
       ),
     );
@@ -141,5 +180,24 @@ class CaseBaseInfoWidget extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String getRuleText(int rule) {
+    switch (rule) {
+      case 1:
+        return '原告';
+      case 2:
+        return '被告';
+      case 3:
+        return '第三人';
+      case 4:
+        return '申请人';
+      case 5:
+        return '被申请人';
+      case 6:
+        return '委托人';
+      default:
+        return '未知';
+    }
   }
 }

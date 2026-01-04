@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/doc_list_model.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
+import 'package:lawyer_app/gen/assets.gen.dart';
 
 class CaseRelatedCertificateWidget extends StatelessWidget {
-  const CaseRelatedCertificateWidget({super.key});
+  final List<DocListModel> docList;
+  const CaseRelatedCertificateWidget({super.key, required this.docList});
 
   @override
   Widget build(BuildContext context) {
-    // 模拟文书数据
-    final documents = [
-      {'title': '起诉状', 'updateTime': '2026-08-12'},
-      {'title': '起诉状', 'updateTime': '2026-08-12'},
-    ];
-
+    final documents = docList.take(2).toList();
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW),
       padding: EdgeInsets.all(16.toW),
@@ -66,10 +67,7 @@ class CaseRelatedCertificateWidget extends StatelessWidget {
             separatorBuilder: (context, index) => SizedBox(height: 12.toW),
             itemBuilder: (context, index) {
               final doc = documents[index];
-              return _buildDocumentItem(
-                doc['title'] as String,
-                doc['updateTime'] as String,
-              );
+              return _buildDocumentItem(doc);
             },
           ),
         ],
@@ -77,7 +75,7 @@ class CaseRelatedCertificateWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDocumentItem(String title, String updateTime) {
+  Widget _buildDocumentItem(DocListModel item) {
     return Container(
       padding: EdgeInsets.all(12.toW),
       decoration: BoxDecoration(
@@ -87,23 +85,20 @@ class CaseRelatedCertificateWidget extends StatelessWidget {
       child: Row(
         children: [
           // 文档图标
-          Container(
-            width: 40.toW,
-            height: 40.toW,
-            decoration: BoxDecoration(
-              color: const Color(0xFF9C27B0),
-              borderRadius: BorderRadius.circular(8.toW),
-            ),
-            child: Icon(Icons.description, size: 24.toW, color: Colors.white),
+          ImageUtils(
+            imageUrl: Assets.home.caseDocIcon.path,
+            width: 48.toW,
+            height: 48.toW,
+            fit: BoxFit.cover,
           ),
-          SizedBox(width: 12.toW),
+          SizedBox(width: 10.toW),
           // 文档信息
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  item.docTitle ?? '-',
                   style: TextStyle(
                     fontSize: 15.toSp,
                     fontWeight: FontWeight.w500,
@@ -112,7 +107,7 @@ class CaseRelatedCertificateWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 4.toW),
                 Text(
-                  '更新于: $updateTime',
+                  '更新于: ${DateTimeUtils.formatTimestamp(item.updateTime ?? 0)}',
                   style: TextStyle(
                     fontSize: 12.toSp,
                     color: AppColors.color_99000000,
@@ -121,12 +116,20 @@ class CaseRelatedCertificateWidget extends StatelessWidget {
               ],
             ),
           ),
+          SizedBox(width: 6.toW),
           // 查看图标
-          Icon(
-            Icons.remove_red_eye_outlined,
-            size: 20.toW,
-            color: AppColors.color_99000000,
-          ),
+          if (item.fileUrl != null && item.fileUrl!.isNotEmpty)
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                showToast('弹窗查看图片');
+              },
+              child: Icon(
+                Icons.remove_red_eye_outlined,
+                size: 20.toW,
+                color: AppColors.color_99000000,
+              ),
+            ),
         ],
       ),
     );

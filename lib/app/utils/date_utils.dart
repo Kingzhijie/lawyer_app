@@ -73,8 +73,11 @@ class DateFormatUtils {
   }
 
   /// 秒转时分秒
-  static String second2HMS(int sec,
-      {bool isEasy = true, bool isZeroFill = true}) {
+  static String second2HMS(
+    int sec, {
+    bool isEasy = true,
+    bool isZeroFill = true,
+  }) {
     String hms = "00:00:00";
     if (!isEasy) hms = "00时00分00秒";
     if (sec > 0) {
@@ -156,8 +159,9 @@ class DateFormatUtils {
       sec = sec * 1000;
     }
 
-    DateTime createTime =
-        DateTime.fromMillisecondsSinceEpoch(int.parse(sec.toString()));
+    DateTime createTime = DateTime.fromMillisecondsSinceEpoch(
+      int.parse(sec.toString()),
+    );
     ydmhms = createTime.toLocal().toString().substring(0, 19);
     ydmhms = ydmhms.replaceAll('-', format);
     return ydmhms;
@@ -226,24 +230,26 @@ class DateFormatUtils {
     return dateTime;
   }
 
-
   ///获取通知时间
   static String getNotificationTimeStr(int milliseconds, {bool? isFirst}) {
     String dateTime = '';
     if (milliseconds == 0) {
       return dateTime;
     }
-    if (milliseconds.toString().length == 10) { ///如果是秒转毫秒
+    if (milliseconds.toString().length == 10) {
+      ///如果是秒转毫秒
       milliseconds = milliseconds * 1000;
     }
     DateTime postTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
     Duration diff = DateTime.now().difference(postTime);
-    String month =
-        postTime.month < 10 ? '0${postTime.month}' : '${postTime.month}';
+    String month = postTime.month < 10
+        ? '0${postTime.month}'
+        : '${postTime.month}';
     String day = postTime.day < 10 ? '0${postTime.day}' : '${postTime.day}';
     String hour = postTime.hour < 10 ? '0${postTime.hour}' : '${postTime.hour}';
-    String minute =
-        postTime.minute < 10 ? '0${postTime.minute}' : '${postTime.minute}';
+    String minute = postTime.minute < 10
+        ? '0${postTime.minute}'
+        : '${postTime.minute}';
     //String second = postTime.second < 10 ? '0${postTime.second}' : '${postTime.second}';
     if (isFirst == true) {
       if (diff.inSeconds < 60) {
@@ -270,14 +276,14 @@ class DateFormatUtils {
   }
 
   ///时间字符串转特定格式的时间字符串
-  static String getAppointTime(
-      {required String dateStr, required String format}) {
+  static String getAppointTime({
+    required String dateStr,
+    required String format,
+  }) {
     DateTime dateTime = DateTime.parse(dateStr);
     String appointTime = DateFormat(format).format(dateTime);
     return appointTime;
   }
-
-
 }
 
 class DateTimeUtils {
@@ -289,13 +295,15 @@ class DateTimeUtils {
   }
 
   /// 从UTC时间戳字符串转为时间
-  static DateTime fromUtcMillisecondsStringSinceEpoch(String millisecondsString,
-      {bool isUtc = false}) {
+  static DateTime fromUtcMillisecondsStringSinceEpoch(
+    String millisecondsString, {
+    bool isUtc = false,
+  }) {
     return fromUtcMillisecondsSinceEpoch(int.parse(millisecondsString));
   }
 
   ///yyyy-MM-DD转DateTime
-  static DateTime format(String data, {String format = "yyyy-MM-DD"}) {
+  static DateTime format(String data, {String format = "yyyy-MM-dd"}) {
     // if (data.isNotEmpty) {
     //   return DateFormat(format).parse(data);
     // } else {
@@ -305,7 +313,7 @@ class DateTimeUtils {
   }
 
   ///timestamp毫秒,
-  static String formatTimestamp(num timestamp, {String format = "yyyy-MM-DD"}) {
+  static String formatTimestamp(num timestamp, {String format = "yyyy-MM-dd"}) {
     // 转换为 DateTime
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt());
     // 格式化为字符串

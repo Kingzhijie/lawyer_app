@@ -4,14 +4,13 @@ import 'package:dio/dio.dart';
 import '../../../utils/storage_utils.dart';
 import 'logger.dart';
 
-
 //header中添加token
 class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final String accessToken = StorageUtils.getToken();
     logPrint('accessToken===$accessToken');
-    options.headers['Authorization'] = 'Bearer $accessToken';
+    options.headers['Authorization'] = 'test1'; // 'Bearer $accessToken';
     // options.headers['App-brand'] = base64Encode(utf8.encode(DeviceInfo.brand ?? ''));
     // options.headers['Device-type'] = PlatformUtils.platform;
     // options.headers['platformID'] = PlatformUtils.isIOS ? 1 : 2;
@@ -52,5 +51,4 @@ class TokenInterceptor extends Interceptor {
     // }
     super.onResponse(response, handler);
   }
-
 }

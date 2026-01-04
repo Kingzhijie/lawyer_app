@@ -1,0 +1,45 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "law",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "law (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "law (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "flutter_advanced_calendar-1.4.3",
+            "cwd": "plugins/flutter_advanced_calendar-1.4.3",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "flutter_advanced_calendar-1.4.3 (profile mode)",
+            "cwd": "plugins/flutter_advanced_calendar-1.4.3",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "flutter_advanced_calendar-1.4.3 (release mode)",
+            "cwd": "plugins/flutter_advanced_calendar-1.4.3",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

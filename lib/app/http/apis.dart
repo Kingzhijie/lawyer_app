@@ -1,4 +1,3 @@
-
 class Apis {
   //上传图片
   static String uploadSingleImage = '/infra/file/upload';
@@ -7,13 +6,16 @@ class Apis {
 
   ///发送手机验证码
   static String sendSmsCode = '/member/auth/send-sms-code';
+
   ///验证码登录
   static String smsLogin = '/member/auth/sms-login';
+
   ///刷新token
   static String refreshToken = '/member/auth/refresh-token';
 
   ///获取用户基本信息
   static String getUserInfo = '/member/user/get';
+
   ///编辑用户基本信息
   static String editUserInfo = '/member/user/update';
 
@@ -26,6 +28,12 @@ class Apis {
   ///案件基本信息列表
   static String caseBasicInfoList = '/legal/case-basic-info/page';
 
+  ///案件基本信息
+  static String caseBasicInfo = '/legal/case-basic-info/get';
+
+  ///案件进展
+  static String caseTimeline = '/legal/case-timeline/list';
+
   ///获取案件任务分页
   static String getTaskPage = '/legal/task/page';
 
@@ -37,9 +45,4 @@ class Apis {
 
   ///设置任务的备注
   static String setTaskRemark = '/legal/task/remark';
-
-
-
-
-
 }

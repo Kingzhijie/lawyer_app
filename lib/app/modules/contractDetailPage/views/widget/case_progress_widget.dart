@@ -1,30 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case_timeline_model.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
+import 'package:lawyer_app/gen/assets.gen.dart';
 
 class CaseProgressWidget extends StatelessWidget {
-  const CaseProgressWidget({super.key});
+  final List<CaseTimelineModel> progressList;
+  const CaseProgressWidget({super.key, required this.progressList});
 
   @override
   Widget build(BuildContext context) {
-    // 模拟进展数据
-    final progressList = [
-      {'date': '2025-01-20', 'title': '案件立案', 'isTask': false},
-      {'date': '2025-01-20', 'title': '缴纳诉讼费用', 'isTask': false},
-      {'date': '2025-01-20', 'title': '传票', 'isTask': false},
-      {'date': '2025-01-20', 'title': '质证意见', 'isTask': false},
-      {'date': '2025-01-20', 'title': '保全裁定书', 'isTask': false},
-      {'date': '2025-01-20', 'title': '保全送果书', 'isTask': false},
-      {'date': '2025-01-20 12:00:00', 'title': '任务名称', 'isTask': true},
-      {'date': '2025-01-20', 'title': '判决通知书', 'isTask': false},
-      {'date': '2025-01-20', 'title': '执行期间', 'isTask': false},
-      {'date': '2025-01-20', 'title': '发起申请执行', 'isTask': false},
-      {'date': '2025-01-20', 'title': '申请执行案号', 'isTask': false},
-      {'date': '2025-01-20', 'title': '归档', 'isTask': false},
-      {'date': '2025-01-20', 'title': '案件创建', 'isTask': false},
-    ];
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW),
       padding: EdgeInsets.all(16.toW),
@@ -37,7 +26,7 @@ class CaseProgressWidget extends StatelessWidget {
         children: [
           // 标题
           Text(
-            '案件进展（原告）',
+            '案件进展',
             style: TextStyle(
               fontSize: 16.toSp,
               fontWeight: FontWeight.w600,
@@ -54,12 +43,7 @@ class CaseProgressWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = progressList[index];
               final isLast = index == progressList.length - 1;
-              return _buildTimelineItem(
-                item['date'] as String,
-                item['title'] as String,
-                isTask: item['isTask'] as bool,
-                isLast: isLast,
-              );
+              return _buildTimelineItem(item, isLast: isLast);
             },
           ),
         ],
@@ -67,12 +51,7 @@ class CaseProgressWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineItem(
-    String date,
-    String title, {
-    bool isTask = false,
-    bool isLast = false,
-  }) {
+  Widget _buildTimelineItem(CaseTimelineModel item, {bool isLast = false}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -92,7 +71,7 @@ class CaseProgressWidget extends StatelessWidget {
             if (!isLast)
               Container(width: 1.toW, height: 60.toW, color: AppColors.theme),
           ],
-        ).withPaddingOnly(top: 7.toW),
+        ).withPaddingOnly(top: 5.toW),
         SizedBox(width: 12.toW),
         // 内容区域
         Expanded(
@@ -101,7 +80,7 @@ class CaseProgressWidget extends StatelessWidget {
             children: [
               // 日期
               Text(
-                date,
+                DateTimeUtils.formatTimestamp(item.eventTime ?? 0),
                 style: TextStyle(
                   fontSize: 12.toSp,
                   color: AppColors.color_99000000,
@@ -109,41 +88,57 @@ class CaseProgressWidget extends StatelessWidget {
               ),
               SizedBox(height: 6.toW),
               // 内容卡片
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 12.toW,
-                  vertical: 10.toW,
-                ),
-                decoration: BoxDecoration(
-                  color: isTask
-                      ? const Color(0xFFFFF5E6)
-                      : const Color(0xFFF5F7FA),
-                  borderRadius: BorderRadius.circular(8.toW),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.people_outline,
-                      size: 16.toW,
-                      color: isTask ? const Color(0xFFFF9800) : AppColors.theme,
-                    ),
-                    SizedBox(width: 8.toW),
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 14.toSp,
-                          color: AppColors.color_E6000000,
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  if (item.relatedTaskId != null) {
+                    showToast('查看任务--暂时没有接口');
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.toW,
+                    vertical: 10.toW,
+                  ),
+                  decoration: BoxDecoration(
+                    color: item.relatedTaskId != null
+                        ? const Color(0xFFFFF5E6)
+                        : const Color(0xFFF5F7FA),
+                    borderRadius: BorderRadius.circular(8.toW),
+                  ),
+                  child: Row(
+                    children: [
+                      ImageUtils(
+                        imageUrl: item.relatedTaskId != null
+                            ? Assets.home.caseProgressTaskIcon.path
+                            : Assets.home.susongfeiIcon.path,
+                        width: 24.toW,
+                        height: 24.toW,
+                        fit: BoxFit.cover,
+                      ),
+                      SizedBox(width: 8.toW),
+                      Expanded(
+                        child: Text(
+                          item.eventTitle != null && item.eventTitle!.isNotEmpty
+                              ? item.eventTitle!
+                              : '-',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14.toSp,
+                            color: AppColors.color_E6000000,
+                          ),
                         ),
                       ),
-                    ),
-                    if (isTask)
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 14.toW,
-                        color: const Color(0xFFFF9800),
-                      ),
-                  ],
+                      if (item.relatedTaskId != null)
+                        ImageUtils(
+                          imageUrl: Assets.home.caseProgressArrowIcon.path,
+                          width: 14.toW,
+                          height: 14.toW,
+                          fit: BoxFit.cover,
+                        ),
+                    ],
+                  ),
                 ),
               ),
               if (!isLast) SizedBox(height: 4.toW),

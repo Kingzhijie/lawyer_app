@@ -76,7 +76,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
               SizedBox(height: 12.toW),
             ],
           ).withMarginOnly(left: 16.toW, right: 16.toW),
-          Obx(()=>_buildTaskCardsList()),
+          Obx(() => _buildTaskCardsList()),
         ],
       ),
     );
@@ -250,21 +250,21 @@ class NewHomePageView extends GetView<NewHomePageController> {
       itemBuilder: (context, index) {
         var model = controller.caseTaskList.value[index];
         return TaskCard(
-          model: model,
-          clickItemType: (type) {
-            if (type == 1) {
-              //关联用户
-              controller.linkUserAlert(model);
-            }
-            if (type == 0) {
-              //备注
-              controller.addRemarkMethod(model);
-            }
-          },
-        )
+              model: model,
+              clickItemType: (type) {
+                if (type == 1) {
+                  //关联用户
+                  controller.linkUserAlert(model);
+                }
+                if (type == 0) {
+                  //备注
+                  controller.addRemarkMethod(model);
+                }
+              },
+            )
             .withOnTap(() {
-          controller.lookContractDetailPage();
-        })
+              controller.lookContractDetailPage(model.caseId);
+            })
             .withMarginOnly(bottom: 12.toW);
       },
     );

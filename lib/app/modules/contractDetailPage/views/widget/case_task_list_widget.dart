@@ -1,55 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/task_list_model.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 
 class CaseTaskListWidget extends StatelessWidget {
-  const CaseTaskListWidget({super.key});
+  final List<TaskListModel> tasks;
+  final VoidCallback onAddTap;
+  const CaseTaskListWidget({
+    super.key,
+    required this.tasks,
+    required this.onAddTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // 模拟任务数据
-    final tasks = [
-      {
-        'title': '缴纳诉讼费',
-        'deadline': '2025-12-31',
-        'hasUrgent': true,
-        'hasAlert': true,
-      },
-      {
-        'title': '催促保全结果',
-        'deadline': '2025-12-31',
-        'hasUrgent': true,
-        'hasAlert': true,
-      },
-      {
-        'title': '第一次开庭',
-        'deadline': '2025-12-31',
-        'hasUrgent': false,
-        'hasAlert': true,
-      },
-      {
-        'title': '判决上诉',
-        'deadline': '2025-12-31',
-        'hasUrgent': true,
-        'hasAlert': true,
-      },
-      {
-        'title': '判决生效日',
-        'deadline': '2025-12-31',
-        'hasUrgent': true,
-        'hasAlert': true,
-      },
-      {
-        'title': '判决上诉',
-        'deadline': '2025-12-31',
-        'hasUrgent': true,
-        'hasAlert': true,
-      },
-    ];
-
+    final taskList = tasks.take(6).toList();
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW),
-      padding: EdgeInsets.all(16.toW),
+      padding: EdgeInsets.symmetric(horizontal: 16.toW, vertical: 8.toW),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.toW),
@@ -57,6 +28,7 @@ class CaseTaskListWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(height: 8.toW),
           // 标题行
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,7 +42,9 @@ class CaseTaskListWidget extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  debugPrint('查看全部任务');
+                },
                 child: Row(
                   children: [
                     Text(
@@ -95,28 +69,24 @@ class CaseTaskListWidget extends StatelessWidget {
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: tasks.length,
+            itemCount: taskList.length,
             padding: EdgeInsets.zero,
             separatorBuilder: (context, index) => SizedBox(height: 12.toW),
             itemBuilder: (context, index) {
-              final task = tasks[index];
-              return _buildTaskItem(
-                task['title'] as String,
-                task['deadline'] as String,
-                hasUrgent: task['hasUrgent'] as bool,
-                hasAlert: task['hasAlert'] as bool,
-              );
+              final task = taskList[index];
+              return _buildTaskItem(task);
             },
           ),
-          SizedBox(height: 16.toW),
+          SizedBox(height: 8.toW),
           // 添加按钮
           Center(
             child: GestureDetector(
-              onTap: () {},
+              onTap: onAddTap,
+              behavior: HitTestBehavior.opaque,
               child: Text(
                 '添加',
                 style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),
-              ),
+              ).withPaddingSymmetric(horizontal: 20.toW, vertical: 8.toW),
             ),
           ),
         ],
@@ -124,12 +94,7 @@ class CaseTaskListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTaskItem(
-    String title,
-    String deadline, {
-    bool hasUrgent = false,
-    bool hasAlert = false,
-  }) {
+  Widget _buildTaskItem(TaskListModel item) {
     return Container(
       padding: EdgeInsets.all(12.toW),
       decoration: BoxDecoration(
@@ -138,7 +103,10 @@ class CaseTaskListWidget extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.center,
-          colors: [Color(0xFFFFEBE8), Colors.white],
+          colors: [
+            item.status == 0 ? Color(0xFFFFEBE8) : Color(0xFFF1FFE8),
+            Colors.white,
+          ],
         ),
         boxShadow: [
           BoxShadow(
@@ -146,7 +114,7 @@ class CaseTaskListWidget extends StatelessWidget {
             blurRadius: 12,
             offset: const Offset(0, 0),
           ),
-        ]
+        ],
       ),
       child: Row(
         children: [
@@ -158,11 +126,18 @@ class CaseTaskListWidget extends StatelessWidget {
               color: AppColors.theme.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8.toW),
             ),
-            child: Icon(
-              Icons.people_outline,
-              size: 20.toW,
-              color: AppColors.theme,
-            ),
+            child: item.logo != null
+                ? ImageUtils(
+                    imageUrl: item.logo,
+                    width: 32.toW,
+                    height: 32.toW,
+                    fit: BoxFit.cover,
+                  )
+                : Icon(
+                    Icons.people_outline,
+                    size: 20.toW,
+                    color: AppColors.theme,
+                  ),
           ),
           SizedBox(width: 12.toW),
           // 任务信息
@@ -171,16 +146,19 @@ class CaseTaskListWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 15.toSp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.color_E6000000,
+                    Expanded(
+                      child: Text(
+                        item.title ?? '-',
+                        style: TextStyle(
+                          fontSize: 15.toSp,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.color_E6000000,
+                        ),
                       ),
                     ),
-                    if (hasUrgent) ...[
+                    if (item.isEmergency == true) ...[
                       SizedBox(width: 8.toW),
                       Container(
                         padding: EdgeInsets.symmetric(
@@ -203,7 +181,7 @@ class CaseTaskListWidget extends StatelessWidget {
                         ),
                       ),
                     ],
-                    if (hasAlert) ...[
+                    if (item.status == 0) ...[
                       SizedBox(width: 6.toW),
                       Container(
                         padding: EdgeInsets.symmetric(
@@ -230,7 +208,7 @@ class CaseTaskListWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 6.toW),
                 Text(
-                  '截止时间：$deadline',
+                  '截止时间：${DateTimeUtils.formatTimestamp(item.dueAt ?? 0)}',
                   style: TextStyle(
                     fontSize: 12.toSp,
                     color: AppColors.color_99000000,
@@ -239,27 +217,30 @@ class CaseTaskListWidget extends StatelessWidget {
               ],
             ),
           ),
-          // 完成按钮
-          GestureDetector(
-            onTap: () {},
-            child: Row(
-              children: [
-                Icon(
-                  Icons.check_circle_outline,
-                  size: 16.toW,
-                  color: AppColors.color_99000000,
-                ),
-                SizedBox(width: 4.toW),
-                Text(
-                  '完成',
-                  style: TextStyle(
-                    fontSize: 13.toSp,
+          SizedBox(width: 10.toW),
+          if (item.status != 0)
+            GestureDetector(
+              onTap: () {},
+              child: Row(
+                children: [
+                  Icon(
+                    item.status == 1
+                        ? Icons.check_circle_outline
+                        : Icons.cancel_outlined,
+                    size: 16.toW,
                     color: AppColors.color_99000000,
                   ),
-                ),
-              ],
+                  SizedBox(width: 4.toW),
+                  Text(
+                    item.status == 1 ? '已完成' : '已取消',
+                    style: TextStyle(
+                      fontSize: 13.toSp,
+                      color: AppColors.color_99000000,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

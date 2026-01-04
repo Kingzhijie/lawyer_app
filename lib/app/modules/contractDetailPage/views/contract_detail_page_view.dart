@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
-import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../utils/image_utils.dart';
 import '../../../utils/screen_utils.dart';
-import '../../chatPage/views/widgets/no_find_case_widget.dart';
 import '../controllers/contract_detail_page_controller.dart';
 import 'widget/case_base_info_widget.dart';
 import 'widget/case_progress_widget.dart';
@@ -36,23 +34,63 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
           Column(
             children: [
               _buildAppBar(),
-              _buildTrialTabs(),
+              Obx(
+                () => controller.caseDetail.value == null
+                    ? SizedBox.shrink()
+                    : _buildTrialTabs(),
+              ),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.only(bottom: AppScreenUtil.bottomBarHeight),
-                  child: Column(
-                    children: [
-                      const CaseBaseInfoWidget(),
-                      Height(16.toW),
-                      const CaseTaskListWidget(),
-                      Height(16.toW),
-                      const CaseSaveDetailWidget(),
-                      Height(16.toW),
-                      const CaseRelatedCertificateWidget(),
-                      Height(16.toW),
-                      const CaseProgressWidget(),
-                      SizedBox(height: 80.toW), // 底部栏高度 + 安全距离
-                    ],
+                  padding: EdgeInsets.only(
+                    bottom: AppScreenUtil.bottomBarHeight,
+                  ),
+                  child: Obx(
+                    () => controller.caseDetail.value == null
+                        ? CircularProgressIndicator()
+                        : Column(
+                            children: [
+                              CaseBaseInfoWidget(
+                                caseDetail: controller.caseDetail.value!,
+                              ),
+                              Height(16.toW),
+                              CaseTaskListWidget(
+                                tasks:
+                                    controller.caseDetail.value!.taskList ?? [],
+                                onAddTap: controller.addTask,
+                              ),
+
+                              if (controller.caseDetail.value!.presAssetList !=
+                                      null &&
+                                  controller
+                                      .caseDetail
+                                      .value!
+                                      .presAssetList!
+                                      .isNotEmpty) ...[
+                                Height(16.toW),
+                                CaseSaveDetailWidget(
+                                  presAssetList:
+                                      controller
+                                          .caseDetail
+                                          .value!
+                                          .presAssetList ??
+                                      [],
+                                ),
+                              ],
+                              Height(16.toW),
+                              CaseRelatedCertificateWidget(
+                                docList:
+                                    controller.caseDetail.value!.docList ?? [],
+                              ),
+                              if (controller.caseTimelineList.isNotEmpty) ...[
+                                Height(16.toW),
+                                CaseProgressWidget(
+                                  progressList: controller.caseTimelineList,
+                                ),
+                              ],
+
+                              SizedBox(height: 80.toW), // 底部栏高度 + 安全距离
+                            ],
+                          ),
                   ),
                 ),
               ),
@@ -86,13 +124,15 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
             ),
           ),
           Expanded(
-            child: Text(
-              '张三诉讼李四合同纠纷案',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18.toSp,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
+            child: Obx(
+              () => Text(
+                controller.caseDetail.value?.caseBase?.caseName ?? '',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18.toSp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
               ),
             ),
           ),
@@ -104,45 +144,45 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
 
   // 审级选项卡
   Widget _buildTrialTabs() {
-    return Obx(() {
-      return Container(
-        margin: EdgeInsets.symmetric(horizontal: 10.toW),
-        padding: EdgeInsets.symmetric(vertical: 12.toW),
-        height: 60.toW,
-        child: Row(
-          children: [
-            _buildTrialTab('一审', 0),
-            _buildTrialTab('二审', 1),
-            _buildTrialTab('再审', 2),
-          ],
-        ),
-      );
-    });
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10.toW),
+      padding: EdgeInsets.symmetric(vertical: 12.toW),
+      height: 60.toW,
+      child: Row(
+        children: [
+          _buildTrialTab('一审', 0),
+          _buildTrialTab('二审', 1),
+          _buildTrialTab('再审', 2),
+        ],
+      ),
+    );
   }
 
   Widget _buildTrialTab(String title, int index) {
-    final isSelected = controller.trialIndex.value == index;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => controller.switchTrial(index),
-        child: Container(
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.theme : AppColors.color_FFF3F3F3,
-            borderRadius: BorderRadius.circular(8.toW),
-          ),
-          margin: EdgeInsets.symmetric(horizontal: 6.toW),
-          alignment: Alignment.center,
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 13.toSp,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              color: isSelected ? Colors.white : AppColors.color_99000000,
+    return Obx(() {
+      final isSelected = controller.trialIndex.value == index;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => controller.switchTrial(index),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.theme : AppColors.color_FFF3F3F3,
+              borderRadius: BorderRadius.circular(8.toW),
+            ),
+            margin: EdgeInsets.symmetric(horizontal: 6.toW),
+            alignment: Alignment.center,
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 13.toSp,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected ? Colors.white : AppColors.color_99000000,
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   // 底部栏
@@ -194,7 +234,8 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
           SizedBox(width: 12.toW),
           // 创建任务按钮
           GestureDetector(
-            onTap: () {},
+            onTap: controller.addTask,
+            behavior: HitTestBehavior.opaque,
             child: Container(
               height: 44.toW,
               width: 95.toW,

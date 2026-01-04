@@ -1,12 +1,25 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/gen/assets.gen.dart';
 
 class CaseSaveDetailWidget extends StatelessWidget {
-  const CaseSaveDetailWidget({super.key});
+  final List<dynamic> presAssetList;
+  const CaseSaveDetailWidget({super.key, required this.presAssetList});
 
   @override
   Widget build(BuildContext context) {
+    final effectiveToList = presAssetList.map((item) {
+      final effectiveTo = item['effectiveTo'] as int? ?? 0;
+      return effectiveTo;
+    }).toList();
+    final max = effectiveToList.reduce((a, b) => a > b ? a : b);
+    final min = effectiveToList.reduce((a, b) => a < b ? a : b);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW),
       padding: EdgeInsets.all(16.toW),
@@ -17,7 +30,6 @@ class CaseSaveDetailWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 标题行
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -34,7 +46,7 @@ class CaseSaveDetailWidget extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      '6处关联保全资产',
+                      '${presAssetList.length}处关联保全资产',
                       style: TextStyle(
                         fontSize: 14.toSp,
                         color: AppColors.theme,
@@ -51,126 +63,48 @@ class CaseSaveDetailWidget extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16.toW),
-          // 保全资产信息
+
           Container(
             padding: EdgeInsets.all(12.toW),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F7FA),
               borderRadius: BorderRadius.circular(8.toW),
+              color: AppColors.color_FFF5F7FA,
             ),
-            child: Column(
+            child: Wrap(
               children: [
-                Row(
-                  children: [
-                    // 不动产
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 32.toW,
-                            height: 32.toW,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFF9800).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8.toW),
-                            ),
-                            child: Icon(
-                              Icons.home_outlined,
-                              size: 20.toW,
-                              color: const Color(0xFFFF9800),
-                            ),
-                          ),
-                          SizedBox(width: 8.toW),
-                          Text(
-                            '不动产: ',
-                            style: TextStyle(
-                              fontSize: 14.toSp,
-                              color: AppColors.color_99000000,
-                            ),
-                          ),
-                          Text(
-                            '2处',
-                            style: TextStyle(
-                              fontSize: 14.toSp,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.color_E6000000,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // 车辆
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 32.toW,
-                            height: 32.toW,
-                            decoration: BoxDecoration(
-                              color: AppColors.theme.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8.toW),
-                            ),
-                            child: Icon(
-                              Icons.directions_car_outlined,
-                              size: 20.toW,
-                              color: AppColors.theme,
-                            ),
-                          ),
-                          SizedBox(width: 8.toW),
-                          Text(
-                            '车辆: ',
-                            style: TextStyle(
-                              fontSize: 14.toSp,
-                              color: AppColors.color_99000000,
-                            ),
-                          ),
-                          Text(
-                            '2台',
-                            style: TextStyle(
-                              fontSize: 14.toSp,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.color_E6000000,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 12.toW),
-                // 资金
-                Row(
-                  children: [
-                    Container(
-                      width: 32.toW,
-                      height: 32.toW,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF52C41A).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8.toW),
-                      ),
-                      child: Icon(
-                        Icons.account_balance_wallet_outlined,
-                        size: 20.toW,
-                        color: const Color(0xFF52C41A),
-                      ),
-                    ),
-                    SizedBox(width: 8.toW),
-                    Text(
-                      '资金: ',
-                      style: TextStyle(
-                        fontSize: 14.toSp,
-                        color: AppColors.color_99000000,
-                      ),
-                    ),
-                    Text(
-                      '¥29,920.00',
-                      style: TextStyle(
-                        fontSize: 14.toSp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.color_E6000000,
-                      ),
-                    ),
-                  ],
-                ),
+                ...presAssetList.map((item) {
+                  final assetType = item['assetType'] as int? ?? 0;
+                  var icon = '';
+                  var label = '';
+                  var value = '';
+                  switch (assetType) {
+                    case 1:
+                      icon = Assets.my.budongchanIcon.path;
+                      label = '不动产：';
+                      value = '${item['quantity'] as int? ?? 1}处';
+                      break;
+                    case 2:
+                      icon = Assets.my.cheliangIcon.path;
+                      label = '车辆：';
+                      value = '${item['quantity'] as int? ?? 1}台';
+                      break;
+                    case 4:
+                      icon = Assets.my.zijianIcon.path;
+                      label = '资金：';
+                      value =
+                          '¥${(item['amount'] as double? ?? 0.0).toStringAsFixed(2)}';
+                      break;
+                    default:
+                      icon = Assets.my.zijianIcon.path;
+                      label = item['assetName'] as String? ?? '';
+                      value = (item['quantity'] as int? ?? 1).toString();
+                  }
+                  return _buildAssetItem(
+                    icon: icon,
+                    label: label,
+                    value: value,
+                  );
+                }),
               ],
             ),
           ),
@@ -186,7 +120,7 @@ class CaseSaveDetailWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                '2026-02-15',
+                DateTimeUtils.formatTimestamp(min),
                 style: TextStyle(
                   fontSize: 14.toSp,
                   color: AppColors.color_E6000000,
@@ -202,7 +136,7 @@ class CaseSaveDetailWidget extends StatelessWidget {
               ),
               SizedBox(width: 8.toW),
               Text(
-                '2026-02-28',
+                DateTimeUtils.formatTimestamp(max),
                 style: TextStyle(
                   fontSize: 14.toSp,
                   color: AppColors.color_E6000000,
@@ -213,5 +147,36 @@ class CaseSaveDetailWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildAssetItem({
+    required String icon,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      children: [
+        ImageUtils(imageUrl: icon, width: 20.toW, height: 20.toW),
+        SizedBox(width: 2.toW),
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: TextStyle(
+              fontSize: 13.toSp,
+              color: AppColors.color_66000000,
+            ),
+            children: [
+              TextSpan(
+                text: value,
+                style: TextStyle(
+                  color: AppColors.color_E6000000,
+                  fontSize: 13.toSp,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ).withWidth(135.toW);
   }
 }

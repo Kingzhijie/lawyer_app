@@ -265,6 +265,15 @@ class $AssetsHomeGen {
   AssetGenImage get zhengzaiTingIcon =>
       const AssetGenImage('assets/home/zhengzai_ting_icon.png');
 
+  AssetGenImage get caseDocIcon =>
+      const AssetGenImage('assets/home/case_doc.png');
+
+  AssetGenImage get caseProgressArrowIcon =>
+      const AssetGenImage('assets/home/case_progress_arrow.png');
+
+  AssetGenImage get caseProgressTaskIcon =>
+      const AssetGenImage('assets/home/case_progress_task.png');
+
   /// List of all assets
   List<AssetGenImage> get values => [
     addCrileIcon,
@@ -302,6 +311,9 @@ class $AssetsHomeGen {
     yuangaoLongBg,
     yuangaoNoticeBg,
     zhengzaiTingIcon,
+    caseDocIcon,
+    caseProgressArrowIcon,
+    caseProgressTaskIcon,
   ];
 }
 

@@ -21,24 +21,25 @@ import '../../casePage/models/case_base_info_model.dart';
 
 class CaseTaskModel {
   CaseTaskModel({
-      num? id, 
-      num? caseId, 
-      String? caseName, 
-      String? logo, 
-      num? taskType, 
-      String? handler, 
-      String? handlerPhone, 
-      String? title, 
-      String? content, 
-      num? status, 
-      num? partyRole, 
-      bool? isEmergency, 
-      num? dueAt,
+    num? id,
+    num? caseId,
+    String? caseName,
+    String? logo,
+    num? taskType,
+    String? handler,
+    String? handlerPhone,
+    String? title,
+    String? content,
+    num? status,
+    num? partyRole,
+    bool? isEmergency,
+    num? dueAt,
     num? remindTimes,
-      bool? isAddCalendar, 
-      List<Notes>? notes,
+    bool? isAddCalendar,
+    List<Notes>? notes,
     num? createTime,
-      List<RelateUsers>? relateUsers,}){
+    List<RelateUsers>? relateUsers,
+  }) {
     _id = id;
     _caseId = caseId;
     _caseName = caseName;
@@ -57,7 +58,7 @@ class CaseTaskModel {
     _notes = notes;
     _createTime = createTime;
     _relateUsers = relateUsers;
-}
+  }
 
   CaseTaskModel.fromJson(dynamic json) {
     _id = json['id'];
@@ -107,43 +108,45 @@ class CaseTaskModel {
   List<Notes>? _notes;
   num? _createTime;
   List<RelateUsers>? _relateUsers;
-CaseTaskModel copyWith({  num? id,
-  num? caseId,
-  String? caseName,
-  String? logo,
-  num? taskType,
-  String? handler,
-  String? handlerPhone,
-  String? title,
-  String? content,
-  num? status,
-  num? partyRole,
-  bool? isEmergency,
-  num? dueAt,
-  num? remindTimes,
-  bool? isAddCalendar,
-  List<Notes>? notes,
-  num? createTime,
-  List<RelateUsers>? relateUsers,
-}) => CaseTaskModel(  id: id ?? _id,
-  caseId: caseId ?? _caseId,
-  caseName: caseName ?? _caseName,
-  logo: logo ?? _logo,
-  taskType: taskType ?? _taskType,
-  handler: handler ?? _handler,
-  handlerPhone: handlerPhone ?? _handlerPhone,
-  title: title ?? _title,
-  content: content ?? _content,
-  status: status ?? _status,
-  partyRole: partyRole ?? _partyRole,
-  isEmergency: isEmergency ?? _isEmergency,
-  dueAt: dueAt ?? _dueAt,
-  remindTimes: remindTimes ?? _remindTimes,
-  isAddCalendar: isAddCalendar ?? _isAddCalendar,
-  notes: notes ?? _notes,
-  createTime: createTime ?? _createTime,
-  relateUsers: relateUsers ?? _relateUsers,
-);
+  CaseTaskModel copyWith({
+    num? id,
+    num? caseId,
+    String? caseName,
+    String? logo,
+    num? taskType,
+    String? handler,
+    String? handlerPhone,
+    String? title,
+    String? content,
+    num? status,
+    num? partyRole,
+    bool? isEmergency,
+    num? dueAt,
+    num? remindTimes,
+    bool? isAddCalendar,
+    List<Notes>? notes,
+    num? createTime,
+    List<RelateUsers>? relateUsers,
+  }) => CaseTaskModel(
+    id: id ?? _id,
+    caseId: caseId ?? _caseId,
+    caseName: caseName ?? _caseName,
+    logo: logo ?? _logo,
+    taskType: taskType ?? _taskType,
+    handler: handler ?? _handler,
+    handlerPhone: handlerPhone ?? _handlerPhone,
+    title: title ?? _title,
+    content: content ?? _content,
+    status: status ?? _status,
+    partyRole: partyRole ?? _partyRole,
+    isEmergency: isEmergency ?? _isEmergency,
+    dueAt: dueAt ?? _dueAt,
+    remindTimes: remindTimes ?? _remindTimes,
+    isAddCalendar: isAddCalendar ?? _isAddCalendar,
+    notes: notes ?? _notes,
+    createTime: createTime ?? _createTime,
+    relateUsers: relateUsers ?? _relateUsers,
+  );
   num? get id => _id;
   num? get caseId => _caseId;
   String? get caseName => _caseName;
@@ -189,40 +192,33 @@ CaseTaskModel copyWith({  num? id,
     }
     return map;
   }
-
 }
-
 
 /// time : ""
 /// content : ""
 /// createBy : ""
 
 class Notes {
-  Notes({
-    num? time,
-      String? content, 
-      String? createBy,}){
+  Notes({String? time, String? content, String? createBy}) {
     _time = time;
     _content = content;
     _createBy = createBy;
-}
+  }
 
   Notes.fromJson(dynamic json) {
     _time = json['time'];
     _content = json['content'];
     _createBy = json['createBy'];
   }
-  num? _time;
+  String? _time;
   String? _content;
   String? _createBy;
-Notes copyWith({  num? time,
-  String? content,
-  String? createBy,
-}) => Notes(  time: time ?? _time,
-  content: content ?? _content,
-  createBy: createBy ?? _createBy,
-);
-  num? get time => _time;
+  Notes copyWith({String? time, String? content, String? createBy}) => Notes(
+    time: time ?? _time,
+    content: content ?? _content,
+    createBy: createBy ?? _createBy,
+  );
+  String? get time => _time;
   String? get content => _content;
   String? get createBy => _createBy;
 
@@ -233,5 +229,4 @@ Notes copyWith({  num? time,
     map['createBy'] = _createBy;
     return map;
   }
-
 }

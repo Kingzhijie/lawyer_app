@@ -8,7 +8,9 @@ import 'package:lawyer_app/app/http/net/net_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/modules/addTaskPage/views/widgets/choose_case_alert.dart';
 import 'package:lawyer_app/app/modules/addTaskPage/views/widgets/notice_date_choose.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/controllers/contract_detail_page_controller.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
 import 'package:lawyer_app/main.dart';
 
@@ -71,28 +73,24 @@ class AddTaskPageController extends GetxController {
       currentContext,
       isShowCloseIcon: false,
       backgroundColor: Colors.transparent,
-      contentWidget: ChooseCaseAlert(chooseCaseCallBack: (model) {
-        selectModel.value = model;
-      }),
+      contentWidget: ChooseCaseAlert(
+        chooseCaseCallBack: (model) {
+          selectModel.value = model;
+        },
+      ),
     );
   }
 
   /// 保存任务
   void saveTask() {
     // 验证必填项
-    if (taskNameController.text
-        .trim()
-        .isEmpty) {
+    if (taskNameController.text.trim().isEmpty) {
       showToast('请输入任务名称');
       return;
     }
 
-    if (taskNameController.text
-        .trim()
-        .length < 4 ||
-        taskNameController.text
-            .trim()
-            .length > 20) {
+    if (taskNameController.text.trim().length < 4 ||
+        taskNameController.text.trim().length > 20) {
       showToast('任务名称请控制在4-20个字符');
       return;
     }
@@ -107,15 +105,21 @@ class AddTaskPageController extends GetxController {
       return;
     }
 
-
-    NetUtils.post(Apis.createCaseTask, params: {
-      'title': taskNameController.text.trim(),
-      'isEmergency': isUrgent.value,
-      'remindTimes': DateTime.parse(reminderTime.value).millisecondsSinceEpoch,
-      'caseId': selectModel.value?.id
-    }).then((result){
+    NetUtils.post(
+      Apis.createCaseTask,
+      params: {
+        'title': taskNameController.text.trim(),
+        'isEmergency': isUrgent.value,
+        'remindTimes': DateTime.parse(
+          reminderTime.value,
+        ).millisecondsSinceEpoch,
+        'caseId': selectModel.value?.id,
+      },
+    ).then((result) {
       if (result.code == NetCodeHandle.success) {
         showToast('添加任务成功');
+        getFindController<ContractDetailPageController>()
+            ?.getContractDetailInfo();
         Get.back();
       }
     });

@@ -77,7 +77,7 @@ class RemarkCaseWidget extends StatelessWidget {
                       children: [
                         RichText(
                           text: TextSpan(
-                            text: model.createBy ??'',
+                            text: model.createBy ?? '',
                             style: TextStyle(
                               color: AppColors.color_99000000,
                               fontSize: 10.toSp,
@@ -85,11 +85,11 @@ class RemarkCaseWidget extends StatelessWidget {
                             ),
                             children: [
                               TextSpan(
-                                text: '   ${DateTimeUtils.formatTimestamp(model?.time ?? 0)}',
+                                text: '   ${model.time}',
                                 style: TextStyle(
                                   color: AppColors.color_42000000,
                                   fontSize: 10.toSp,
-                                  fontWeight: FontWeight.normal
+                                  fontWeight: FontWeight.normal,
                                 ),
                               ),
                             ],

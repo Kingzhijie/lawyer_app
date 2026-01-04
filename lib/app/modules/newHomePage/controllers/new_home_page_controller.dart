@@ -32,18 +32,18 @@ class NewHomePageController extends GetxController {
 
   ///用户信息
   var userModel = Rx<UserModel?>(null);
+
   ///首页数据看板
   var homeStatistics = Rx<HomeStatistics?>(null);
 
   int pageNo = 1;
 
-  final EasyRefreshController easyRefreshController= EasyRefreshController(
+  final EasyRefreshController easyRefreshController = EasyRefreshController(
     controlFinishRefresh: true,
-    controlFinishLoad: true
+    controlFinishLoad: true,
   );
 
   final caseTaskList = RxList<CaseTaskModel>([]);
-  
 
   void switchTab(int index) {
     tabIndex.value = index;
@@ -70,23 +70,30 @@ class NewHomePageController extends GetxController {
   ///添加备注
   void addRemarkMethod(CaseTaskModel model) {
     textEditingController.text = '';
-    BottomSheetUtils.show(currentContext,
-        isShowCloseIcon: false,
-        radius: 12.toW,
-        contentWidget: AddCaseRemarkWidget(sendAction: (text){
+    BottomSheetUtils.show(
+      currentContext,
+      isShowCloseIcon: false,
+      radius: 12.toW,
+      contentWidget: AddCaseRemarkWidget(
+        sendAction: (text) {
           // FocusManager.instance.primaryFocus?.unfocus();
           Navigator.pop(currentContext);
           setTaskRemark(text, model);
-        },textEditingController: textEditingController));
+        },
+        textEditingController: textEditingController,
+      ),
+    );
   }
 
-  void linkUserAlert(CaseTaskModel model){
-    BottomSheetUtils.show(currentContext,
-        radius: 12.toW,
-        isShowCloseIcon: true,
-        height: AppScreenUtil.screenHeight - 217.toW,
-        isSetBottomInset: false,
-        contentWidget: LinkUserWidget());
+  void linkUserAlert(CaseTaskModel model) {
+    BottomSheetUtils.show(
+      currentContext,
+      radius: 12.toW,
+      isShowCloseIcon: true,
+      height: AppScreenUtil.screenHeight - 217.toW,
+      isSetBottomInset: false,
+      contentWidget: LinkUserWidget(),
+    );
   }
 
   void searchCaseAction() {
@@ -99,13 +106,13 @@ class NewHomePageController extends GetxController {
   }
 
   ///查看合同详情
-  void lookContractDetailPage() {
-    Get.toNamed(Routes.CONTRACT_DETAIL_PAGE);
+  void lookContractDetailPage(num? caseId) {
+    Get.toNamed(Routes.CONTRACT_DETAIL_PAGE, arguments: caseId);
   }
 
   ///获取用户信息
-  void getUserInfo(){
-    NetUtils.get(Apis.getUserInfo, isLoading: false).then((result){
+  void getUserInfo() {
+    NetUtils.get(Apis.getUserInfo, isLoading: false).then((result) {
       if (result.code == NetCodeHandle.success) {
         userModel.value = UserModel.fromJson(result.data);
       }
@@ -113,8 +120,13 @@ class NewHomePageController extends GetxController {
   }
 
   ///加载首页数据看板
-  void loadHomeStatistics(){ //1: 本周, 2: 本月
-    NetUtils.get(Apis.homeStatistics, queryParameters: {'cycle': 1}, isLoading: false).then((result){
+  void loadHomeStatistics() {
+    //1: 本周, 2: 本月
+    NetUtils.get(
+      Apis.homeStatistics,
+      queryParameters: {'cycle': 1},
+      isLoading: false,
+    ).then((result) {
       if (result.code == NetCodeHandle.success) {
         homeStatistics.value = HomeStatistics.fromJson(result.data ?? {});
         getTaskCount();
@@ -123,12 +135,16 @@ class NewHomePageController extends GetxController {
   }
 
   ///加载首页数据看板
-  void getTaskCount(){
-    NetUtils.get(Apis.getTaskCount, isLoading: false).then((result){
+  void getTaskCount() {
+    NetUtils.get(Apis.getTaskCount, isLoading: false).then((result) {
       if (result.code == NetCodeHandle.success) {
         if (result.data != null) {
-          homeStatistics.value?.yuqiTaskCount = result.data['2'].toString().toInt();
-          homeStatistics.value?.myjoinTaskCount = result.data['1'].toString().toInt();
+          homeStatistics.value?.yuqiTaskCount = result.data['2']
+              .toString()
+              .toInt();
+          homeStatistics.value?.myjoinTaskCount = result.data['1']
+              .toString()
+              .toInt();
           homeStatistics.value?.wddbCount = result.data['0'].toString().toInt();
           homeStatistics.refresh();
         }
@@ -178,7 +194,6 @@ class NewHomePageController extends GetxController {
     }
   }
 
-
   void onRefresh() {
     pageNo = 1;
     getCaseListData(true);
@@ -196,7 +211,6 @@ class NewHomePageController extends GetxController {
     easyRefreshController.resetFooter();
   }
 
-
   /// 上拉加载完成
   void finishLoad(bool isLast) {
     if (isLast) {
@@ -206,18 +220,16 @@ class NewHomePageController extends GetxController {
     }
   }
 
-
   ///设置备注
-  void setTaskRemark(String text, CaseTaskModel model){
-    NetUtils.post(Apis.setTaskRemark, params: {
-      'content': text,
-      'id': model.id
-    }).then((result){
+  void setTaskRemark(String text, CaseTaskModel model) {
+    NetUtils.post(
+      Apis.setTaskRemark,
+      params: {'content': text, 'id': model.id},
+    ).then((result) {
       if (result.code == NetCodeHandle.success) {
         showToast('备注添加成功');
         getCaseListData(true);
       }
     });
   }
-
 }
