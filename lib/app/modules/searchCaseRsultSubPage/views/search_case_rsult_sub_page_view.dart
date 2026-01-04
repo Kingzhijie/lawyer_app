@@ -15,13 +15,20 @@ class SearchCaseRsultSubPageView
   Widget build(BuildContext context) {
     final tasks = _getTasksForDate();
     return Container(
-      padding: EdgeInsets.only(left: 16.toW, right: 16.toW, top: 10.toW, bottom: AppScreenUtil.bottomBarHeight + 10.toW),
+      padding: EdgeInsets.only(
+        left: 16.toW,
+        right: 16.toW,
+        top: 10.toW,
+        bottom: AppScreenUtil.bottomBarHeight + 10.toW,
+      ),
       child: ListView.builder(
         itemCount: tasks.length,
-          padding: EdgeInsets.zero,
-          itemBuilder: (context, index){
-          return TodayWaitWorkWidget(task: tasks[index], isShowTime: false);
-      }),
+        padding: EdgeInsets.zero,
+        itemBuilder: (context, index) {
+          return SizedBox();
+          // return TodayWaitWorkWidget(task: tasks[index], isShowTime: false);
+        },
+      ),
     );
   }
 
@@ -62,5 +69,4 @@ class SearchCaseRsultSubPageView
       },
     ];
   }
-
 }

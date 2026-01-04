@@ -39,12 +39,11 @@ class SearchCaseResultPageController extends GetxController {
         LabelTopBarModel(e.name, SearchCaseRsultSubPageView(type: e.type)),
       );
       Get.lazyPut<SearchCaseRsultSubPageController>(
-            () => SearchCaseRsultSubPageController(),
+        () => SearchCaseRsultSubPageController(),
         tag: e.type.toString(), // 使用 type 作为标签区分不同实例
         fenix: true, // 允许控制器被销毁后重新创建
       );
     }
-
   }
 
   @override
@@ -59,14 +58,13 @@ class SearchCaseResultPageController extends GetxController {
       final tag = e.type.toString(); // 使用 type 作为 tag
       // 检查是否存在再删除
       if (Get.isRegistered<SearchCaseRsultSubPageController>(tag: tag)) {
-        Get.delete<SearchCaseRsultSubPageController>(
-          tag: tag,
-          force: true,
-        );
+        Get.delete<SearchCaseRsultSubPageController>(tag: tag, force: true);
       }
     }
     super.onClose();
   }
 
-  void searchCaseResult() {}
+  void searchCaseResult() {
+    debugPrint('搜索案件');
+  }
 }

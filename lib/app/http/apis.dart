@@ -34,6 +34,9 @@ class Apis {
   ///案件进展
   static String caseTimeline = '/legal/case-timeline/list';
 
+  ///待办
+  static String todoCaseList = '/legal/task/list';
+
   ///获取案件任务分页
   static String getTaskPage = '/legal/task/page';
 

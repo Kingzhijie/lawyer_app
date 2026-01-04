@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_calendar/flutter_advanced_calendar.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/http/apis.dart';
+import 'package:lawyer_app/app/http/net/net_utils.dart';
+import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
+import 'package:lawyer_app/app/modules/newHomePage/models/case_task_model.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
 
 import '../../../../main.dart';
 import '../../../common/components/bottom_sheet_utils.dart';
@@ -9,48 +15,68 @@ import '../../../utils/screen_utils.dart';
 import '../../newHomePage/views/widgets/add_case_remark_widget.dart';
 
 class CalendarPageController extends GetxController {
-  /// 日历控制器
   late final AdvancedCalendarController calendarController;
   final TextEditingController textEditingController = TextEditingController();
 
-  /// 当前选中的日期
   final Rx<DateTime> selectedDate = DateTime.now().obs;
 
   /// 当前显示的月份（用于底部大数字显示）
   final Rx<DateTime> currentDisplayMonth = DateTime.now().obs;
-
-  /// 日历是否展开
   final RxBool isCalendarExpanded = true.obs;
-
-  /// 有事件的日期列表（示例数据）
-  /// 根据UI图，17、18（今日）、19、20有事件
-  /// 使用固定日期，避免其他日期出现点
-  final RxList<DateTime> eventDates = <DateTime>[
-    // 只设置当前月份的具体日期，避免跨月问题
-    // 这里需要根据实际当前日期动态计算
-  ].obs;
-
-  /// 初始化事件日期
-  void _initEventDates() {
-    final now = DateTime.now();
-    final currentMonth = now.month;
-    final currentYear = now.year;
-    
-    // 只设置当前月份的17、18、19、20号
-    eventDates.value = [
-      DateTime(currentYear, currentMonth, 17),
-      DateTime(currentYear, currentMonth, 18),
-      DateTime(currentYear, currentMonth, 19),
-      DateTime(currentYear, currentMonth, 24),
-    ];
-  }
+  final RxList<DateTime> eventDates = <DateTime>[].obs;
+  List<CaseTaskModel> monthsTodoTaskList = [];
+  final RxList<CaseTaskModel> todoTaskList = <CaseTaskModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     calendarController = AdvancedCalendarController.today();
     calendarController.addListener(_onCalendarChanged);
-    _initEventDates();
+    getTaskList();
+  }
+
+  void getTaskList({bool isOnlyShowEventDates = false}) {
+    NetUtils.post(
+      Apis.todoCaseList,
+      params: {
+        'dueAtStart': DateTime(
+          currentDisplayMonth.value.year,
+          currentDisplayMonth.value.month,
+          01,
+        ).toString().replaceAll('.000', ''),
+        'dueAtEnd': DateTime(
+          currentDisplayMonth.value.year,
+          currentDisplayMonth.value.month,
+          currentDisplayMonth.value.daysInMonth(),
+        ).toString().replaceAll('.000', ''),
+      },
+      isLoading: false,
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        monthsTodoTaskList = (result.data as List)
+            .map((e) => CaseTaskModel.fromJson(e))
+            .toList();
+        List<DateTime> dates = [];
+        var taskList = monthsTodoTaskList.where((item) {
+          final dueAt = DateTime.fromMillisecondsSinceEpoch(
+            (item.dueAt ?? 0).toInt(),
+          );
+          final isMonth = dueAt.isMonth(currentDisplayMonth.value);
+          if (isMonth) {
+            dates.add(DateTime(dueAt.year, dueAt.month, dueAt.day));
+          }
+          final isDay = dueAt.isDay(currentDisplayMonth.value);
+          return isDay;
+        }).toList();
+        if (!isOnlyShowEventDates) {
+          taskList.sort(
+            (a, b) => (a.createTime ?? 0).compareTo((b.createTime ?? 0)),
+          );
+          todoTaskList.value = taskList;
+        }
+        eventDates.value = dates;
+      }
+    });
   }
 
   @override
@@ -62,33 +88,47 @@ class CalendarPageController extends GetxController {
 
   void _onCalendarChanged() {
     selectedDate.value = calendarController.value;
-    // 更新显示的月份（只更新年月，不更新日）
-    final newMonth = calendarController.value;
-    if (currentDisplayMonth.value.year != newMonth.year ||
-        currentDisplayMonth.value.month != newMonth.month) {
-      currentDisplayMonth.value = DateTime(newMonth.year, newMonth.month, 1);
+    if (selectedDate.value.month == currentDisplayMonth.value.month) {
+      var taskList = monthsTodoTaskList.where((item) {
+        final dueAt = DateTime.fromMillisecondsSinceEpoch(
+          (item.dueAt ?? 0).toInt(),
+        );
+        final isDay = dueAt.isDay(selectedDate.value);
+        return isDay;
+      }).toList();
+      taskList.sort(
+        (a, b) => (a.createTime ?? 0).compareTo((b.createTime ?? 0)),
+      );
+      todoTaskList.value = taskList;
+    }
+    if (currentDisplayMonth.value.year != selectedDate.value.year ||
+        currentDisplayMonth.value.month != selectedDate.value.month) {
+      currentDisplayMonth.value = DateTime(
+        selectedDate.value.year,
+        selectedDate.value.month,
+        selectedDate.value.day,
+      );
     }
   }
 
   /// 处理日历水平滚动（月份切换）
   void onMonthChanged(DateTime monthDate) {
-    // 更新显示的月份
-    currentDisplayMonth.value = DateTime(monthDate.year, monthDate.month, 1);
-  }
-
-
-  /// 选择日期
-  void selectDate(DateTime date) {
-    calendarController.value = date;
-    selectedDate.value = date;
+    currentDisplayMonth.value = DateTime(
+      monthDate.year,
+      monthDate.month,
+      selectedDate.value.day,
+    );
+    getTaskList(isOnlyShowEventDates: true);
   }
 
   /// 判断日期是否有事件
   bool hasEvent(DateTime date) {
-    return eventDates.any((eventDate) =>
-        eventDate.year == date.year &&
-        eventDate.month == date.month &&
-        eventDate.day == date.day);
+    return eventDates.any(
+      (eventDate) =>
+          eventDate.year == date.year &&
+          eventDate.month == date.month &&
+          eventDate.day == date.day,
+    );
   }
 
   /// 切换日历展开/收起状态
@@ -101,14 +141,29 @@ class CalendarPageController extends GetxController {
     Get.toNamed(Routes.SEARCH_CASE_PAGE);
   }
 
-  void addRemarkAction() {
+  void addRemarkAction(CaseTaskModel model) {
     textEditingController.text = '';
-    BottomSheetUtils.show(currentContext,
-        isShowCloseIcon: false,
-        radius: 12.toW,
-        contentWidget: AddCaseRemarkWidget(sendAction: (text){
-
-        },textEditingController: textEditingController));
+    BottomSheetUtils.show(
+      currentContext,
+      isShowCloseIcon: false,
+      radius: 12.toW,
+      contentWidget: AddCaseRemarkWidget(
+        sendAction: (text) => setTaskRemark(text, model),
+        textEditingController: textEditingController,
+      ),
+    );
   }
 
+  ///设置备注
+  void setTaskRemark(String text, CaseTaskModel model) {
+    NetUtils.post(
+      Apis.setTaskRemark,
+      params: {'content': text, 'id': model.id},
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        showToast('备注添加成功');
+        Get.back();
+      }
+    });
+  }
 }

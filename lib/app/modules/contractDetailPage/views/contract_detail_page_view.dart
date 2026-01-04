@@ -97,7 +97,16 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
             ],
           ),
           // 底部栏
-          Positioned(left: 0, right: 0, bottom: 0, child: _buildBottomBar()),
+          Obx(
+            () => controller.caseDetail.value == null
+                ? SizedBox.shrink()
+                : Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: _buildBottomBar(),
+                  ),
+          ),
         ],
       ),
     );
