@@ -53,6 +53,6 @@ class Apis {
   ///AI智能体UI配置
   static String agentUIConfig = '/ai/agent-ui-config/get';
 
-  
+
 }
 
