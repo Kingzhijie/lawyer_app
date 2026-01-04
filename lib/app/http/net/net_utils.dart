@@ -165,7 +165,6 @@ class NetUtils {
     try {
       LoadingTool.showLoading();
       final dio = DioUtils.instance.dio;
-      String compressedPath = filePath;
       FormData? formData;
 
       // 移动端原有逻辑
@@ -209,7 +208,10 @@ class NetUtils {
             });
           }
         } else {
-          compressedPath = filePath;
+          final MultipartFile multipartFile = await MultipartFile.fromFile(filePath);
+          formData = FormData.fromMap({
+            'file': multipartFile,
+          });
           logPrint('上传其他类型的文件');
         }
       }
@@ -230,7 +232,7 @@ class NetUtils {
         final data = response.data;
         if (data != null) {
           if (data['data'] != null) {
-            logPrint("上传图片成功: " + data.toString());
+            logPrint("上传成功: " + data.toString());
             final dataImage = data['data'].toString();
             return dataImage;
           }

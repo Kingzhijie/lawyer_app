@@ -50,10 +50,9 @@ class TaskCard extends StatelessWidget {
                   ),
                   SizedBox(width: 8.toW),
                   ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 170.toW),
+                    constraints: BoxConstraints(maxWidth: AppScreenUtil.screenWidth - 170.toW),
                     child: Text(
                       model?.title ?? '',
-                      maxLines: 1,
                       style: TextStyle(
                         fontSize: 16.toSp,
                         fontWeight: FontWeight.w600,
