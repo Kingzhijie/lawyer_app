@@ -24,7 +24,7 @@ class CasePageView extends GetView<CasePageController> {
       floatingActionButton: _setFloatingActionWidget(),
       body: Stack(
         children: [
-          // 背景
+          // // 背景
           Positioned(
             top: 0,
             right: 0,
@@ -34,52 +34,47 @@ class CasePageView extends GetView<CasePageController> {
               width: AppScreenUtil.screenWidth,
             ),
           ),
-          _buildTopBar(context),
-          Positioned(
-            left: 0,
-            right: 0,
-            top: AppScreenUtil.navigationBarHeight,
-            child: _buildTabs(),
-          ),
-          Container(
-            alignment: Alignment.topCenter,
-            margin: EdgeInsets.only(
-              top: AppScreenUtil.navigationBarHeight + 48.toW,
-            ),
-            child: Obx(() {
-              if (controller.caseBaseInfoList.isEmpty) {
-                return EmptyContentWidget();
-              }
+          Column(
+            children: [
+              _buildTopBar(context),
+              _buildTabs(),
+              Container(
+                alignment: Alignment.topCenter,
+                margin: EdgeInsets.only(bottom: AppScreenUtil.bottomBarHeight + 90.toW),
+                child: Obx(() {
+                  if (controller.caseBaseInfoList.isEmpty) {
+                    return EmptyContentWidget();
+                  }
 
-              return MSEasyRefresher(
-                controller: controller.easyRefreshController,
-                onRefresh: () {
-                  controller.onRefresh();
-                },
-                onLoad: () {
-                  controller.onLoadMore();
-                },
-                childBuilder: (context, physics) {
-                  return ListView.builder(
-                    itemCount: controller.caseBaseInfoList.length,
-                    physics: physics,
-                    padding: EdgeInsets.only(
-                      left: 16.toW,
-                      right: 16.toW,
-                      top: 8.toW,
-                    ),
-                    itemBuilder: (context, index) {
-                      var model = controller.caseBaseInfoList.value[index];
-                      return AddTaskItem(model: model).withOnTap(() {
-                        controller.lookCaseDetail(model);
-                      });
+                  return MSEasyRefresher(
+                    controller: controller.easyRefreshController,
+                    onRefresh: () {
+                      controller.onRefresh();
+                    },
+                    onLoad: () {
+                      controller.onLoadMore();
+                    },
+                    childBuilder: (context, physics) {
+                      return ListView.builder(
+                        itemCount: controller.caseBaseInfoList.length,
+                        physics: physics,
+                        padding: EdgeInsets.only(
+                          left: 16.toW,
+                          right: 16.toW,
+                        ),
+                        itemBuilder: (context, index) {
+                          var model = controller.caseBaseInfoList[index];
+                          return AddTaskItem(model: model).withOnTap(() {
+                            controller.lookCaseDetail(model);
+                          });
+                        },
+                      );
                     },
                   );
-                  ;
-                },
-              );
-            }),
-          ),
+                }),
+              ).withExpanded(),
+            ],
+          )
         ],
       ),
     );

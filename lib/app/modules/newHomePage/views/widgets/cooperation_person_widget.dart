@@ -84,7 +84,7 @@ class CooperationPersonWidget extends StatelessWidget {
           ConstrainedBox(
             constraints: BoxConstraints(maxWidth: 32.toW),
             child: Text(
-              '腰动力',
+              model?.nickname ?? '',
               maxLines: 1,
               style: TextStyle(
                 color: AppColors.color_42000000,

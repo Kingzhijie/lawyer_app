@@ -129,10 +129,9 @@ class AddTaskItem extends StatelessWidget {
                         ),
                       ).withMarginOnly(right: 8.toW),
                     ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 170.toW),
+                      constraints: BoxConstraints(maxWidth: AppScreenUtil.screenWidth - 162.toW),
                       child: Text(
                         model?.caseName ?? '',
-                        maxLines: 1,
                         style: TextStyle(
                           fontSize: 15.toSp,
                           fontWeight: FontWeight.w700,
@@ -285,8 +284,10 @@ class AddTaskItem extends StatelessWidget {
     String type = '';
     if (!ObjectUtils.isEmptyList(model?.casePartyResVOS)) {
       for (var e in model!.casePartyResVOS!) {
-        type =
-            '${type.isEmpty ? '' : '$type '}${e.name}(${getPartyRole(e.partyRole ?? 0)})';
+        if (!ObjectUtils.isEmptyString(e.name)) {
+          type =
+          '${type.isEmpty ? '' : '$type '}${e.name}(${getPartyRole(e.partyRole ?? 0)})';
+        }
       }
     }
     return type;

@@ -199,7 +199,7 @@ CaseTaskModel copyWith({  num? id,
 
 class Notes {
   Notes({
-    num? time,
+    String? time,
       String? content, 
       String? createBy,}){
     _time = time;
@@ -212,17 +212,17 @@ class Notes {
     _content = json['content'];
     _createBy = json['createBy'];
   }
-  num? _time;
+  String? _time;
   String? _content;
   String? _createBy;
-Notes copyWith({  num? time,
+Notes copyWith({  String? time,
   String? content,
   String? createBy,
 }) => Notes(  time: time ?? _time,
   content: content ?? _content,
   createBy: createBy ?? _createBy,
 );
-  num? get time => _time;
+  String? get time => _time;
   String? get content => _content;
   String? get createBy => _createBy;
 

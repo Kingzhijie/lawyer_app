@@ -46,7 +46,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
             childBuilder: (context, physics) {
               return _setContentWidget(physics);
             },
-          ).withMarginOnly(top: AppScreenUtil.navigationBarHeight + 50.toW),
+          ).withMarginOnly(top: AppScreenUtil.navigationBarHeight + 50.toW, bottom: 20.toW),
           Positioned(
             top: 0,
             right: 16.toW,

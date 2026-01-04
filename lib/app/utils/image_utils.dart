@@ -206,7 +206,6 @@ class ImageUtils extends StatelessWidget {
             color: imageColor,
             placeholder: (context, url) => _placeholderWidget(),
             errorWidget: (context, url, error) {
-              logPrint('error====$error---url===$url');
               return _placeholderWidget(isErr: true);
             },
             cacheManager: CustomCacheManager(),

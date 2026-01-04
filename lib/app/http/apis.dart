@@ -38,6 +38,11 @@ class Apis {
   ///设置任务的备注
   static String setTaskRemark = '/legal/task/remark';
 
+  ///系统配置
+  static String systemConfig = '/system/parameter-config/all';
+
+  ///AI智能体UI配置
+  static String agentUIConfig = '/ai/agent-ui-config/get';
 
 
 

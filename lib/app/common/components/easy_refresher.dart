@@ -75,7 +75,7 @@ class _MSEasyRefresherState extends State<MSEasyRefresher> {
       // 指定加载时的底部组件
       footer: ClassicFooter(
         hitOver: true,
-        safeArea: true,
+        safeArea: false,
         showMessage: false,
         showText: true,
         processedDuration: Duration.zero,
