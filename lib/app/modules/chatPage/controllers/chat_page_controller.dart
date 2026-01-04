@@ -1,7 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:lawyer_app/app/http/apis.dart';
+import 'package:lawyer_app/app/http/net/net_utils.dart';
+import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bottom_panel.dart';
+import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:chat_bottom_container/chat_bottom_container.dart';
@@ -16,6 +21,8 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:vibration/vibration.dart';
 
 import '../../../utils/image_picker_util.dart';
+import '../models/chat_agent_ui_config.dart';
+import '../models/chat_system_config.dart';
 
 class UiMessage {
   UiMessage({
@@ -181,11 +188,12 @@ class ChatPageController extends GetxController {
     }
   }
 
-  void _addAiWelcome() {
+  ///添加欢迎开场白
+  void _addAiWelcome(ChatAgentUiConfig model) {
     messages.add(
       UiMessage(
-        id: 'welcome',
-        text: '您好，我是 AI 助手，随时为您提供法律相关咨询。',
+        id: model.id.toString(),
+        text: model.prologue ?? '您好，我是 AI 助手，随时为您提供法律相关咨询。',
         isAi: true,
         createdAt: DateTime.now(),
       ),
@@ -297,7 +305,7 @@ class ChatPageController extends GetxController {
     super.onInit();
     textController.addListener(_handleTextChanged);
     inputFocusNode.addListener(_handleFocusChange);
-    _addAiWelcome();
+    getSystemConfig();
   }
 
   @override
@@ -564,10 +572,38 @@ class ChatPageController extends GetxController {
             logPrint('文件大小: ${file.size} bytes');
             logPrint('文件路径: ${file.path}');
             logPrint('文件扩展名: ${file.extension}');
+
+            NetUtils.uploadSingleFile(file.path!).then((result) {
+              logPrint('result====$result');
+            });
           }
         } catch (e) {
           logPrint('选取错误===$e');
         }
     }
+  }
+
+  ///获取系统配置
+  void getSystemConfig() {
+    NetUtils.get(Apis.systemConfig).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        var id = result.data?['sys_def_agent'];
+        getAgentUIConfig(id);
+      }
+    });
+  }
+
+  ///获取Ai智能图UI配置
+  void getAgentUIConfig(id) {
+    NetUtils.get(
+      Apis.agentUIConfig,
+      queryParameters: {'id': id},
+      isLoading: false,
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        var model = ChatAgentUiConfig.fromJson(result.data ?? {});
+        _addAiWelcome(model);
+      }
+    });
   }
 }
