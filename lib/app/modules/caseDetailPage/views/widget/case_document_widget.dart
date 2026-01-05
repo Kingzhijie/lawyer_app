@@ -81,7 +81,7 @@ class CaseDocumentWidget extends StatelessWidget {
         children: [
           // 文档图标
           ImageUtils(
-            imageUrl: Assets.home.caseDocIcon.path,
+            imageUrl: Assets.home.caseDoc.path,
             width: 40.toW,
             height: 40.toW,
             fit: BoxFit.cover,

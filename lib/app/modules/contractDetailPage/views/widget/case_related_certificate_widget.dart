@@ -92,7 +92,7 @@ class CaseRelatedCertificateWidget extends StatelessWidget {
         children: [
           // 文档图标
           ImageUtils(
-            imageUrl: Assets.home.caseDocIcon.path,
+            imageUrl: Assets.home.caseDoc.path,
             width: 48.toW,
             height: 48.toW,
             fit: BoxFit.cover,

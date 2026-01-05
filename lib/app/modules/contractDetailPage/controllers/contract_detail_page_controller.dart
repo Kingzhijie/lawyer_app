@@ -7,6 +7,7 @@ import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_detail_model.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case_timeline_model.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/views/contract_detail_page_view.dart';
 import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/widgets/link_user_widget.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
@@ -121,5 +122,23 @@ class ContractDetailPageController extends GetxController {
     } catch (e) {
       logPrint('选取错误===$e');
     }
+  }
+
+  // 处理菜单操作
+  void handleMenuAction(String action) {
+    if (action == CaseActionType.caseClosed.title) {
+      // 结案
+      logPrint('结案操作');
+    } else if (action == CaseActionType.caseArchiving.title) {
+      // 结案
+      logPrint('归档操作');
+    } else if (action == CaseActionType.caseAppeal.title) {
+      // 结案
+      logPrint('上诉操作');
+    }else if (action == CaseActionType.caseDelete.title) {
+      // 结案
+      logPrint('删除操作');
+    }
+
   }
 }

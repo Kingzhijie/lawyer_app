@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../utils/image_utils.dart';
@@ -13,6 +15,17 @@ import 'widget/case_progress_widget.dart';
 import 'widget/case_related_certificate_widget.dart';
 import 'widget/case_save_detail_widget.dart';
 import 'widget/case_task_list_widget.dart';
+
+enum CaseActionType {
+  caseClosed('结案'),
+  caseArchiving('归档'),
+  caseAppeal('上诉'),
+  caseDelete('删除');
+
+  const CaseActionType(this.title);
+
+  final String title;
+}
 
 class ContractDetailPageView extends GetView<ContractDetailPageController> {
   const ContractDetailPageView({super.key});
@@ -137,10 +150,14 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
         children: [
           GestureDetector(
             onTap: () => Get.back(),
-            child: Icon(
-              Icons.arrow_back_ios,
-              size: 20.toW,
-              color: Colors.black,
+            child: Container(
+              alignment: Alignment.centerLeft,
+              width: 30.toW,
+              child: Icon(
+                Icons.arrow_back_ios,
+                size: 20.toW,
+                color: Colors.black,
+              ),
             ),
           ),
           Expanded(
@@ -156,7 +173,37 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
               ),
             ),
           ),
-          SizedBox(width: 20.toW),
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_horiz, color: Colors.black, size: 22.toW),
+            offset: Offset(0, 40.toW),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.toW),
+            ),
+            color: Colors.white,
+            elevation: 8,
+            padding: EdgeInsets.zero,
+            itemBuilder: (BuildContext context) => [
+              _buildPopupMenuItem(
+                icon: Assets.my.jieanIcon.path,
+                label: CaseActionType.caseClosed,
+              ),
+              _buildPopupMenuItem(
+                icon: Assets.my.guidangIcon.path,
+                label: CaseActionType.caseArchiving,
+              ),
+              _buildPopupMenuItem(
+                icon: Assets.my.shangsuIcon.path,
+                label: CaseActionType.caseAppeal,
+              ),
+              _buildPopupMenuItem(
+                icon: Assets.my.deleteHtIcon.path,
+                label: CaseActionType.caseDelete,
+              ),
+            ],
+            onSelected: (String value) {
+              controller.handleMenuAction(value);
+            },
+          ),
         ],
       ),
     );
@@ -347,6 +394,30 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
                   color: AppColors.color_99000000,
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 构建弹出菜单项
+  PopupMenuItem<String> _buildPopupMenuItem({
+    required String icon,
+    required CaseActionType label,
+  }) {
+    return PopupMenuItem<String>(
+      value: label.title,
+      height: 48.toW,
+      child: Row(
+        children: [
+          ImageUtils(imageUrl: icon, width: 20.toW),
+          SizedBox(width: 12.toW),
+          Text(
+            label.title,
+            style: TextStyle(
+              fontSize: 15.toSp,
+              color: AppColors.color_E6000000,
             ),
           ),
         ],

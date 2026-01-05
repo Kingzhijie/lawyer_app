@@ -127,7 +127,12 @@ class SSEUtils {
   }) async {
     try {
       // 创建一个新的 Dio 实例，避免日志拦截器干扰流式响应
-      final dio = DioUtils.instance.dio;
+      final dio = Dio(BaseOptions(
+        baseUrl: DioConfig.baseURL,
+        connectTimeout: DioConfig.connectTimeout,
+        receiveTimeout: Duration(minutes: 5), // SSE 需要更长的超时时间
+        sendTimeout: DioConfig.sendTimeout,
+      ));
       
       final url = '/ai/super-agent/chat/stream/$agentId';
       
@@ -135,16 +140,19 @@ class SSEUtils {
       logPrint('SSE 请求参数: ${jsonEncode(request.toJson())}');
 
       // 获取 token
-      final token = StorageUtils.getToken();
+      final token = 'test1';
+      //StorageUtils.getToken();
       
       // 构建请求头
       final headers = {
         ...DioConfig.httpHeaders,
-        // if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+        if (token.isNotEmpty) 'Authorization': 'Bearer $token',
         'Accept': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
       };
+
+      logPrint('SSE 请求 headers: $headers');
 
       final response = await dio.post<ResponseBody>(
         url,
