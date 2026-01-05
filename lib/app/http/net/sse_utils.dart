@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:lawyer_app/app/http/net/tool/dio_utils.dart';
 import '../../config/dio_config.dart';
 import '../../utils/storage_utils.dart';
 import 'tool/logger.dart';
@@ -126,12 +127,7 @@ class SSEUtils {
   }) async {
     try {
       // 创建一个新的 Dio 实例，避免日志拦截器干扰流式响应
-      final dio = Dio(BaseOptions(
-        baseUrl: DioConfig.baseURL,
-        connectTimeout: DioConfig.connectTimeout,
-        receiveTimeout: Duration(minutes: 5), // SSE 需要更长的超时时间
-        sendTimeout: DioConfig.sendTimeout,
-      ));
+      final dio = DioUtils.instance.dio;
       
       final url = '/ai/super-agent/chat/stream/$agentId';
       
@@ -144,7 +140,7 @@ class SSEUtils {
       // 构建请求头
       final headers = {
         ...DioConfig.httpHeaders,
-        if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+        // if (token.isNotEmpty) 'Authorization': 'Bearer $token',
         'Accept': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
