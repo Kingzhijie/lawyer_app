@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/http/apis.dart';
+import 'package:lawyer_app/app/http/net/net_utils.dart';
+import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
+import 'package:lawyer_app/app/modules/myPage/models/user_model.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
 class LinkUserWidget extends StatefulWidget {
-  const LinkUserWidget({super.key});
+  final Function(UserModel model)? relevanceSuccess;
+  final int manageType; //管理类型 1-案件 2-任务
+  final num? manageId; //案件id 或 任务id
+  const LinkUserWidget({
+    super.key,
+    this.relevanceSuccess,
+    this.manageType = 1,
+    this.manageId,
+  });
 
   @override
   State<LinkUserWidget> createState() => _LinkUserWidgetState();
@@ -14,6 +27,14 @@ class LinkUserWidget extends StatefulWidget {
 
 class _LinkUserWidgetState extends State<LinkUserWidget> {
   final TextEditingController controller = TextEditingController();
+
+  List<UserModel> userModels = [];
+  bool isRequest = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +102,9 @@ class _LinkUserWidgetState extends State<LinkUserWidget> {
                   onChanged: (text) {
                     setState(() {});
                   },
-                  onSubmitted: (text) {},
+                  onSubmitted: (text) {
+                    loadData();
+                  },
                 ).withExpanded(),
                 Text(
                   '搜索',
@@ -92,25 +115,27 @@ class _LinkUserWidgetState extends State<LinkUserWidget> {
                     fontSize: 16.toSp,
                     fontWeight: FontWeight.w500,
                   ),
-                ),
+                ).withOnTap(() {
+                  loadData();
+                }),
               ],
             ),
           ),
-          if (controller.text != '18539921059')
+          if (userModels.isEmpty && isRequest)
             Row(
               children: [
                 Text(
                   '无关联用户，请确认对方是否注册',
                   style: TextStyle(color: Color(0xFFFF383C), fontSize: 14.toSp),
-                )
+                ),
               ],
             ).withMarginOnly(top: 8.toW)
-          else if (controller.text == '18539921059')
+          else if (userModels.isNotEmpty)
             ListView.builder(
-              itemCount: 20,
+              itemCount: userModels.length,
               padding: EdgeInsets.zero,
               itemBuilder: (context, index) {
-                return _setItem();
+                return _setItem(userModels[index]);
               },
             ).withExpanded(),
         ],
@@ -118,33 +143,32 @@ class _LinkUserWidgetState extends State<LinkUserWidget> {
     ).unfocusWhenTap();
   }
 
-  Widget _setItem(){
+  Widget _setItem(UserModel model) {
     return Container(
       margin: EdgeInsets.only(top: 12.toW),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.toW),
         color: Color(0xFFF5F7FA),
       ),
-      padding: EdgeInsets.symmetric(
-        horizontal: 16.toW,
-        vertical: 12.toW,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 16.toW, vertical: 12.toW),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
               ImageUtils(
-                imageUrl: Assets.home.defaultUserIcon.path,
+                imageUrl: model.avatar,
+                placeholderImagePath: Assets.home.defaultUserIcon.path,
                 width: 48.toW,
                 height: 48.toW,
+                circularRadius: 24.toW,
               ),
               Width(10.toW),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '韩律师',
+                    model.nickname ?? '',
                     style: TextStyle(
                       color: AppColors.color_E6000000,
                       fontSize: 16.toSp,
@@ -152,7 +176,7 @@ class _LinkUserWidgetState extends State<LinkUserWidget> {
                   ),
                   Height(4.toW),
                   Text(
-                    '18539921059',
+                    model.mobile ?? '',
                     style: TextStyle(
                       color: AppColors.color_99000000,
                       fontSize: 14.toSp,
@@ -180,10 +204,47 @@ class _LinkUserWidgetState extends State<LinkUserWidget> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-          ),
+          ).withOnTap(() {
+            relevanceMethod(model);
+          }),
         ],
       ),
     );
   }
 
+  ///加载用户信息
+  void loadData() {
+    if (controller.text.isEmpty) {
+      return;
+    }
+    NetUtils.get(
+      Apis.searchUserList,
+      queryParameters: {'mobile': controller.text},
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        isRequest = true;
+        var list = (result.data as List)
+            .map((e) => UserModel.fromJson(e))
+            .toList();
+        userModels = list;
+        setState(() {});
+      }
+    });
+  }
+
+  void relevanceMethod(UserModel model) {
+    NetUtils.post(
+      Apis.relateUser,
+      queryParameters: {
+        'manageId': widget.manageId,
+        'manageType': widget.manageType,
+        'memberUserId':model.id,
+      },
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        showToast('关联成功');
+        Navigator.pop(context);
+      }
+    });
+  }
 }

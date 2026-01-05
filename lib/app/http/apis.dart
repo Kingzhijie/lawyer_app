@@ -64,9 +64,27 @@ class Apis {
   ///设置任务的备注
   static String setTaskRemark = '/legal/task/remark';
 
+
+  ///搜索用户列表
+  static String searchUserList = '/member/user/list';
+
+  ///关联用户
+  static String relateUser= '/legal/manager/relate-user';
+
+  ///创建聊天id
+  static String createChatId = '/ai/chat-his/create';
+
+
+
   ///系统配置
   static String systemConfig = '/system/parameter-config/all';
 
   ///AI智能体UI配置
   static String agentUIConfig = '/ai/agent-ui-config/get';
+
+
+  ///AI智能体聊天流式接口
+  static String aiChatStream(String agentId) => '/ai/super-agent/chat/stream/$agentId';
+
+
 }

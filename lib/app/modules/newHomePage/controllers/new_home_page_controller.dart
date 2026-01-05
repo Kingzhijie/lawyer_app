@@ -101,7 +101,9 @@ class NewHomePageController extends GetxController {
       isShowCloseIcon: true,
       height: AppScreenUtil.screenHeight - 217.toW,
       isSetBottomInset: false,
-      contentWidget: LinkUserWidget(),
+      contentWidget: LinkUserWidget(manageId: model.id!, relevanceSuccess: (m){
+        getCaseListData(true);
+      }),
     );
   }
 
