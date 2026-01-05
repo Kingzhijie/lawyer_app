@@ -1,10 +1,19 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/components/bottom_sheet_utils.dart';
 import 'package:lawyer_app/app/http/apis.dart';
 import 'package:lawyer_app/app/http/net/net_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_detail_model.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case_timeline_model.dart';
+import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
+import 'package:lawyer_app/app/modules/newHomePage/views/widgets/link_user_widget.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
+import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
+import 'package:lawyer_app/main.dart';
 
 class ContractDetailPageController extends GetxController {
   final RxInt trialIndex = 0.obs; // 0-一审, 1-二审, 2-再审
@@ -59,5 +68,58 @@ class ContractDetailPageController extends GetxController {
 
   void addTask() {
     Get.toNamed(Routes.ADD_TASK_PAGE);
+  }
+
+  void onLinkUser() {
+    final userModel =
+        getFindController<NewHomePageController>()?.userModel.value;
+    if (userModel == null) {
+      return;
+    }
+
+    if (userModel.hasTeamOffice == false) {
+      showToast('跳转引导开会员');
+      return;
+    }
+
+    BottomSheetUtils.show(
+      currentContext,
+      radius: 12.toW,
+      isShowCloseIcon: true,
+      height: AppScreenUtil.screenHeight - 217.toW,
+      isSetBottomInset: false,
+      contentWidget: LinkUserWidget(),
+    );
+  }
+
+  void onCaseDetail({required int tabIndex}) {
+    Get.toNamed(
+      Routes.CASE_DETAIL_PAGE,
+      arguments: {'caseId': caseId, 'tabIndex': tabIndex},
+    );
+  }
+
+  void uploadFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.any, // 所有类型
+        allowMultiple: false, // 单选
+      );
+      if (result != null && result.files.isNotEmpty) {
+        PlatformFile file = result.files.first;
+        logPrint('文件名: ${file.name}');
+        logPrint('文件大小: ${file.size} bytes');
+        logPrint('文件路径: ${file.path}');
+        logPrint('文件扩展名: ${file.extension}');
+
+        NetUtils.uploadSingleFile(file.path!).then((result) {
+          logPrint('result====$result--');
+
+          /// todo : 上传文件到该案件
+        });
+      }
+    } catch (e) {
+      logPrint('选取错误===$e');
+    }
   }
 }

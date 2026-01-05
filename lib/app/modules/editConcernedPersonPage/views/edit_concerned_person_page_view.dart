@@ -17,7 +17,7 @@ class EditConcernedPersonPageView
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CommonAppBar(title: '编辑当事人/关联方'),
+      appBar: CommonAppBar(title: '新增当事人/关联方'),
       body: Column(
         children: [
           Expanded(
@@ -186,14 +186,14 @@ class EditConcernedPersonPageView
               fontSize: 14.toSp,
               color: AppColors.color_E6000000,
             ),
-            onTap: (){
-              if (label == '类型'){
+            onTap: () {
+              if (label == '类型') {
                 controller.chooseStylePage();
               }
-              if (label == '属性'){
+              if (label == '属性') {
                 controller.chooseAttributePage();
               }
-              if (label == '性别'){
+              if (label == '性别') {
                 controller.chooseSexPage();
               }
             },

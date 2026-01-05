@@ -1,4 +1,4 @@
-import 'case_party_res_vo.detail_model.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_party_model.dart';
 
 class CaseBaseModel {
   int? id;
@@ -17,11 +17,15 @@ class CaseBaseModel {
   dynamic closureDate;
   dynamic archivingDate;
   String? archiveLocation;
+  String? primaryLawyer;
+  String? assistantLawyer;
+  String? judgePhone;
+  String? caseSummary;
   dynamic caseRemark;
   String? handler;
   dynamic handlerPhone;
   int? createTime;
-  List<CasePartyResVo>? casePartyResVos;
+  List<CasePartyModel>? casePartyResVos;
 
   CaseBaseModel({
     this.id,
@@ -45,6 +49,10 @@ class CaseBaseModel {
     this.handlerPhone,
     this.createTime,
     this.casePartyResVos,
+    this.primaryLawyer,
+    this.assistantLawyer,
+    this.judgePhone,
+    this.caseSummary,
   });
 
   factory CaseBaseModel.fromJson(Map<String, dynamic> json) => CaseBaseModel(
@@ -69,8 +77,12 @@ class CaseBaseModel {
     handlerPhone: json['handlerPhone'] as dynamic,
     createTime: json['createTime'] as int?,
     casePartyResVos: (json['casePartyResVOS'] as List<dynamic>?)
-        ?.map((e) => CasePartyResVo.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => CasePartyModel.fromJson(e as Map<String, dynamic>))
         .toList(),
+    primaryLawyer: json['primaryLawyer'] as String?,
+    assistantLawyer: json['assistantLawyer'] as String?,
+    judgePhone: json['judgePhone'] as String?,
+    caseSummary: json['caseSummary'] as String?,
   );
 
   Map<String, dynamic> toJson() => {
@@ -94,6 +106,10 @@ class CaseBaseModel {
     'handler': handler,
     'handlerPhone': handlerPhone,
     'createTime': createTime,
+    'primaryLawyer': primaryLawyer,
+    'assistantLawyer': assistantLawyer,
+    'judgePhone': judgePhone,
+    'caseSummary': caseSummary,
     'casePartyResVOS': casePartyResVos?.map((e) => e.toJson()).toList(),
   };
 }

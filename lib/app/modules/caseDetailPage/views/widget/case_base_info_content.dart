@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_party_model.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 
 import '../../controllers/case_detail_page_controller.dart';
@@ -29,6 +31,17 @@ class CaseBaseInfoContent extends StatelessWidget {
   }
 
   Widget _setCaseBaseInfoWidget() {
+    final roles = controller.caseDetail.value?.caseBase!.casePartyResVos ?? [];
+    var roleText = '';
+    for (var item in roles) {
+      if (item.name != null && item.name!.isNotEmpty) {
+        if (roleText.isEmpty) {
+          roleText += '${item.name}';
+        } else {
+          roleText += '/${item.name}';
+        }
+      }
+    }
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW),
       padding: EdgeInsets.all(16.toW),
@@ -72,23 +85,92 @@ class CaseBaseInfoContent extends StatelessWidget {
           Container(height: 0.5, color: AppColors.color_line),
           SizedBox(height: 16.toW),
           // 信息列表
-          _buildInfoRow('案号', '2023粤0105民初1234号'),
+          _buildInfoRow(
+            '案号',
+            controller.caseDetail.value?.caseBase?.caseNumber ?? '-',
+          ),
           SizedBox(height: 16.toW),
-          _buildInfoRow('案由', '合同纠纷'),
+          _buildInfoRow(
+            '案由',
+            controller.caseDetail.value?.caseBase?.caseReason != null &&
+                    controller
+                        .caseDetail
+                        .value!
+                        .caseBase!
+                        .caseReason!
+                        .isNotEmpty
+                ? controller.caseDetail.value!.caseBase!.caseReason!
+                : '-',
+          ),
           SizedBox(height: 16.toW),
-          _buildInfoRow('立案日期', '2025-09-24'),
+          _buildInfoRow(
+            '立案日期',
+            DateTimeUtils.formatTimestamp(
+              controller.caseDetail.value!.caseBase?.createTime ?? 0,
+            ),
+          ),
           SizedBox(height: 16.toW),
-          _buildInfoRow('承办律师', '祝律师'),
+          _buildInfoRow(
+            '承办律师',
+            controller.caseDetail.value?.caseBase?.primaryLawyer != null &&
+                    controller
+                        .caseDetail
+                        .value!
+                        .caseBase!
+                        .primaryLawyer!
+                        .isNotEmpty
+                ? controller.caseDetail.value!.caseBase!.primaryLawyer!
+                : '-',
+          ),
           SizedBox(height: 16.toW),
-          _buildInfoRow('协办律师', '蔡律师  王律师'),
+          _buildInfoRow(
+            '协办律师',
+            controller.caseDetail.value?.caseBase?.assistantLawyer != null &&
+                    controller
+                        .caseDetail
+                        .value!
+                        .caseBase!
+                        .assistantLawyer!
+                        .isNotEmpty
+                ? controller.caseDetail.value!.caseBase!.assistantLawyer!
+                : '-',
+          ),
           SizedBox(height: 16.toW),
-          _buildInfoRow('客户/委托人', '浙江互品云科技'),
+          _buildInfoRow('客户/委托人', roleText),
           SizedBox(height: 16.toW),
-          _buildInfoRow('承办人', '李林顿'),
+          _buildInfoRow(
+            '承办人',
+            controller.caseDetail.value!.caseBase?.handler != null &&
+                    controller.caseDetail.value!.caseBase!.handler!.isNotEmpty
+                ? controller.caseDetail.value!.caseBase!.handler!
+                : '-',
+          ),
           SizedBox(height: 16.toW),
-          _buildInfoRow('受理法院', '广州市天河区人民法院'),
+          _buildInfoRow(
+            '受理法院',
+            controller.caseDetail.value!.caseBase?.receivingUnit != null &&
+                    controller
+                        .caseDetail
+                        .value!
+                        .caseBase!
+                        .receivingUnit!
+                        .isNotEmpty
+                ? controller.caseDetail.value!.caseBase!.receivingUnit!
+                : '-',
+          ),
           SizedBox(height: 16.toW),
-          _buildInfoRow('法官电话', '0571-98276822'),
+          _buildInfoRow(
+            '法官电话',
+            controller.caseDetail.value!.caseBase?.judgePhone != null &&
+                    controller
+                        .caseDetail
+                        .value!
+                        .caseBase!
+                        .judgePhone!
+                        .isNotEmpty
+                ? controller.caseDetail.value!.caseBase!.judgePhone!
+                : '-',
+          ),
         ],
       ),
     );
@@ -124,6 +206,8 @@ class CaseBaseInfoContent extends StatelessWidget {
 
   // 当事人/关联方
   Widget _setPartyInfoWidget() {
+    final casePartyResVOS =
+        controller.caseDetail.value?.caseBase?.casePartyResVos ?? [];
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW),
       padding: EdgeInsets.all(16.toW),
@@ -158,182 +242,170 @@ class CaseBaseInfoContent extends StatelessWidget {
                   controller.editConcernedPerson();
                 },
                 child: Text(
-                  '编辑',
+                  '新增',
                   style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),
                 ),
               ),
             ],
           ),
           SizedBox(height: 16.toW),
-          // 当事人列表
-          Obx(
-            () => _buildPartyItem(
-              index: 0,
-              name: '林玲',
-              type: '被告',
-              typeColor: const Color(0xFF52C41A),
-              isIndividual: true,
-              contact: '13800138000',
-              idCard: '330102199001011234',
-              address: '浙江省杭州市上城区某某街道123号',
-              gender: '女',
-            ),
-          ),
-          SizedBox(height: 12.toW),
-          Obx(
-            () => _buildPartyItem(
-              index: 1,
-              name: '浙江燕山机场',
-              type: '原告',
-              typeColor: const Color(0xFFFF4D4F),
-              isIndividual: false,
-              contact: '15263677322',
-              idCard: '220182195403073083',
-              address: '浙江省乐清市乐成镇环城东街89弄8号',
-              gender: '女',
-            ),
-          ),
+          ...casePartyResVOS.asMap().entries.map((item) {
+            return _buildPartyItem(index: item.key, item: item.value);
+          }),
         ],
       ),
     );
   }
 
-  Widget _buildPartyItem({
-    required int index,
-    required String name,
-    required String type,
-    required Color typeColor,
-    required bool isIndividual,
-    String? contact,
-    String? idCard,
-    String? address,
-    String? gender,
-  }) {
-    final isExpanded = controller.partyExpandedList[index];
+  Widget _buildPartyItem({required int index, required CasePartyModel item}) {
+    return Obx(() {
+      final isExpanded = controller.partyExpandedList[index];
 
-    return GestureDetector(
-      onTap: () => controller.togglePartyExpanded(index),
-      child: Container(
-        padding: EdgeInsets.all(12.toW),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF5F7FA),
-          borderRadius: BorderRadius.circular(8.toW),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 顶部信息行
-            Row(
-              children: [
-                // 类型标签
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 8.toW,
-                    vertical: 4.toW,
-                  ),
-                  decoration: BoxDecoration(
-                    color: typeColor,
-                    borderRadius: BorderRadius.circular(4.toW),
-                  ),
-                  child: Text(
-                    type,
-                    style: TextStyle(
-                      fontSize: 12.toSp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+      return item.name != null && item.name!.isNotEmpty
+          ? GestureDetector(
+              onTap: () => controller.togglePartyExpanded(index),
+              child: Container(
+                margin: EdgeInsets.only(bottom: 12.toW),
+                padding: EdgeInsets.all(12.toW),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F7FA),
+                  borderRadius: BorderRadius.circular(8.toW),
                 ),
-                SizedBox(width: 8.toW),
-                // 姓名
-                Text(
-                  name,
-                  style: TextStyle(
-                    fontSize: 15.toSp,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.color_E6000000,
-                  ),
-                ),
-                SizedBox(width: 8.toW),
-                // 个人/公司标签
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 6.toW,
-                    vertical: 2.toW,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: isIndividual
-                          ? AppColors.theme
-                          : const Color(0xFFFF9800),
-                      width: 0.5,
-                    ),
-                    borderRadius: BorderRadius.circular(4.toW),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        isIndividual
-                            ? Icons.person_outline
-                            : Icons.business_outlined,
-                        size: 12.toW,
-                        color: isIndividual
-                            ? AppColors.theme
-                            : const Color(0xFFFF9800),
-                      ),
-                      SizedBox(width: 2.toW),
-                      Text(
-                        isIndividual ? '个人' : '公司',
-                        style: TextStyle(
-                          fontSize: 10.toSp,
-                          color: isIndividual
-                              ? AppColors.theme
-                              : const Color(0xFFFF9800),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 顶部信息行
+                    Row(
+                      children: [
+                        // 类型标签
+                        if (item.partyRole == 1 || item.partyRole == 2)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8.toW,
+                              vertical: 4.toW,
+                            ),
+                            decoration: BoxDecoration(
+                              color: item.partyRole == 2
+                                  ? const Color(0xFF52C41A)
+                                  : const Color(0xFFFF4D4F),
+                              borderRadius: BorderRadius.circular(4.toW),
+                            ),
+                            child: Text(
+                              item.partyRole == 2 ? '被告' : '原告',
+                              style: TextStyle(
+                                fontSize: 12.toSp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        SizedBox(width: 8.toW),
+                        // 姓名
+                        Expanded(
+                          child: Text(
+                            item.name != null && item.name!.isNotEmpty
+                                ? item.name!
+                                : '-',
+                            style: TextStyle(
+                              fontSize: 15.toSp,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.color_E6000000,
+                            ),
+                          ),
                         ),
+                        SizedBox(width: 8.toW),
+                        // 个人/公司标签
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6.toW,
+                            vertical: 2.toW,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: item.partyType == 1
+                                  ? AppColors.theme
+                                  : const Color(0xFFFF9800),
+                              width: 0.5,
+                            ),
+                            borderRadius: BorderRadius.circular(4.toW),
+                          ),
+                          child: Text(
+                            item.partyType == 1 ? '个人' : '公司',
+                            style: TextStyle(
+                              fontSize: 10.toSp,
+                              color: item.partyType == 1
+                                  ? AppColors.theme
+                                  : const Color(0xFFFF9800),
+                            ),
+                          ),
+                        ),
+                        // 委托人标签
+                        if (item.partyRole == 6)
+                          Container(
+                            margin: EdgeInsets.only(left: 6.toW),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 4.toW,
+                              vertical: 3.toW,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF52C41A),
+                              borderRadius: BorderRadius.circular(4.toW),
+                            ),
+                            child: Text(
+                              '委托人',
+                              style: TextStyle(
+                                fontSize: 10.toSp,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        SizedBox(width: 8.toW),
+                        Icon(
+                          isExpanded
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
+                          size: 20.toW,
+                          color: AppColors.color_99000000,
+                        ),
+                      ],
+                    ),
+                    // 展开的详细信息
+                    if (isExpanded) ...[
+                      SizedBox(height: 12.toW),
+                      _buildDetailRow(
+                        '联系方式',
+                        item.phone != null && item.phone!.isNotEmpty
+                            ? item.phone!
+                            : '-',
+                      ),
+                      SizedBox(height: 8.toW),
+                      _buildDetailRow(
+                        '身份证号码',
+                        item.idNumber != null && item.idNumber!.isNotEmpty
+                            ? item.idNumber!
+                            : '-',
+                      ),
+                      SizedBox(height: 8.toW),
+                      _buildDetailRow(
+                        '地址',
+                        item.address != null && item.address!.isNotEmpty
+                            ? item.address!
+                            : '-',
+                      ),
+                      SizedBox(height: 8.toW),
+                      _buildDetailRow(
+                        '性别',
+                        (item.gender ?? 0) > 0
+                            ? (item.gender == 1 ? '男' : '女')
+                            : '-',
                       ),
                     ],
-                  ),
+                  ],
                 ),
-                const Spacer(),
-                // 委托人标签
-                if (!isIndividual)
-                  Container(
-                    padding: EdgeInsets.all(4.toW),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF52C41A),
-                      borderRadius: BorderRadius.circular(4.toW),
-                    ),
-                    child: Text(
-                      '委托人',
-                      style: TextStyle(fontSize: 10.toSp, color: Colors.white),
-                    ),
-                  ),
-                SizedBox(width: 8.toW),
-                Icon(
-                  isExpanded
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
-                  size: 20.toW,
-                  color: AppColors.color_99000000,
-                ),
-              ],
-            ),
-            // 展开的详细信息
-            if (isExpanded && contact != null) ...[
-              SizedBox(height: 12.toW),
-              _buildDetailRow('联系方式', contact),
-              SizedBox(height: 8.toW),
-              _buildDetailRow('身份证号码', idCard ?? ''),
-              SizedBox(height: 8.toW),
-              _buildDetailRow('地址', address ?? ''),
-              SizedBox(height: 8.toW),
-              _buildDetailRow('性别', gender ?? ''),
-            ],
-          ],
-        ),
-      ),
-    );
+              ),
+            )
+          : SizedBox.shrink();
+    });
   }
 
   Widget _buildDetailRow(String label, String value) {
@@ -363,7 +435,6 @@ class CaseBaseInfoContent extends StatelessWidget {
       ],
     );
   }
-
 
   // 案件摘要
   Widget _setCaseSummaryWidget() {
@@ -400,13 +471,13 @@ class CaseBaseInfoContent extends StatelessWidget {
           // 争议焦点
           _buildSummarySection(
             '争议焦点',
-            '案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题',
+            controller.caseDetail.value?.caseBase?.caseSummary ?? '-',
           ),
           SizedBox(height: 16.toW),
           // 事实概述
           _buildSummarySection(
             '事实概述',
-            '案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题',
+            controller.caseDetail.value?.caseBase?.caseSummary ?? '-',
           ),
         ],
       ),
@@ -415,6 +486,7 @@ class CaseBaseInfoContent extends StatelessWidget {
 
   Widget _buildSummarySection(String title, String content) {
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.all(12.toW),
       decoration: BoxDecoration(
         color: const Color(0xFFF5F7FA),
@@ -445,8 +517,30 @@ class CaseBaseInfoContent extends StatelessWidget {
     );
   }
 
-// 代理律师费
+  // 代理律师费
   Widget _setLawyerFeeWidget() {
+    final feeInfo = controller.caseDetail.value?.agencyFeeInfo;
+    var type = '';
+    // 1定额收费 2风险收费 3计时收费 4计件收费 5免费
+    switch (feeInfo?.feeType) {
+      case 1:
+        type = '定额收费';
+        break;
+      case 2:
+        type = '风险收费';
+        break;
+      case 3:
+        type = '计时收费';
+        break;
+      case 4:
+        type = '计件收费';
+        break;
+      case 5:
+        type = '免费';
+        break;
+      default:
+    }
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW),
       padding: EdgeInsets.all(16.toW),
@@ -489,13 +583,19 @@ class CaseBaseInfoContent extends StatelessWidget {
           ),
           SizedBox(height: 16.toW),
           // 信息列表
-          _buildInfoRow('收费方式:', '定额收费'),
+          _buildInfoRow('收费方式:', type),
           SizedBox(height: 16.toW),
-          _buildInfoRow('代理费:', '¥12,727,838'),
+          _buildInfoRow(
+            '代理费:',
+            '¥${((feeInfo?.agencyFee ?? 0) * 100).toStringAsFixed(2)}',
+          ),
           SizedBox(height: 16.toW),
-          _buildInfoRow('我的标:', '¥12,727,838'),
+          _buildInfoRow(
+            '我的标:',
+            '¥${((feeInfo?.targetAmount ?? 0) * 100).toStringAsFixed(2)}',
+          ),
           SizedBox(height: 16.toW),
-          _buildInfoRow('标的物', '汽车'),
+          _buildInfoRow('标的物', feeInfo?.targetObject ?? '-'),
           SizedBox(height: 16.toW),
           // 收费标准
           Column(
@@ -510,7 +610,7 @@ class CaseBaseInfoContent extends StatelessWidget {
               ),
               SizedBox(height: 8.toW),
               Text(
-                '案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问题案件核心法律问',
+                feeInfo?.feeIntro ?? '-',
                 style: TextStyle(
                   fontSize: 14.toSp,
                   color: AppColors.color_E6000000,
@@ -524,6 +624,22 @@ class CaseBaseInfoContent extends StatelessWidget {
     );
   }
 
+  String getPartyRole(num index) {
+    switch (index) {
+      case 1:
+        return '原告';
+      case 2:
+        return '被告';
+      case 3:
+        return '第三人 ';
+      case 4:
+        return '申请人';
+      case 5:
+        return '被申请人 ';
+      case 6:
+        return '委托人';
+      default:
+        return '';
+    }
+  }
 }
-
-

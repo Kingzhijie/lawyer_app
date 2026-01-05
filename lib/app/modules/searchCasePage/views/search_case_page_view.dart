@@ -81,7 +81,7 @@ class SearchCasePageView extends GetView<SearchCasePageController> {
                     ),
                     onChanged: (text) {},
                     onSubmitted: (text) {
-                      controller.searchCaseResult();
+                      controller.searchCaseResult(text);
                     },
                   ).withExpanded(),
                   ImageUtils(
@@ -119,30 +119,32 @@ class SearchCasePageView extends GetView<SearchCasePageController> {
           ),
           Height(8.toW),
           SingleChildScrollView(
-            child: Wrap(
-              spacing: 12.toW,
-              runSpacing: 5.toW,
-              children: controller.historys
-                  .map(
-                    (e) => Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4.toW),
-                        color: AppColors.color_FFF3F3F3,
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 6.toW,
-                        vertical: 4.toW,
-                      ),
-                      child: Text(
-                        e,
-                        style: TextStyle(
-                          color: AppColors.color_E6000000,
-                          fontSize: 12.toSp,
+            child: Obx(
+              () => Wrap(
+                spacing: 12.toW,
+                runSpacing: 5.toW,
+                children: controller.historys
+                    .map(
+                      (e) => Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4.toW),
+                          color: AppColors.color_FFF3F3F3,
                         ),
-                      ),
-                    ),
-                  )
-                  .toList(),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6.toW,
+                          vertical: 4.toW,
+                        ),
+                        child: Text(
+                          e,
+                          style: TextStyle(
+                            color: AppColors.color_E6000000,
+                            fontSize: 12.toSp,
+                          ),
+                        ),
+                      ).withOnTap(() => controller.searchCaseResult(e)),
+                    )
+                    .toList(),
+              ),
             ),
           ),
         ],

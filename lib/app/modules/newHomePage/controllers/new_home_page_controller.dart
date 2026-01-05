@@ -86,6 +86,15 @@ class NewHomePageController extends GetxController {
   }
 
   void linkUserAlert(CaseTaskModel model) {
+    if (userModel.value == null) {
+      return;
+    }
+
+    if (userModel.value!.hasTeamOffice == false) {
+      showToast('跳转引导开会员');
+      return;
+    }
+
     BottomSheetUtils.show(
       currentContext,
       radius: 12.toW,

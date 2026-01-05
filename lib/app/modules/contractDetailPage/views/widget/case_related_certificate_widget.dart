@@ -9,7 +9,12 @@ import 'package:lawyer_app/gen/assets.gen.dart';
 
 class CaseRelatedCertificateWidget extends StatelessWidget {
   final List<DocListModel> docList;
-  const CaseRelatedCertificateWidget({super.key, required this.docList});
+  final VoidCallback onCheckDocsTap;
+  const CaseRelatedCertificateWidget({
+    super.key,
+    required this.docList,
+    required this.onCheckDocsTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +42,8 @@ class CaseRelatedCertificateWidget extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: onCheckDocsTap,
+                behavior: HitTestBehavior.opaque,
                 child: Row(
                   children: [
                     Text(
@@ -98,7 +104,9 @@ class CaseRelatedCertificateWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.docTitle ?? '-',
+                  item.docTitle != null && item.docTitle!.isNotEmpty
+                      ? item.docTitle!
+                      : '-',
                   style: TextStyle(
                     fontSize: 15.toSp,
                     fontWeight: FontWeight.w500,

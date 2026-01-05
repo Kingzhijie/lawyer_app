@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_detail_model.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 
 class CaseDetailBaseInfo extends StatelessWidget {
-  const CaseDetailBaseInfo({super.key});
+  final CaseDetailModel caseDetail;
+  const CaseDetailBaseInfo({super.key, required this.caseDetail});
 
   @override
   Widget build(BuildContext context) {
+    var caseTypeText = '未知';
+    switch (caseDetail.caseBase!.caseType) {
+      case 1:
+        caseTypeText = '行政';
+        break;
+      case 2:
+        caseTypeText = '民事';
+        break;
+      case 3:
+        caseTypeText = '刑事';
+        break;
+      default:
+    }
     return Container(
       padding: EdgeInsets.all(16.toW),
       decoration: BoxDecoration(
@@ -30,7 +46,7 @@ class CaseDetailBaseInfo extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4.toW),
                 ),
                 child: Text(
-                  '原告',
+                  caseDetail.caseBase?.casePartyRole == 2 ? '原告' : '被告',
                   style: TextStyle(
                     fontSize: 12.toSp,
                     color: Colors.white,
@@ -41,7 +57,7 @@ class CaseDetailBaseInfo extends StatelessWidget {
               SizedBox(width: 8.toW),
               // 案件标题
               Text(
-                '张三诉离思合同纠纷案件',
+                caseDetail.caseBase?.caseName ?? '',
                 style: TextStyle(
                   fontSize: 16.toSp,
                   fontWeight: FontWeight.w600,
@@ -60,7 +76,7 @@ class CaseDetailBaseInfo extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4.toW),
                 ),
                 child: Text(
-                  '民事',
+                  caseTypeText,
                   style: TextStyle(
                     fontSize: 12.toSp,
                     color: AppColors.color_99000000,
@@ -81,7 +97,9 @@ class CaseDetailBaseInfo extends StatelessWidget {
                 ),
               ),
               Text(
-                '2025-12-1205',
+                DateTimeUtils.formatTimestamp(
+                  caseDetail.caseBase?.createTime ?? 0,
+                ),
                 style: TextStyle(
                   fontSize: 14.toSp,
                   color: AppColors.color_E6000000,
@@ -91,7 +109,7 @@ class CaseDetailBaseInfo extends StatelessWidget {
               GestureDetector(
                 onTap: () {},
                 child: Text(
-                  '立案准备',
+                  caseDetail.caseBase?.currentStage ?? '',
                   style: TextStyle(
                     fontSize: 14.toSp,
                     color: const Color(0xFFFF9800),

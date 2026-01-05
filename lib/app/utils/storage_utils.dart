@@ -5,10 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class StorageKey {
   ///用户token
   static String get accessToken => 'accessToken';
+
   ///用户刷新token
   static String get refreshToken => 'refreshToken';
+
   ///用户token过期时间
   static String get tokenExpiresTime => 'tokenExpiresTime';
+
   ///用户id
   static String get userId => 'userId';
 
@@ -20,6 +23,9 @@ class StorageKey {
 
   ///青少年模式
   static String get teenageModeKey => 'teenageMode';
+
+  ///搜索历史
+  static String get taskSearchKey => 'taskSearch';
 }
 
 class StorageUtils {
@@ -92,5 +98,4 @@ class StorageUtils {
   static void setIsFirstInstall() {
     return StorageUtils.setString(StorageKey.isFirstInstall, 'install');
   }
-
 }

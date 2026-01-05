@@ -1,5 +1,9 @@
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/http/apis.dart';
+import 'package:lawyer_app/app/http/net/net_utils.dart';
+import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/modules/casePage/controllers/case_page_controller.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_detail_model.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 
 import '../../../common/components/tabPage/label_tab_bar.dart';
@@ -33,17 +37,30 @@ class CaseDetailPageController extends GetxController {
   ];
 
   // 当事人展开状态列表
-  final RxList<bool> partyExpandedList = <bool>[false, true].obs;
+  final RxList<bool> partyExpandedList = <bool>[].obs;
 
   // 切换当事人展开状态
   void togglePartyExpanded(int index) {
     partyExpandedList[index] = !partyExpandedList[index];
   }
 
+  RxInt defaultSelectIndex = 0.obs;
+  var caseDetail = Rx<CaseDetailModel?>(null);
+
   @override
   void onInit() {
     super.onInit();
+    final arguments = Get.arguments;
+    if (arguments == null) {
+      return;
+    }
 
+    final caseId = arguments['caseId'];
+    final tabIndex = arguments['tabIndex'] ?? 0;
+    defaultSelectIndex.value = tabIndex;
+    if (caseId != null) {
+      getCaseDetailInfo(caseId);
+    }
     tabModelArr = [
       LabelTopBarModel(
         CaseDetailTypeEnum.baseInfo.name,
@@ -59,17 +76,31 @@ class CaseDetailPageController extends GetxController {
       ),
       LabelTopBarModel(
         CaseDetailTypeEnum.rwzx.name,
-        AgencyCenterPageView(
-          tag: CaseDetailTypeEnum.rwzx.type.toString(),
-        ),
+        AgencyCenterPageView(tag: CaseDetailTypeEnum.rwzx.type.toString()),
       ),
     ];
 
     Get.lazyPut<AgencyCenterPageController>(
-      () => AgencyCenterPageController(),
+      () => AgencyCenterPageController(caseId: caseId),
       tag: CaseDetailTypeEnum.rwzx.type.toString(), // 使用 type 作为标签区分不同实例
       fenix: true, // 允许控制器被销毁后重新创建
     );
+  }
+
+  void getCaseDetailInfo(num caseId) async {
+    NetUtils.get(
+      Apis.caseBasicInfo,
+      queryParameters: {'id': caseId},
+      isLoading: false,
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        caseDetail.value = CaseDetailModel.fromJson(result.data ?? {});
+        partyExpandedList.value = List.generate(
+          (caseDetail.value?.caseBase?.casePartyResVos ?? []).length,
+          (_) => false,
+        );
+      }
+    });
   }
 
   @override
@@ -91,5 +122,4 @@ class CaseDetailPageController extends GetxController {
   void attorneysFeePage() {
     Get.toNamed(Routes.ATTORNEYS_FEE_PAGE);
   }
-
 }

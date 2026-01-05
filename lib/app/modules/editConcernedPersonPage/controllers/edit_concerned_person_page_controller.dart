@@ -58,9 +58,7 @@ class EditConcernedPersonPageController extends GetxController {
       contentWidget: ChooseChargeStyle(
         title: '选择类型',
         selectStr: typeController.text,
-        contents: [
-          '类型1', '类型2', '类型3', '类型4'
-        ],
+        contents: ['类型1', '类型2', '类型3', '类型4'],
         chooseResult: (String content) {
           typeController.text = content;
         },
@@ -78,9 +76,7 @@ class EditConcernedPersonPageController extends GetxController {
       contentWidget: ChooseChargeStyle(
         title: '选择属性',
         selectStr: attributeController.text,
-        contents: [
-          '属性1', '属性12', '属性13', '属性14'
-        ],
+        contents: ['属性1', '属性12', '属性13', '属性14'],
         chooseResult: (String content) {
           attributeController.text = content;
         },
@@ -98,14 +94,11 @@ class EditConcernedPersonPageController extends GetxController {
       contentWidget: ChooseChargeStyle(
         title: '选择性别',
         selectStr: genderController.text,
-        contents: [
-          '男', '女'
-        ],
+        contents: ['男', '女'],
         chooseResult: (String content) {
           genderController.text = content;
         },
       ),
     );
   }
-
 }

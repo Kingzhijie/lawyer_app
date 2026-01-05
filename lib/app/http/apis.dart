@@ -37,6 +37,12 @@ class Apis {
   ///待办
   static String todoCaseList = '/legal/task/list';
 
+  ///当事人角色列表
+  static String partyRoleList = '/legal/case-party/role-list';
+
+  ///新增当事人
+  static String createPartyRole = '/legal/case-party/create';
+
   ///获取案件任务分页
   static String getTaskPage = '/legal/task/page';
 
@@ -49,13 +55,9 @@ class Apis {
   ///设置任务的备注
   static String setTaskRemark = '/legal/task/remark';
 
-
   ///系统配置
   static String systemConfig = '/system/parameter-config/all';
 
   ///AI智能体UI配置
   static String agentUIConfig = '/ai/agent-ui-config/get';
-
-
 }
-
