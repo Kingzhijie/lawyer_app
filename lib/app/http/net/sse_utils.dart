@@ -201,12 +201,18 @@ class SSEUtils {
             
             // 跳过 tools 事件
             if (eventType == 'tools') {
-              logPrint('跳过 tools 事件');
+              logPrint('⏭️ 跳过 tools 事件');
               continue;
             }
             
             if (eventData != null && eventData.isNotEmpty) {
               logPrint('SSE 提取数据: $eventData');
+              
+              // 跳过空数组 []
+              if (eventData.trim() == '[]') {
+                logPrint('⏭️ 跳过空数组');
+                continue;
+              }
               
               // 检查是否是结束标记
               if (eventData == '[DONE]') {

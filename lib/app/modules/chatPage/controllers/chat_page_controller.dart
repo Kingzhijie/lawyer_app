@@ -6,13 +6,11 @@ import 'package:lawyer_app/app/http/apis.dart';
 import 'package:lawyer_app/app/http/net/net_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bottom_panel.dart';
-import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:chat_bottom_container/chat_bottom_container.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/utils/permission_util.dart';
@@ -25,7 +23,6 @@ import 'package:vibration/vibration.dart';
 import '../../../http/net/sse_utils.dart';
 import '../../../utils/image_picker_util.dart';
 import '../models/chat_agent_ui_config.dart';
-import '../models/chat_system_config.dart';
 
 class UiMessage {
   UiMessage({
@@ -245,17 +242,6 @@ class ChatPageController extends GetxController {
         ),
       );
 
-      // 添加"思考中"消息
-      messages.add(
-        UiMessage(
-          id: 'think_id',
-          text: '',
-          isAi: true,
-          thinkingProcess: '',
-          thinkingSeconds: 10, createdAt: DateTime.now(),
-        ),
-      );
-
       _scheduleScrollToBottom();
       
       // 使用真实的 SSE 连接替代模拟回复
@@ -299,24 +285,28 @@ class ChatPageController extends GetxController {
           // 累积思考过程（reasoningContent）
           if (data.reasoningContent != null && data.reasoningContent!.isNotEmpty) {
             thinkingContent += data.reasoningContent!;
-            logPrint('✅ 思考: ${data.reasoningContent}');
+            logPrint('✅ 收到思考内容: ${data.reasoningContent}');
+            logPrint('📊 累积思考内容: $thinkingContent');
           }
           
           // 累积回复内容（content）
           if (data.content != null && data.content!.isNotEmpty) {
             replyContent += data.content!;
-            logPrint('✅ 回复: ${data.content}');
+            logPrint('✅ 收到回复内容: ${data.content}');
+            logPrint('📊 累积回复内容: $replyContent');
           }
 
-          // 移除"思考中"消息
+          // 移除"思考中"消息（只移除一次）
           messages.removeWhere((e) => e.id == 'think_id');
 
+          // 创建更新的消息
           final aiMessage = UiMessage(
             id: aiMessageId,
-            text: replyContent,
+            text: replyContent.isNotEmpty ? replyContent : '正在思考...',
             isAi: true,
             createdAt: DateTime.now(),
-            thinkingProcess: thinkingContent
+            thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
+            hasAnimated: false, // 保持为 false 以触发动画
           );
 
           // 查找是否已存在该消息
@@ -324,11 +314,15 @@ class ChatPageController extends GetxController {
           if (existingIndex != -1) {
             // 更新现有消息
             messages[existingIndex] = aiMessage;
+            logPrint('🔄 更新消息 - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符');
           } else {
             // 添加新消息
             messages.add(aiMessage);
+            logPrint('➕ 添加新消息 - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符');
           }
-
+          
+          // 触发滚动
+          scheduleScrollDuringTyping();
         },
         onError: (error) {
           logPrint('SSE 错误: $error');
@@ -350,25 +344,31 @@ class ChatPageController extends GetxController {
           // 计算思考用时（秒）
           final thinkingSeconds = DateTime.now().difference(startTime).inSeconds;
           
-          logPrint('消息接收完成');
-          logPrint('思考过程: $thinkingContent');
-          logPrint('回复内容: $replyContent');
-          logPrint('思考用时: $thinkingSeconds 秒');
+          logPrint('✅ 消息接收完成');
+          logPrint('📊 最终思考过程: $thinkingContent (${thinkingContent.length} 字符)');
+          logPrint('📊 最终回复内容: $replyContent (${replyContent.length} 字符)');
+          logPrint('⏱️ 思考用时: $thinkingSeconds 秒');
           isLoading.value = false;
+          
+          // 移除"思考中"消息（确保清理）
+          messages.removeWhere((e) => e.id == 'think_id');
           
           // 最终更新消息，包含完整的思考过程和用时
           final index = messages.indexWhere((m) => m.id == aiMessageId);
           if (index != -1) {
             messages[index] = UiMessage(
               id: aiMessageId,
-              text: replyContent,
+              text: replyContent.isNotEmpty ? replyContent : '未收到回复内容',
               isAi: true,
               createdAt: messages[index].createdAt,
-              hasAnimated: true,
+              hasAnimated: false, // 设置为 false 以触发打字动画
               thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
               deepThinkingProcess: null, // 如果需要区分深度思考，可以根据实际情况设置
               thinkingSeconds: thinkingSeconds,
             );
+            logPrint('🎯 最终消息已更新');
+          } else {
+            logPrint('⚠️ 未找到消息 ID: $aiMessageId');
           }
           
           _scheduleScrollToBottom();
@@ -395,12 +395,6 @@ class ChatPageController extends GetxController {
   /// 发送文本消息（已废弃，使用 _sendMessageWithSSE 替代）
   @Deprecated('使用 _sendMessageWithSSE 替代')
   Future<void> sendTextMessage(String message, String sessionId) async {
-    // 此方法已被 _sendMessageWithSSE 替代
-  }
-
-  ///模拟AI回复（已废弃，使用真实的 SSE 连接）
-  @Deprecated('使用 _sendMessageWithSSE 替代')
-  void _simulateAiReply(String userText) {
     // 此方法已被 _sendMessageWithSSE 替代
   }
 
@@ -726,11 +720,11 @@ class ChatPageController extends GetxController {
   Future<void> clickAction(ActionType type) async {
     switch (type) {
       case ActionType.camera:
-        var file = await ImagePickerUtil.takePhotoOrFromLibrary(
+        await ImagePickerUtil.takePhotoOrFromLibrary(
           imageSource: ImageSourceType.camera,
         );
       case ActionType.photo:
-        var file = await ImagePickerUtil.takePhotoOrFromLibrary(
+        await ImagePickerUtil.takePhotoOrFromLibrary(
           imageSource: ImageSourceType.gallery,
         );
       case ActionType.file:
