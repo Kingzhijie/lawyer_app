@@ -99,7 +99,6 @@ dependencies:
   #ai文字逐字回答UI
   typewritertext: ^3.0.9
   flutter_markdown_plus: ^1.0.7
-  sse_channel: ^0.2.2
   #语音转文字
   speech_to_text: ^7.3.0
   #录音
@@ -118,6 +117,8 @@ dependencies:
   #文件选取
   file_picker: ^10.3.8
   easy_refresh: ^3.4.0
+  #uuid生成
+  uuid: ^4.5.1
   #日历
   flutter_advanced_calendar:
     path: plugins/flutter_advanced_calendar-1.4.3

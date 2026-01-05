@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:lawyer_app/app/common/extension/string_extension.dart';
 import 'package:lawyer_app/app/http/apis.dart';
 import 'package:lawyer_app/app/http/net/net_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
@@ -18,8 +19,10 @@ import 'package:lawyer_app/app/utils/permission_util.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
 import 'package:record/record.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:uuid/uuid.dart';
 import 'package:vibration/vibration.dart';
 
+import '../../../http/net/sse_utils.dart';
 import '../../../utils/image_picker_util.dart';
 import '../models/chat_agent_ui_config.dart';
 import '../models/chat_system_config.dart';
@@ -91,6 +94,15 @@ class ChatPageController extends GetxController {
   ///聊天id
   String? sessionId;
 
+  // 当前消息内容
+  final RxString currentMessage = ''.obs;
+
+  // 加载状态
+  final RxBool isLoading = false.obs;
+
+  // SSE 订阅
+  StreamSubscription<SSEEvent>? _sseSubscription;
+
   void updatePanelType(ChatPanelType type) {
     final targetPanelType = _toBottomPanel(type);
     final targetFocus = _toHandleFocus(type);
@@ -126,7 +138,7 @@ class ChatPageController extends GetxController {
     if (isFocus) {
       inputFocusNode.requestFocus();
     }
-    _simulateAiReply(text);
+    // 已经在 _addUserMessage 中调用 SSE，不需要再调用 _simulateAiReply
     _scheduleScrollToBottom();
   }
 
@@ -232,29 +244,164 @@ class ChatPageController extends GetxController {
           createdAt: DateTime.now(),
         ),
       );
-      _scheduleScrollToBottom();
-    }
 
+      // 添加"思考中"消息
+      messages.add(
+        UiMessage(
+          id: 'think_id',
+          text: '',
+          isAi: true,
+          thinkingProcess: '',
+          thinkingSeconds: 10, createdAt: DateTime.now(),
+        ),
+      );
+
+      _scheduleScrollToBottom();
+      
+      // 使用真实的 SSE 连接替代模拟回复
+      _sendMessageWithSSE(text, sessionId!);
+    }
   }
 
-  ///模拟AI回复
-  void _simulateAiReply(String userText) {
-    Future.delayed(const Duration(milliseconds: 600), () {
-      if (!isClosed) {
-        messages.add(
-          UiMessage(
-            id: 'ai-${DateTime.now().microsecondsSinceEpoch}',
-            text: '这里是模拟的 AI 回复：$userText',
+  /// 使用 SSE 发送消息并接收 AI 回复
+  Future<void> _sendMessageWithSSE(String message, String sessionId) async {
+    // 取消之前的连接
+    cancelConnection();
+
+    isLoading.value = true;
+    currentMessage.value = '';
+    
+    // 用于累积思考过程和回复内容
+    String thinkingContent = '';
+    String replyContent = '';
+    final startTime = DateTime.now();
+
+    // 创建一个临时的 AI 消息用于显示实时回复
+    final aiMessageId = 'ai-${DateTime.now().microsecondsSinceEpoch}';
+
+    // 生成唯一的请求 ID
+    final requestId = const Uuid().v4();
+
+    final request = SSEChatRequest(
+      message: message,
+      requestId: requestId,
+      hisId: sessionId.toNullInt(),
+      think: true,
+    );
+
+    logPrint('发送消息: $message');
+
+    try {
+      _sseSubscription = await SSEUtils().chatStream(
+        agentId: agentId!,
+        request: request,
+        onMessage: (data) {
+          // 累积思考过程（reasoningContent）
+          if (data.reasoningContent != null && data.reasoningContent!.isNotEmpty) {
+            thinkingContent += data.reasoningContent!;
+            logPrint('✅ 思考: ${data.reasoningContent}');
+          }
+          
+          // 累积回复内容（content）
+          if (data.content != null && data.content!.isNotEmpty) {
+            replyContent += data.content!;
+            logPrint('✅ 回复: ${data.content}');
+          }
+
+          // 移除"思考中"消息
+          messages.removeWhere((e) => e.id == 'think_id');
+
+          final aiMessage = UiMessage(
+            id: aiMessageId,
+            text: replyContent,
             isAi: true,
             createdAt: DateTime.now(),
-            thinkingProcess: '正在分析您的问题，检索相关法律条文和案例参考，整理相关判例...',
-            deepThinkingProcess: '已完成深度分析，整理了相关的法律依据、司法解释和判例参考，正在生成详细回复...',
-            thinkingSeconds: 14,
-          ),
+            thinkingProcess: thinkingContent
+          );
+
+          // 查找是否已存在该消息
+          final existingIndex = messages.indexWhere((m) => m.id == aiMessageId);
+          if (existingIndex != -1) {
+            // 更新现有消息
+            messages[existingIndex] = aiMessage;
+          } else {
+            // 添加新消息
+            messages.add(aiMessage);
+          }
+
+        },
+        onError: (error) {
+          logPrint('SSE 错误: $error');
+          showToast('连接失败: $error');
+          isLoading.value = false;
+          
+          // 更新消息为错误状态
+          final index = messages.indexWhere((m) => m.id == aiMessageId);
+          if (index != -1) {
+            messages[index] = UiMessage(
+              id: aiMessageId,
+              text: '抱歉，连接失败，请稍后重试。',
+              isAi: true,
+              createdAt: messages[index].createdAt,
+            );
+          }
+        },
+        onDone: () {
+          // 计算思考用时（秒）
+          final thinkingSeconds = DateTime.now().difference(startTime).inSeconds;
+          
+          logPrint('消息接收完成');
+          logPrint('思考过程: $thinkingContent');
+          logPrint('回复内容: $replyContent');
+          logPrint('思考用时: $thinkingSeconds 秒');
+          isLoading.value = false;
+          
+          // 最终更新消息，包含完整的思考过程和用时
+          final index = messages.indexWhere((m) => m.id == aiMessageId);
+          if (index != -1) {
+            messages[index] = UiMessage(
+              id: aiMessageId,
+              text: replyContent,
+              isAi: true,
+              createdAt: messages[index].createdAt,
+              hasAnimated: true,
+              thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
+              deepThinkingProcess: null, // 如果需要区分深度思考，可以根据实际情况设置
+              thinkingSeconds: thinkingSeconds,
+            );
+          }
+          
+          _scheduleScrollToBottom();
+        },
+      );
+    } catch (e) {
+      logPrint('发送消息失败: $e');
+      showToast('发送失败: $e');
+      isLoading.value = false;
+      
+      // 更新消息为错误状态
+      final index = messages.indexWhere((m) => m.id == aiMessageId);
+      if (index != -1) {
+        messages[index] = UiMessage(
+          id: aiMessageId,
+          text: '抱歉，发送失败，请稍后重试。',
+          isAi: true,
+          createdAt: messages[index].createdAt,
         );
-        _scheduleScrollToBottom();
       }
-    });
+    }
+  }
+
+  /// 发送文本消息（已废弃，使用 _sendMessageWithSSE 替代）
+  @Deprecated('使用 _sendMessageWithSSE 替代')
+  Future<void> sendTextMessage(String message, String sessionId) async {
+    // 此方法已被 _sendMessageWithSSE 替代
+  }
+
+  ///模拟AI回复（已废弃，使用真实的 SSE 连接）
+  @Deprecated('使用 _sendMessageWithSSE 替代')
+  void _simulateAiReply(String userText) {
+    // 此方法已被 _sendMessageWithSSE 替代
   }
 
   void markMessageAnimated(String id) {
@@ -362,6 +509,7 @@ class ChatPageController extends GetxController {
         }
       });
     }
+    cancelConnection();
     super.onClose();
   }
 
@@ -441,7 +589,7 @@ class ChatPageController extends GetxController {
         final textToSend = recognizedText.value.trim();
         if (textToSend.isNotEmpty) {
           _addUserMessage(textToSend);
-          _simulateAiReply(textToSend);
+          // 已经在 _addUserMessage 中调用 SSE，不需要再调用 _simulateAiReply
           _scheduleScrollToBottom();
         } else {
           // showToast('未识别到任何内容');
@@ -632,5 +780,15 @@ class ChatPageController extends GetxController {
       }
     });
   }
+
+
+  /// 取消当前连接
+  void cancelConnection() {
+    _sseSubscription?.cancel();
+    _sseSubscription = null;
+    isLoading.value = false;
+    logPrint('SSE 连接已取消');
+  }
+
 
 }

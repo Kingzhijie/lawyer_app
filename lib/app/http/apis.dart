@@ -63,6 +63,9 @@ class Apis {
   ///AI智能体UI配置
   static String agentUIConfig = '/ai/agent-ui-config/get';
 
+  ///AI智能体聊天流式接口
+  static String aiChatStream(String agentId) => '/ai/super-agent/chat/stream/$agentId';
+
 
 }
 

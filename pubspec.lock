@@ -1588,22 +1588,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.4.0"
-  sse:
-    dependency: transitive
-    description:
-      name: sse
-      sha256: fcc97470240bb37377f298e2bd816f09fd7216c07928641c0560719f50603643
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "4.1.8"
-  sse_channel:
-    dependency: "direct main"
-    description:
-      name: sse_channel
-      sha256: ad85fda353fae12533fd762dbd3ff275e710f216644e39459bf11a138124acad
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.2.2"
   stack_trace:
     dependency: transitive
     description:
@@ -1765,7 +1749,7 @@ packages:
     source: hosted
     version: "3.1.5"
   uuid:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: uuid
       sha256: a11b666489b1954e01d992f3d601b1804a33937b5a8fe677bd26b8a9f96f96e8
