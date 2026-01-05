@@ -27,6 +27,7 @@ enum CaseDetailTypeEnum {
 class CaseDetailPageController extends GetxController {
   int? caseId;
   List<LabelTopBarModel> tabModelArr = [];
+  String tagName = '';
 
   List<CaseDetailTypeEnum> titles = [
     CaseDetailTypeEnum.baseInfo,
@@ -60,6 +61,7 @@ class CaseDetailPageController extends GetxController {
     if (caseId != null) {
       getCaseDetailInfo();
     }
+    tagName = '${CaseDetailTypeEnum.rwzx.type}_$caseId';
     tabModelArr = [
       LabelTopBarModel(
         CaseDetailTypeEnum.baseInfo.name,
@@ -75,13 +77,13 @@ class CaseDetailPageController extends GetxController {
       ),
       LabelTopBarModel(
         CaseDetailTypeEnum.rwzx.name,
-        AgencyCenterPageView(tag: CaseDetailTypeEnum.rwzx.type.toString()),
+        AgencyCenterPageView(tag: tagName),
       ),
     ];
 
     Get.lazyPut<AgencyCenterPageController>(
       () => AgencyCenterPageController(caseId: caseId!),
-      tag: CaseDetailTypeEnum.rwzx.type.toString(), // 使用 type 作为标签区分不同实例
+      tag: tagName,
       fenix: true, // 允许控制器被销毁后重新创建
     );
   }
@@ -105,10 +107,9 @@ class CaseDetailPageController extends GetxController {
   @override
   void onClose() {
     super.onClose();
-    final tag = CaseDetailTypeEnum.rwzx.type.toString(); // 使用 type 作为 tag
     // 检查是否存在再删除
-    if (Get.isRegistered<AgencyCenterPageController>(tag: tag)) {
-      Get.delete<AgencyCenterPageController>(tag: tag, force: true);
+    if (Get.isRegistered<AgencyCenterPageController>(tag: tagName)) {
+      Get.delete<AgencyCenterPageController>(tag: tagName, force: true);
     }
   }
 
