@@ -20,6 +20,8 @@ import '../modules/chatPage/bindings/chat_page_binding.dart';
 import '../modules/chatPage/views/chat_page_view.dart';
 import '../modules/contractDetailPage/bindings/contract_detail_page_binding.dart';
 import '../modules/contractDetailPage/views/contract_detail_page_view.dart';
+import '../modules/editCaseBaseInfo/bindings/edit_case_base_info_binding.dart';
+import '../modules/editCaseBaseInfo/views/edit_case_base_info_view.dart';
 import '../modules/editConcernedPersonPage/bindings/edit_concerned_person_page_binding.dart';
 import '../modules/editConcernedPersonPage/views/edit_concerned_person_page_view.dart';
 import '../modules/loginCodePage/bindings/login_code_page_binding.dart';
@@ -162,6 +164,11 @@ class AppPages {
       name: _Paths.ATTORNEYS_FEE_PAGE,
       page: () => const AttorneysFeePageView(),
       binding: AttorneysFeePageBinding(),
+    ),
+    GetPage(
+      name: _Paths.EDIT_CASE_BASE_INFO,
+      page: () => const EditCaseBaseInfoView(),
+      binding: EditCaseBaseInfoBinding(),
     ),
   ];
 }

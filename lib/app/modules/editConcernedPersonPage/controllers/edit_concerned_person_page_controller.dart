@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/http/apis.dart';
+import 'package:lawyer_app/app/http/net/net_utils.dart';
+import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
+import 'package:lawyer_app/app/modules/caseDetailPage/controllers/case_detail_page_controller.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/controllers/contract_detail_page_controller.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
 
 import '../../../../main.dart';
 import '../../../common/components/bottom_sheet_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../views/widget/choose_charge_style.dart';
 
+class PartyRuleTypeClass {
+  final String name;
+  final int role;
+  const PartyRuleTypeClass({required this.name, required this.role});
+}
+
 class EditConcernedPersonPageController extends GetxController {
+  num? caseId;
   // 表单控制器
   final typeController = TextEditingController();
   final nameController = TextEditingController();
@@ -22,6 +36,27 @@ class EditConcernedPersonPageController extends GetxController {
   final RxBool isClient = false.obs;
   // 同步创建客户开关
   final RxBool syncCreateCustomer = false.obs;
+  Map<String, int> roleMap = {};
+
+  @override
+  void onInit() {
+    super.onInit();
+    caseId = Get.arguments;
+    getPartyRoleListList();
+  }
+
+  void getPartyRoleListList() {
+    NetUtils.get(Apis.partyRoleList, isLoading: false).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        final roleList = (result.data as List);
+        for (var item in roleList) {
+          final name = item['name'];
+          final role = item['role'];
+          roleMap['$name'] = role;
+        }
+      }
+    });
+  }
 
   @override
   void onClose() {
@@ -44,8 +79,60 @@ class EditConcernedPersonPageController extends GetxController {
 
   // 立即提交
   void onSubmit() {
-    // TODO: 实现提交逻辑
-    Get.back();
+    if (caseId == null) {
+      return;
+    }
+
+    final type = typeController.text;
+    if (type.isEmpty) {
+      showToast('请选择类型');
+      return;
+    }
+
+    final name = nameController.text;
+    if (name.isEmpty) {
+      showToast('请输入姓名');
+      return;
+    }
+
+    final attribute = attributeController.text;
+    if (attribute.isEmpty) {
+      showToast('请选择属性');
+      return;
+    }
+
+    final nationality = nationalityController.text;
+    final gender = genderController.text;
+    final contact = contactMethodController.text;
+    final idNumber = idNumberController.text;
+    final address = addressController.text;
+    final remark = remarkController.text;
+    final data = {
+      'caseId': caseId,
+      'partyType': type == '个人' ? 1 : 2,
+      'isClient': isClient.value,
+      'name': name,
+      'partyRole': roleMap[attribute],
+      'idType': 1,
+      'idNumber': idNumber,
+      'nationality': nationality,
+      'gender': gender.isNotEmpty ? (gender == '男' ? 1 : 2) : '',
+      'isCustomer': syncCreateCustomer.value,
+      'phone': contact,
+      'address': address,
+      'remark': remark,
+    };
+
+    NetUtils.post(Apis.createPartyRole, params: data).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        getFindController<ContractDetailPageController>()
+            ?.getContractDetailInfo();
+        getFindController<CaseDetailPageController>()?.getCaseDetailInfo();
+        delay(1, () {
+          Get.back();
+        });
+      }
+    });
   }
 
   ///选择类型
@@ -58,7 +145,7 @@ class EditConcernedPersonPageController extends GetxController {
       contentWidget: ChooseChargeStyle(
         title: '选择类型',
         selectStr: typeController.text,
-        contents: ['类型1', '类型2', '类型3', '类型4'],
+        contents: ['个人', '企业'],
         chooseResult: (String content) {
           typeController.text = content;
         },
@@ -76,7 +163,7 @@ class EditConcernedPersonPageController extends GetxController {
       contentWidget: ChooseChargeStyle(
         title: '选择属性',
         selectStr: attributeController.text,
-        contents: ['属性1', '属性12', '属性13', '属性14'],
+        contents: roleMap.keys.toList(),
         chooseResult: (String content) {
           attributeController.text = content;
         },

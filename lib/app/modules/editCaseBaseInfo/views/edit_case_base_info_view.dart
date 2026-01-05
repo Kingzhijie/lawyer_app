@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -7,17 +6,15 @@ import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 
-import '../controllers/edit_concerned_person_page_controller.dart';
+import '../controllers/edit_case_base_info_controller.dart';
 
-class EditConcernedPersonPageView
-    extends GetView<EditConcernedPersonPageController> {
-  const EditConcernedPersonPageView({super.key});
-
+class EditCaseBaseInfoView extends GetView<EditCaseBaseInfoController> {
+  const EditCaseBaseInfoView({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CommonAppBar(title: '编辑当事人/关联方'),
+      appBar: CommonAppBar(title: '编辑案件基本信息'),
       body: Column(
         children: [
           Expanded(
@@ -31,44 +28,36 @@ class EditConcernedPersonPageView
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDropdownField('类型', controller.typeController),
-                  SizedBox(height: 16.toW),
-                  _buildSwitchField('委托方', controller.isClient, required: true),
-                  SizedBox(height: 16.toW),
                   _buildTextField(
-                    '姓名',
-                    controller.nameController,
+                    '案件名称',
+                    controller.caseNameController,
                     required: true,
                   ),
                   SizedBox(height: 16.toW),
-                  _buildDropdownField(
-                    '属性',
-                    controller.attributeController,
+                  _buildTextField(
+                    '案号',
+                    controller.caseNumberController,
                     required: true,
                   ),
                   SizedBox(height: 16.toW),
-                  _buildTextField('民族', controller.nationalityController),
-                  SizedBox(height: 16.toW),
-                  _buildDropdownField('性别', controller.genderController),
-                  SizedBox(height: 16.toW),
-                  _buildTextField('联系方式', controller.contactMethodController),
-                  SizedBox(height: 16.toW),
-                  _buildTextField('身份证号码', controller.idNumberController),
-                  SizedBox(height: 16.toW),
-                  _buildSwitchField('同步创建客户', controller.syncCreateCustomer),
-                  SizedBox(height: 16.toW),
                   _buildTextField(
-                    '住所地',
-                    controller.addressController,
-                    maxLines: 3,
+                    '案由',
+                    controller.caseReasonController,
+                    required: true,
+                    maxLines: 2,
                   ),
                   SizedBox(height: 16.toW),
+                  _buildTextField('承办律师', controller.primaryLawyerController),
+                  SizedBox(height: 16.toW),
+                  _buildTextField('协办律师', controller.assistantLawyerController),
+                  SizedBox(height: 16.toW),
+                  _buildTextField('法官电话', controller.judgePhoneController),
+                  SizedBox(height: 16.toW),
                   _buildTextField(
-                    '备注',
-                    controller.remarkController,
+                    '案件备注',
+                    controller.caseRemarkController,
                     maxLines: 3,
                   ),
-                  // SizedBox(height: 80.toW), // 为底部按钮留出空间
                 ],
               ),
             ),
@@ -79,7 +68,6 @@ class EditConcernedPersonPageView
     ).unfocusWhenTap();
   }
 
-  // 普通输入框
   Widget _buildTextField(
     String label,
     TextEditingController textController, {
@@ -135,128 +123,6 @@ class EditConcernedPersonPageView
                 horizontal: 12.toW,
                 vertical: 12.toW,
               ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // 下拉选择框
-  Widget _buildDropdownField(
-    String label,
-    TextEditingController textController, {
-    bool required = false,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            if (required)
-              Text(
-                '* ',
-                style: TextStyle(
-                  fontSize: 14.toSp,
-                  color: Colors.red,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14.toSp,
-                color: AppColors.color_E6000000,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 8.toW),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8.toW),
-            border: Border.all(color: const Color(0xFFE5E5E5), width: 1),
-          ),
-          child: TextField(
-            controller: textController,
-            readOnly: true,
-            style: TextStyle(
-              fontSize: 14.toSp,
-              color: AppColors.color_E6000000,
-            ),
-            onTap: () {
-              if (label == '类型') {
-                controller.chooseStylePage();
-              }
-              if (label == '属性') {
-                controller.chooseAttributePage();
-              }
-              if (label == '性别') {
-                controller.chooseSexPage();
-              }
-            },
-            decoration: InputDecoration(
-              hintText: '请选择',
-              hintStyle: TextStyle(
-                fontSize: 14.toSp,
-                color: AppColors.color_99000000,
-              ),
-              suffixIcon: Icon(
-                Icons.keyboard_arrow_down,
-                color: AppColors.color_99000000,
-                size: 20.toW,
-              ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 12.toW,
-                vertical: 12.toW,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // 开关字段
-  Widget _buildSwitchField(
-    String label,
-    RxBool value, {
-    bool required = false,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            if (required)
-              Text(
-                '* ',
-                style: TextStyle(
-                  fontSize: 14.toSp,
-                  color: Colors.red,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14.toSp,
-                color: AppColors.color_E6000000,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        Obx(
-          () => Transform.scale(
-            scale: 0.85,
-            child: CupertinoSwitch(
-              value: value.value,
-              onChanged: (val) => value.value = val,
-              activeColor: AppColors.theme,
             ),
           ),
         ),

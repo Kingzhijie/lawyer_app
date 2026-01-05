@@ -31,6 +31,9 @@ class Apis {
   ///案件基本信息
   static String caseBasicInfo = '/legal/case-basic-info/get';
 
+  ///更新案件基本信息
+  static String updateCaseBasicInfo = '/legal/case-basic-info/update';
+
   ///案件进展
   static String caseTimeline = '/legal/case-timeline/list';
 
@@ -42,6 +45,12 @@ class Apis {
 
   ///新增当事人
   static String createPartyRole = '/legal/case-party/create';
+
+  ///新增律师费记录
+  static String createAgencyFee = '/legal/agency-fee/create';
+
+  ///编辑律师费记录
+  static String updateAgencyFee = '/legal/agency-fee/update';
 
   ///获取案件任务分页
   static String getTaskPage = '/legal/task/page';

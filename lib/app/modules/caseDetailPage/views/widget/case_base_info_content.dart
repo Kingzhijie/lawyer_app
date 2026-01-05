@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/string_extension.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_detail_model.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_party_model.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
@@ -15,23 +19,26 @@ class CaseBaseInfoContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: EdgeInsets.only(bottom: AppScreenUtil.bottomBarHeight + 12.toW),
-      child: Column(
-        children: [
-          Height(12.toW),
-          _setCaseBaseInfoWidget(),
-          Height(12.toW),
-          _setPartyInfoWidget(),
-          Height(12.toW),
-          _setCaseSummaryWidget(),
-          Height(12.toW),
-          _setLawyerFeeWidget(),
-        ],
-      ),
+      child: Obx(() {
+        final caseDetail = controller.caseDetail.value!;
+        return Column(
+          children: [
+            Height(12.toW),
+            _setCaseBaseInfoWidget(caseDetail),
+            Height(12.toW),
+            _setPartyInfoWidget(caseDetail),
+            Height(12.toW),
+            _setCaseSummaryWidget(caseDetail),
+            Height(12.toW),
+            _setLawyerFeeWidget(caseDetail),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _setCaseBaseInfoWidget() {
-    final roles = controller.caseDetail.value?.caseBase!.casePartyResVos ?? [];
+  Widget _setCaseBaseInfoWidget(CaseDetailModel caseDetail) {
+    final roles = caseDetail.caseBase!.casePartyResVos ?? [];
     var roleText = '';
     for (var item in roles) {
       if (item.name != null && item.name!.isNotEmpty) {
@@ -72,7 +79,9 @@ class CaseBaseInfoContent extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  controller.onCaseBaseInfoEdit();
+                },
                 child: Text(
                   '编辑',
                   style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),
@@ -205,9 +214,8 @@ class CaseBaseInfoContent extends StatelessWidget {
   }
 
   // 当事人/关联方
-  Widget _setPartyInfoWidget() {
-    final casePartyResVOS =
-        controller.caseDetail.value?.caseBase?.casePartyResVos ?? [];
+  Widget _setPartyInfoWidget(CaseDetailModel caseDetail) {
+    final casePartyResVOS = caseDetail.caseBase?.casePartyResVos ?? [];
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW),
       padding: EdgeInsets.all(16.toW),
@@ -372,33 +380,22 @@ class CaseBaseInfoContent extends StatelessWidget {
                     // 展开的详细信息
                     if (isExpanded) ...[
                       SizedBox(height: 12.toW),
-                      _buildDetailRow(
-                        '联系方式',
-                        item.phone != null && item.phone!.isNotEmpty
-                            ? item.phone!
-                            : '-',
-                      ),
-                      SizedBox(height: 8.toW),
-                      _buildDetailRow(
-                        '身份证号码',
-                        item.idNumber != null && item.idNumber!.isNotEmpty
-                            ? item.idNumber!
-                            : '-',
-                      ),
-                      SizedBox(height: 8.toW),
-                      _buildDetailRow(
-                        '地址',
-                        item.address != null && item.address!.isNotEmpty
-                            ? item.address!
-                            : '-',
-                      ),
-                      SizedBox(height: 8.toW),
-                      _buildDetailRow(
-                        '性别',
-                        (item.gender ?? 0) > 0
-                            ? (item.gender == 1 ? '男' : '女')
-                            : '-',
-                      ),
+                      if (item.phone != null && item.phone!.isNotEmpty) ...[
+                        _buildDetailRow('联系方式', item.phone!),
+                      ],
+                      if (item.idNumber != null &&
+                          item.idNumber!.isNotEmpty) ...[
+                        SizedBox(height: 8.toW),
+                        _buildDetailRow('身份证号码', item.idNumber!),
+                      ],
+                      if (item.address != null && item.address!.isNotEmpty) ...[
+                        SizedBox(height: 8.toW),
+                        _buildDetailRow('地址', item.address!),
+                      ],
+                      if ((item.gender ?? 0) > 0) ...[
+                        SizedBox(height: 8.toW),
+                        _buildDetailRow('性别', item.gender == 1 ? '男' : '女'),
+                      ],
                     ],
                   ],
                 ),
@@ -437,7 +434,8 @@ class CaseBaseInfoContent extends StatelessWidget {
   }
 
   // 案件摘要
-  Widget _setCaseSummaryWidget() {
+  Widget _setCaseSummaryWidget(CaseDetailModel caseDetail) {
+    final summaryObj = json.decode(caseDetail.caseBase?.caseSummary ?? '{}');
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW),
       padding: EdgeInsets.all(16.toW),
@@ -469,16 +467,10 @@ class CaseBaseInfoContent extends StatelessWidget {
           Container(height: 0.5, color: AppColors.color_line),
           SizedBox(height: 16.toW),
           // 争议焦点
-          _buildSummarySection(
-            '争议焦点',
-            controller.caseDetail.value?.caseBase?.caseSummary ?? '-',
-          ),
+          _buildSummarySection('争议焦点', summaryObj['争议焦点'] ?? '-'),
           SizedBox(height: 16.toW),
           // 事实概述
-          _buildSummarySection(
-            '事实概述',
-            controller.caseDetail.value?.caseBase?.caseSummary ?? '-',
-          ),
+          _buildSummarySection('事实概述', summaryObj['事实概述'] ?? '-'),
         ],
       ),
     );
@@ -518,8 +510,8 @@ class CaseBaseInfoContent extends StatelessWidget {
   }
 
   // 代理律师费
-  Widget _setLawyerFeeWidget() {
-    final feeInfo = controller.caseDetail.value?.agencyFeeInfo;
+  Widget _setLawyerFeeWidget(CaseDetailModel caseDetail) {
+    final feeInfo = caseDetail.agencyFeeInfo;
     var type = '';
     // 1定额收费 2风险收费 3计时收费 4计件收费 5免费
     switch (feeInfo?.feeType) {
@@ -581,44 +573,51 @@ class CaseBaseInfoContent extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 16.toW),
-          // 信息列表
-          _buildInfoRow('收费方式:', type),
-          SizedBox(height: 16.toW),
-          _buildInfoRow(
-            '代理费:',
-            '¥${((feeInfo?.agencyFee ?? 0) * 100).toStringAsFixed(2)}',
-          ),
-          SizedBox(height: 16.toW),
-          _buildInfoRow(
-            '我的标:',
-            '¥${((feeInfo?.targetAmount ?? 0) * 100).toStringAsFixed(2)}',
-          ),
-          SizedBox(height: 16.toW),
-          _buildInfoRow('标的物', feeInfo?.targetObject ?? '-'),
-          SizedBox(height: 16.toW),
-          // 收费标准
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '收费标准',
-                style: TextStyle(
-                  fontSize: 14.toSp,
-                  color: AppColors.color_99000000,
-                ),
+
+          if (feeInfo != null) ...[
+            SizedBox(height: 16.toW),
+            // 信息列表
+            _buildInfoRow('收费方式:', type),
+            SizedBox(height: 16.toW),
+            _buildInfoRow(
+              '代理费:',
+              ((feeInfo.agencyFee ?? 0) / 100).toString().toRMBPrice(
+                fractionDigits: 2,
               ),
-              SizedBox(height: 8.toW),
-              Text(
-                feeInfo?.feeIntro ?? '-',
-                style: TextStyle(
-                  fontSize: 14.toSp,
-                  color: AppColors.color_E6000000,
-                  height: 1.5,
-                ),
+            ),
+            SizedBox(height: 16.toW),
+            _buildInfoRow(
+              '我的标:',
+              ((feeInfo.targetAmount ?? 0) / 100).toString().toRMBPrice(
+                fractionDigits: 2,
               ),
-            ],
-          ),
+            ),
+            SizedBox(height: 16.toW),
+            _buildInfoRow('标的物', feeInfo.targetObject ?? '-'),
+            SizedBox(height: 16.toW),
+            // 收费标准
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '收费标准',
+                  style: TextStyle(
+                    fontSize: 14.toSp,
+                    color: AppColors.color_99000000,
+                  ),
+                ),
+                SizedBox(height: 8.toW),
+                Text(
+                  feeInfo.feeIntro ?? '-',
+                  style: TextStyle(
+                    fontSize: 14.toSp,
+                    color: AppColors.color_E6000000,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

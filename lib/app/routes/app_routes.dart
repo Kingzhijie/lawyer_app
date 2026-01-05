@@ -25,6 +25,7 @@ abstract class Routes {
   static const CASE_DETAIL_PAGE = _Paths.CASE_DETAIL_PAGE;
   static const EDIT_CONCERNED_PERSON_PAGE = _Paths.EDIT_CONCERNED_PERSON_PAGE;
   static const ATTORNEYS_FEE_PAGE = _Paths.ATTORNEYS_FEE_PAGE;
+  static const EDIT_CASE_BASE_INFO = _Paths.EDIT_CASE_BASE_INFO;
 }
 
 abstract class _Paths {
@@ -51,4 +52,5 @@ abstract class _Paths {
   static const CASE_DETAIL_PAGE = '/case-detail-page';
   static const EDIT_CONCERNED_PERSON_PAGE = '/edit-concerned-person-page';
   static const ATTORNEYS_FEE_PAGE = '/attorneys-fee-page';
+  static const EDIT_CASE_BASE_INFO = '/edit-case-base-info';
 }

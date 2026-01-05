@@ -2,14 +2,12 @@ import 'package:get/get.dart';
 import 'package:lawyer_app/app/http/apis.dart';
 import 'package:lawyer_app/app/http/net/net_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
-import 'package:lawyer_app/app/modules/casePage/controllers/case_page_controller.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_detail_model.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 
 import '../../../common/components/tabPage/label_tab_bar.dart';
 import '../../agencyCenterPage/controllers/agency_center_page_controller.dart';
 import '../../agencyCenterPage/views/agency_center_page_view.dart';
-import '../../casePage/views/case_page_view.dart';
 import '../views/widget/case_base_info_content.dart';
 import '../views/widget/case_document_widget.dart';
 import '../views/widget/preservation_situation_widget.dart';
@@ -27,6 +25,7 @@ enum CaseDetailTypeEnum {
 }
 
 class CaseDetailPageController extends GetxController {
+  int? caseId;
   List<LabelTopBarModel> tabModelArr = [];
 
   List<CaseDetailTypeEnum> titles = [
@@ -55,11 +54,11 @@ class CaseDetailPageController extends GetxController {
       return;
     }
 
-    final caseId = arguments['caseId'];
+    caseId = arguments['caseId'];
     final tabIndex = arguments['tabIndex'] ?? 0;
     defaultSelectIndex.value = tabIndex;
     if (caseId != null) {
-      getCaseDetailInfo(caseId);
+      getCaseDetailInfo();
     }
     tabModelArr = [
       LabelTopBarModel(
@@ -81,13 +80,13 @@ class CaseDetailPageController extends GetxController {
     ];
 
     Get.lazyPut<AgencyCenterPageController>(
-      () => AgencyCenterPageController(caseId: caseId),
+      () => AgencyCenterPageController(caseId: caseId!),
       tag: CaseDetailTypeEnum.rwzx.type.toString(), // 使用 type 作为标签区分不同实例
       fenix: true, // 允许控制器被销毁后重新创建
     );
   }
 
-  void getCaseDetailInfo(num caseId) async {
+  void getCaseDetailInfo() async {
     NetUtils.get(
       Apis.caseBasicInfo,
       queryParameters: {'id': caseId},
@@ -115,11 +114,25 @@ class CaseDetailPageController extends GetxController {
 
   ///关联当事人
   void editConcernedPerson() {
-    Get.toNamed(Routes.EDIT_CONCERNED_PERSON_PAGE);
+    Get.toNamed(Routes.EDIT_CONCERNED_PERSON_PAGE, arguments: caseId);
   }
 
   ///代理律师费
   void attorneysFeePage() {
-    Get.toNamed(Routes.ATTORNEYS_FEE_PAGE);
+    Get.toNamed(
+      Routes.ATTORNEYS_FEE_PAGE,
+      arguments: {
+        'agencyFee': caseDetail.value?.agencyFeeInfo,
+        'caseId': caseId,
+      },
+    );
+  }
+
+  ///案件基本信息编辑
+  void onCaseBaseInfoEdit() {
+    Get.toNamed(
+      Routes.EDIT_CASE_BASE_INFO,
+      arguments: {'caseBase': caseDetail.value?.caseBase, 'caseId': caseId},
+    );
   }
 }
