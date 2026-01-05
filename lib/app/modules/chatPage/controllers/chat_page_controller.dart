@@ -86,6 +86,11 @@ class ChatPageController extends GetxController {
   Offset? _recordingStartPosition;
   StreamSubscription<Amplitude>? _amplitudeSubscription;
 
+  ///聊天智能体id
+  String? agentId;
+  ///聊天id
+  String? sessionId;
+
   void updatePanelType(ChatPanelType type) {
     final targetPanelType = _toBottomPanel(type);
     final targetFocus = _toHandleFocus(type);
@@ -201,18 +206,38 @@ class ChatPageController extends GetxController {
     _scheduleScrollToBottom(animated: false);
   }
 
-  void _addUserMessage(String text) {
-    messages.add(
-      UiMessage(
-        id: 'user-${DateTime.now().microsecondsSinceEpoch}',
-        text: text,
-        isAi: false,
-        createdAt: DateTime.now(),
-      ),
-    );
-    _scheduleScrollToBottom();
+
+  ///添加发送消息
+  Future<void> _addUserMessage(String text) async {
+    if (ObjectUtils.isEmptyString(agentId)) {
+      return;
+    }
+    if (ObjectUtils.isEmptyString(sessionId)) {
+      var result = await NetUtils.post(
+        Apis.createChatId,
+        params: {'agentId': agentId, 'subject': text},
+        isLoading: false,
+      );
+      if (result.code == NetCodeHandle.success) {
+        sessionId = result.data.toString();
+      }
+    }
+
+    if (!ObjectUtils.isEmptyString(sessionId)) {
+      messages.add(
+        UiMessage(
+          id: 'user-${DateTime.now().microsecondsSinceEpoch}',
+          text: text,
+          isAi: false,
+          createdAt: DateTime.now(),
+        ),
+      );
+      _scheduleScrollToBottom();
+    }
+
   }
 
+  ///模拟AI回复
   void _simulateAiReply(String userText) {
     Future.delayed(const Duration(milliseconds: 600), () {
       if (!isClosed) {
@@ -573,10 +598,9 @@ class ChatPageController extends GetxController {
             logPrint('文件路径: ${file.path}');
             logPrint('文件扩展名: ${file.extension}');
 
-            NetUtils.uploadSingleFile(file.path!).then((result){
+            NetUtils.uploadSingleFile(file.path!).then((result) {
               logPrint('result====$result');
             });
-
           }
         } catch (e) {
           logPrint('选取错误===$e');
@@ -584,20 +608,24 @@ class ChatPageController extends GetxController {
     }
   }
 
-
   ///获取系统配置
-  void getSystemConfig(){
-    NetUtils.get(Apis.systemConfig).then((result){
+  void getSystemConfig() {
+    NetUtils.get(Apis.systemConfig).then((result) {
       if (result.code == NetCodeHandle.success) {
         var id = result.data?['sys_def_agent'];
+        agentId = id.toString();
         getAgentUIConfig(id);
       }
     });
   }
 
   ///获取Ai智能图UI配置
-  void getAgentUIConfig(id){
-    NetUtils.get(Apis.agentUIConfig, queryParameters: {'id': id}, isLoading: false).then((result){
+  void getAgentUIConfig(id) {
+    NetUtils.get(
+      Apis.agentUIConfig,
+      queryParameters: {'id': id},
+      isLoading: false,
+    ).then((result) {
       if (result.code == NetCodeHandle.success) {
         var model = ChatAgentUiConfig.fromJson(result.data ?? {});
         _addAiWelcome(model);

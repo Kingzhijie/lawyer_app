@@ -134,14 +134,14 @@ class AgencyCenterPageController extends GetxController {
   }
 
   void linkUserAlert() {
-    BottomSheetUtils.show(
-      currentContext,
-      radius: 12.toW,
-      isShowCloseIcon: true,
-      height: AppScreenUtil.screenHeight - 217.toW,
-      isSetBottomInset: false,
-      contentWidget: LinkUserWidget(),
-    );
+    // BottomSheetUtils.show(
+    //   currentContext,
+    //   radius: 12.toW,
+    //   isShowCloseIcon: true,
+    //   height: AppScreenUtil.screenHeight - 217.toW,
+    //   isSetBottomInset: false,
+    //   contentWidget: LinkUserWidget(),
+    // );
   }
 
   ///添加任务

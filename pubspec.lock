@@ -701,6 +701,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.3"
+  flutter_markdown_plus:
+    dependency: "direct main"
+    description:
+      name: flutter_markdown_plus
+      sha256: "039177906850278e8fb1cd364115ee0a46281135932fa8ecea8455522166d2de"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.7"
   flutter_native_splash:
     dependency: "direct main"
     description:
@@ -1015,6 +1023,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.3.0"
+  markdown:
+    dependency: transitive
+    description:
+      name: markdown
+      sha256: "935e23e1ff3bc02d390bad4d4be001208ee92cc217cb5b5a6c19bc14aaa318c1"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "7.3.0"
   matcher:
     dependency: transitive
     description:
@@ -1572,6 +1588,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.4.0"
+  sse:
+    dependency: transitive
+    description:
+      name: sse
+      sha256: fcc97470240bb37377f298e2bd816f09fd7216c07928641c0560719f50603643
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.1.8"
+  sse_channel:
+    dependency: "direct main"
+    description:
+      name: sse_channel
+      sha256: ad85fda353fae12533fd762dbd3ff275e710f216644e39459bf11a138124acad
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.2"
   stack_trace:
     dependency: transitive
     description:
