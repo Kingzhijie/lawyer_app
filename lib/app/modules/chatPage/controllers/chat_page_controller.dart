@@ -32,8 +32,9 @@ class UiMessage {
     required this.createdAt,
     this.hasAnimated = false,
     this.thinkingProcess,
-    this.deepThinkingProcess,
     this.thinkingSeconds,
+    this.isThinkingDone = false, // 思考是否完成
+    this.isPrologue = false
   });
 
   final String id;
@@ -42,23 +43,25 @@ class UiMessage {
   final DateTime createdAt;
   final bool hasAnimated;
   final String? thinkingProcess; // 思考过程内容
-  final String? deepThinkingProcess; // 深度思考过程内容
   final int? thinkingSeconds; // 思考用时
+  final bool isThinkingDone; // 思考是否完成
+  final bool isPrologue; //是否开场白
 
   UiMessage copyWith({
     bool? hasAnimated,
     String? thinkingProcess,
-    String? deepThinkingProcess,
     int? thinkingSeconds,
+    bool? isThinkingDone,
   }) => UiMessage(
     id: id,
     text: text,
     isAi: isAi,
     createdAt: createdAt,
+    isPrologue: isPrologue,
     hasAnimated: hasAnimated ?? this.hasAnimated,
     thinkingProcess: thinkingProcess ?? this.thinkingProcess,
-    deepThinkingProcess: deepThinkingProcess ?? this.deepThinkingProcess,
     thinkingSeconds: thinkingSeconds ?? this.thinkingSeconds,
+    isThinkingDone: isThinkingDone ?? this.isThinkingDone,
   );
 }
 
@@ -209,6 +212,7 @@ class ChatPageController extends GetxController {
         id: model.id.toString(),
         text: model.prologue ?? '您好，我是 AI 助手，随时为您提供法律相关咨询。',
         isAi: true,
+        isPrologue: true,
         createdAt: DateTime.now(),
       ),
     );
@@ -302,11 +306,11 @@ class ChatPageController extends GetxController {
           // 创建更新的消息
           final aiMessage = UiMessage(
             id: aiMessageId,
-            text: '',
+            text: replyContent,
             isAi: true,
             createdAt: DateTime.now(),
             thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
-            thinkingSeconds: 3
+            isThinkingDone: false, // 思考中
           );
 
           // 查找是否已存在该消息
@@ -320,6 +324,7 @@ class ChatPageController extends GetxController {
             messages.add(aiMessage);
             logPrint('➕ 添加新消息 - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符');
           }
+          messages.refresh();
 
           // 触发滚动
           scheduleScrollDuringTyping();
@@ -363,10 +368,11 @@ class ChatPageController extends GetxController {
               createdAt: messages[index].createdAt,
               hasAnimated: false, // 设置为 false 以触发打字动画
               thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
-              deepThinkingProcess: null, // 如果需要区分深度思考，可以根据实际情况设置
               thinkingSeconds: thinkingSeconds,
+              isThinkingDone: true, // 思考完成
             );
             logPrint('🎯 最终消息已更新');
+            messages.refresh();
           } else {
             logPrint('⚠️ 未找到消息 ID: $aiMessageId');
           }

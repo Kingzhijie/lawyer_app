@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
-import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import '../../controllers/chat_page_controller.dart';
 
@@ -23,151 +22,92 @@ class ChatBubbleLeft extends StatefulWidget {
 
 class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
   bool _showThinking = false;
-  bool _showDeepThinking = false;
   bool _showFinalAnswer = false;
   String _thinkingText = '';
-  String _deepThinkingText = '';
+  String? _previousThinkingProcess;
 
   @override
   void initState() {
     super.initState();
-    if (!widget.message.hasAnimated) {
-      _startAnimation();
-    } else {
-      // 已经动画过，直接显示所有内容
-      _showThinking = widget.message.thinkingProcess != null;
-      _showDeepThinking = widget.message.deepThinkingProcess != null;
-      _showFinalAnswer = true;
-      _thinkingText = widget.message.thinkingProcess ?? '';
-      _deepThinkingText = widget.message.deepThinkingProcess ?? '';
-    }
+    _previousThinkingProcess = widget.message.thinkingProcess;
+    _initDisplay();
   }
 
-  void _startAnimation() {
-    // 先显示思考过程
-    if (widget.message.thinkingProcess != null) {
-      setState(() {
-        _showThinking = true;
-      });
-      _animateThinkingText();
-    } else {
-      // 没有思考过程，直接显示答案
+  @override
+  void didUpdateWidget(ChatBubbleLeft oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 检测思考内容是否有更新
+    if (widget.message.thinkingProcess != _previousThinkingProcess) {
+      _previousThinkingProcess = widget.message.thinkingProcess;
+      // 实时更新思考内容
+      if (widget.message.thinkingProcess != null) {
+        setState(() {
+          _showThinking = true;
+          _thinkingText = widget.message.thinkingProcess!;
+        });
+      }
+    }
+    // 检测是否思考完成，显示最终答案
+    if (widget.message.isThinkingDone && !_showFinalAnswer && widget.message.text.isNotEmpty) {
       setState(() {
         _showFinalAnswer = true;
       });
     }
   }
 
-  void _animateThinkingText() {
-    final text = widget.message.thinkingProcess!;
-    int currentIndex = 0;
-
-    void showNextChar() {
-      if (currentIndex < text.length && mounted) {
-        setState(() {
-          _thinkingText = text.substring(0, currentIndex + 1);
-        });
-        // 在布局更新后触发滚动
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.onTick();
-        });
-        currentIndex++;
-        Future.delayed(const Duration(milliseconds: 30), showNextChar);
-      } else if (mounted) {
-        // 思考文字显示完成，开始深度思考
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted && widget.message.deepThinkingProcess != null) {
-            setState(() {
-              _showDeepThinking = true;
-            });
-            // 在布局更新后触发滚动
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              widget.onTick();
-            });
-            _animateDeepThinkingText();
-          } else if (mounted) {
-            // 没有深度思考，直接显示答案
-            setState(() {
-              _showFinalAnswer = true;
-            });
-            // 在布局更新后触发滚动
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              widget.onTick();
-            });
-          }
-        });
+  void _initDisplay() {
+    if (widget.message.hasAnimated) {
+      // 已经动画过，直接显示所有内容
+      _showThinking = widget.message.thinkingProcess != null;
+      _showFinalAnswer = true;
+      _thinkingText = widget.message.thinkingProcess ?? '';
+    } else {
+      // 未动画过
+      if (widget.message.thinkingProcess != null) {
+        // 有思考过程
+        _showThinking = true;
+        _thinkingText = widget.message.thinkingProcess!;
+        if (widget.message.isThinkingDone && widget.message.text.isNotEmpty) {
+          _showFinalAnswer = true;
+        }
+      } else {
+        // 没有思考过程（如开场白），直接显示文本
+        _showFinalAnswer = widget.message.text.isNotEmpty;
       }
     }
-
-    showNextChar();
-  }
-
-  void _animateDeepThinkingText() {
-    final text = widget.message.deepThinkingProcess!;
-    int currentIndex = 0;
-    void showNextChar() {
-      if (currentIndex < text.length && mounted) {
-        setState(() {
-          _deepThinkingText = text.substring(0, currentIndex + 1);
-        });
-        // 在布局更新后触发滚动
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.onTick();
-        });
-        currentIndex++;
-        Future.delayed(const Duration(milliseconds: 30), showNextChar);
-      } else if (mounted) {
-        // 深度思考文字显示完成，显示最终答案
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) {
-            setState(() {
-              _showFinalAnswer = true;
-            });
-            // 在布局更新后触发滚动
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              widget.onTick();
-            });
-          }
-        });
-      }
-    }
-
-    showNextChar();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bubbleColor = Colors.grey.shade200;
     final textColor = Colors.black87;
-    final radius = const BorderRadius.only(
-      topLeft: Radius.circular(12),
-      topRight: Radius.circular(12),
-      bottomLeft: Radius.circular(2),
-      bottomRight: Radius.circular(12),
-    );
 
     return Align(
       alignment: Alignment.centerLeft,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 思考中...
+          // 思考过程区域
           if (_showThinking && widget.message.thinkingProcess != null)
             Padding(
               padding: EdgeInsets.only(bottom: 8.toW, top: 10.toW),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 标题行：思考中... 或 思考完成(用时X秒)
                   Row(
                     children: [
                       Text(
-                        !_showDeepThinking ? '思考中...' : '已思考',
+                        widget.message.isThinkingDone
+                            ? '思考完成${widget.message.thinkingSeconds != null ? "(用时${widget.message.thinkingSeconds}秒)" : ""}'
+                            : '思考中...',
                         style: TextStyle(
                           fontSize: 14.toSp,
                           color: AppColors.color_E6000000,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      if (!_showDeepThinking) ...[
+                      // 思考中显示加载动画
+                      if (!widget.message.isThinkingDone) ...[
                         SizedBox(width: 6.toW),
                         SizedBox(
                           width: 14.toW,
@@ -182,42 +122,21 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                       ],
                     ],
                   ),
+                  // 思考内容
                   if (_thinkingText.isNotEmpty) ...[
-                    SizedBox(height: 8.toW),
-                    Text(
-                      _thinkingText,
-                      style: TextStyle(
-                        fontSize: 13.toSp,
-                        color: AppColors.color_99000000,
-                        height: 1.4,
+                    SizedBox(height: 12.toW),
+                    Container(
+                      padding: EdgeInsets.only(left: 12.toW),
+                      decoration: BoxDecoration(
+                        border: Border(left: BorderSide(color: AppColors.color_line, width: 0.5))
                       ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          // 已深度思考
-          if (_showDeepThinking && widget.message.deepThinkingProcess != null)
-            Padding(
-              padding: EdgeInsets.only(bottom: 8.toW, top: 8.toW),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '已思考${widget.message.thinkingSeconds != null ? "(用时${widget.message.thinkingSeconds}秒)" : ""}',
-                    style: TextStyle(
-                      fontSize: 14.toSp,
-                      color: AppColors.color_E6000000,
-                    ),
-                  ),
-                  if (_deepThinkingText.isNotEmpty) ...[
-                    SizedBox(height: 8.toW),
-                    Text(
-                      _deepThinkingText,
-                      style: TextStyle(
-                        fontSize: 13.toSp,
-                        color: AppColors.color_99000000,
-                        height: 1.4,
+                      child: Text(
+                        _thinkingText,
+                        style: TextStyle(
+                          fontSize: 12.toSp,
+                          color: AppColors.color_99000000,
+                          height: 1.4,
+                        ),
                       ),
                     ),
                   ],
@@ -225,7 +144,7 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
               ),
             ),
           // 最终回复
-          if (_showFinalAnswer)
+          if (_showFinalAnswer && widget.message.text.isNotEmpty)
             Container(
               margin: EdgeInsets.symmetric(vertical: 14.toW),
               child: Column(
@@ -233,6 +152,7 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                 children: [
                   _buildAnimatedText(textColor),
                   SizedBox(height: 14.toW),
+                  if (!widget.message.isPrologue)
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
