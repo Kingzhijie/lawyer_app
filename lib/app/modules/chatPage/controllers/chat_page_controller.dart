@@ -302,11 +302,11 @@ class ChatPageController extends GetxController {
           // 创建更新的消息
           final aiMessage = UiMessage(
             id: aiMessageId,
-            text: replyContent.isNotEmpty ? replyContent : '正在思考...',
+            text: '',
             isAi: true,
             createdAt: DateTime.now(),
             thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
-            hasAnimated: false, // 保持为 false 以触发动画
+            thinkingSeconds: 3
           );
 
           // 查找是否已存在该消息

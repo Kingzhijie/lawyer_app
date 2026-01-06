@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import '../../controllers/chat_page_controller.dart';
 
@@ -104,7 +105,6 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
   void _animateDeepThinkingText() {
     final text = widget.message.deepThinkingProcess!;
     int currentIndex = 0;
-
     void showNextChar() {
       if (currentIndex < text.length && mounted) {
         setState(() {
@@ -161,7 +161,7 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                   Row(
                     children: [
                       Text(
-                        '思考中...',
+                        !_showDeepThinking ? '思考中...' : '已思考',
                         style: TextStyle(
                           fontSize: 14.toSp,
                           color: AppColors.color_E6000000,
@@ -204,7 +204,7 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '已深度思考${widget.message.thinkingSeconds != null ? "(用时${widget.message.thinkingSeconds}秒)" : ""}',
+                    '已思考${widget.message.thinkingSeconds != null ? "(用时${widget.message.thinkingSeconds}秒)" : ""}',
                     style: TextStyle(
                       fontSize: 14.toSp,
                       color: AppColors.color_E6000000,

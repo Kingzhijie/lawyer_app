@@ -139,7 +139,8 @@ class SSEUtils {
       logPrint('SSE 请求参数: ${jsonEncode(request.toJson())}');
 
       // 获取 token
-      final token = StorageUtils.getToken();
+      final token = 'test1';
+      //StorageUtils.getToken();
       
       // 构建请求头
       final headers = {
