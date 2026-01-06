@@ -36,49 +36,8 @@ class ChatInputBar extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (controller.images.isNotEmpty)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: controller.images
-                      .map(
-                        (e) => Stack(
-                          children: [
-                            ImageUtils(
-                              imageUrl: e.path ?? e.url,
-                              width: 60.toW,
-                              height: 60.toW,
-                              circularRadius: 5.toW,
-                            ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child:
-                                  Container(
-                                    width: 20.toW,
-                                    height: 20.toW,
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.3),
-                                      borderRadius: BorderRadius.circular(
-                                        10.toW,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.close,
-                                      size: 12.toW,
-                                      color: Colors.white,
-                                    ),
-                                  ).withOnTap(() {
-                                    controller.images.value.remove(e);
-                                    controller.images.refresh();
-                                  }),
-                            ),
-                          ],
-                        ).withMarginOnly(right: 6.toW, top: 6.toW),
-                      )
-                      .toList(),
-                ),
-              ).withMarginOnly(bottom: 12.toW),
+            if (controller.images.isNotEmpty) _setImageWidget(),
+            if (controller.files.isNotEmpty) _setFilesWidget(),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -123,6 +82,7 @@ class ChatInputBar extends StatelessWidget {
                       child: Container(
                         alignment: Alignment.center,
                         padding: EdgeInsets.symmetric(vertical: 12.toW),
+                        color: Colors.white,
                         child: Text(
                           '按住说话',
                           style: TextStyle(
@@ -166,6 +126,128 @@ class ChatInputBar extends StatelessWidget {
       }),
     );
   }
+
+  ///设置image
+  Widget _setImageWidget() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: controller.images
+            .map(
+              (e) => Stack(
+                children: [
+                  ImageUtils(
+                    imageUrl: e.path ?? e.url,
+                    width: 60.toW,
+                    height: 60.toW,
+                    circularRadius: 5.toW,
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child:
+                        Container(
+                          width: 20.toW,
+                          height: 20.toW,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(10.toW),
+                          ),
+                          child: Icon(
+                            Icons.close,
+                            size: 12.toW,
+                            color: Colors.white,
+                          ),
+                        ).withOnTap(() {
+                          controller.images.remove(e);
+                          controller.images.refresh();
+                        }),
+                  ),
+                ],
+              ).withMarginOnly(right: 6.toW, top: 6.toW),
+            )
+            .toList(),
+      ),
+    ).withMarginOnly(bottom: 12.toW);
+  }
+
+  ///设置文件
+  Widget _setFilesWidget() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: controller.files
+            .map(
+              (e) => Stack(
+                children: [
+                  Container(
+                    width: 120.toW,
+                    height: 80.toW,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6.toW),
+                      border: Border.all(
+                        color: AppColors.color_line,
+                        width: 0.5,
+                      ),
+                      color: Colors.white,
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 8.toW),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          (e.name ?? '').replaceAll('.${e.type}', ''),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppColors.color_E6000000,
+                            fontSize: 13.toSp,
+                          ),
+                        ),
+                        Height(2.toW),
+                        Row(
+                          children: [
+                            ImageUtils(
+                              imageUrl: Assets.common.actionFileIcon.path,
+                              width: 16.toW,
+                            ),
+                            Text(
+                              e.type ?? '.pdf',
+                              style: TextStyle(
+                                color: AppColors.color_E6000000,
+                                fontSize: 12.toSp,
+                              ),
+                            ).withExpanded(),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child:
+                        Container(
+                          width: 20.toW,
+                          height: 20.toW,
+                          child: Icon(
+                            Icons.close,
+                            size: 14.toW,
+                            color: Colors.black,
+                          ),
+                        ).withOnTap(() {
+                          controller.files.remove(e);
+                          controller.files.refresh();
+                        }),
+                  ),
+                ],
+              ).withMarginOnly(right: 6.toW, top: 6.toW),
+            )
+            .toList(),
+      ),
+    ).withMarginOnly(bottom: 12.toW);
+  }
 }
 
 class _InputField extends StatelessWidget {
@@ -180,7 +262,6 @@ class _InputField extends StatelessWidget {
       minLines: 1,
       maxLines: 4,
       style: TextStyle(color: AppColors.color_E6000000, fontSize: 16.toSp),
-      // 1-4 行内自适应，高度到 4 行后内部滚动
       keyboardType: TextInputType.multiline,
       decoration: InputDecoration(
         hintText: '问一问灵伴...',

@@ -804,11 +804,18 @@ class ChatPageController extends GetxController {
               logPrint('文件路径: ${file.path}');
               logPrint('文件扩展名: ${file.extension}');
               if (file.path != null) {
+                images.clear();
+                files.add(MessageFileModel(path: file.path, name: file.name, type: file.extension));
                 NetUtils.uploadSingleFile(file.path!).then((result) {
                   logPrint('result====$result');
                   if (result != null) {
-                    images.clear();
-                    files.add(MessageFileModel(path: file.path, url: result, name: file.extension));
+                    // 找到对应的图片
+                    final index = files.indexWhere((e) => e.path == file.path);
+                    if (index != -1) {
+                      // 使用 copyWith 更新 url
+                      files[index] = files[index].copyWith(url: result);
+                      files.refresh(); // 刷新 UI
+                    }
                   }
                 });
               }

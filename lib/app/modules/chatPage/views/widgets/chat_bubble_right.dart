@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../../../common/extension/widget_extension.dart';
 import '../../../../utils/image_utils.dart';
 import '../../../../utils/object_utils.dart';
 import '../../../../utils/screen_utils.dart';
 import '../../controllers/chat_page_controller.dart';
 import '../../models/ui_message.dart';
-
 
 class ChatBubbleRight extends StatelessWidget {
   const ChatBubbleRight({super.key, required this.message});
@@ -30,20 +30,8 @@ class ChatBubbleRight extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (!ObjectUtils.isEmptyList(message.images))
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: message.images!.map((e)=>ImageUtils(
-                  imageUrl: e.url ?? e.path,
-                  width: 80.toW,
-                  height: 80.toW,
-                  circularRadius: 6.toW,
-                ).withMarginOnly(left: 4.toW)).toList(),
-              ),
-            ).withMargin(EdgeInsets.symmetric(vertical: 6)),
-
+          if (!ObjectUtils.isEmptyList(message.images)) _setImageWidget(),
+          if (!ObjectUtils.isEmptyList(message.files)) _setFilesWidget(),
           Container(
             margin: const EdgeInsets.symmetric(vertical: 6),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -56,7 +44,7 @@ class ChatBubbleRight extends StatelessWidget {
                   blurRadius: 14,
                   offset: const Offset(0, 0),
                 ),
-              ]
+              ],
             ),
             child: Text(
               message.text,
@@ -67,5 +55,78 @@ class ChatBubbleRight extends StatelessWidget {
       ),
     );
   }
-}
 
+  ///设置文件
+  Widget _setFilesWidget() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: message.files!
+            .map(
+              (e) => Container(
+                width: 120.toW,
+                height: 80.toW,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6.toW),
+                  border: Border.all(color: AppColors.color_line, width: 0.5),
+                  color: Colors.white,
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 8.toW),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      (e.name ?? '').replaceAll('.${e.type}', ''),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColors.color_E6000000,
+                        fontSize: 13.toSp,
+                      ),
+                    ),
+                    Height(2.toW),
+                    Row(
+                      children: [
+                        ImageUtils(
+                          imageUrl: Assets.common.actionFileIcon.path,
+                          width: 16.toW,
+                        ),
+                        Text(
+                          e.type ?? '.pdf',
+                          style: TextStyle(
+                            color: AppColors.color_E6000000,
+                            fontSize: 12.toSp,
+                          ),
+                        ).withExpanded(),
+                      ],
+                    ),
+                  ],
+                ),
+              ).withMarginOnly(left: 6.toW),
+            )
+            .toList(),
+      ),
+    ).withMargin(EdgeInsets.symmetric(vertical: 6));
+  }
+
+  Widget _setImageWidget() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: message.images!
+            .map(
+              (e) => ImageUtils(
+                imageUrl: e.url ?? e.path,
+                width: 80.toW,
+                height: 80.toW,
+                circularRadius: 6.toW,
+              ).withMarginOnly(left: 4.toW),
+            )
+            .toList(),
+      ),
+    ).withMargin(EdgeInsets.symmetric(vertical: 6));
+  }
+}

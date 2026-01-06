@@ -3,18 +3,21 @@ class MessageFileModel {
   final String? url;
   final String? path;
   final String? name;
+  final String? type;
 
-  MessageFileModel({this.path, this.url, this.name});
+  MessageFileModel({this.path, this.url, this.name, this.type});
 
   MessageFileModel copyWith({
     String? url,
     String? path,
     String? name,
+    String? type,
   }) {
     return MessageFileModel(
       path: path ?? this.path,
       url: url ?? this.url,
       name: name ?? this.name,
+        type: type ?? this.type
     );
   }
 }
