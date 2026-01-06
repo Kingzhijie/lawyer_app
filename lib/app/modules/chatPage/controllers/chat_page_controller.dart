@@ -70,6 +70,9 @@ class ChatPageController extends GetxController {
   
   // 语音识别是否可用（华为设备可能不支持）
   bool _isSpeechRecognitionAvailable = true;
+  
+  // 是否启用思考模式（默认启用）
+  bool enableThinkingMode = true;
 
   void updatePanelType(ChatPanelType type) {
     final targetPanelType = _toBottomPanel(type);
@@ -244,6 +247,10 @@ class ChatPageController extends GetxController {
     String thinkingContent = '';
     String replyContent = '';
     final startTime = DateTime.now();
+    
+    // 自动检测后端是否支持思考模式
+    bool backendSupportsThinking = false;
+    bool hasReceivedContent = false;
 
     // 创建一个临时的 AI 消息用于显示实时回复
     final aiMessageId = 'ai-${DateTime.now().microsecondsSinceEpoch}';
@@ -283,10 +290,10 @@ class ChatPageController extends GetxController {
       requestId: requestId,
       hisId: sessionId.toNullInt(),
       files: uploadFiles,
-      think: true,
+      think: enableThinkingMode, // 使用配置项
     );
 
-    logPrint('发送消息: $message');
+    logPrint('发送消息: $message, 思考模式: $enableThinkingMode');
 
     try {
       _sseSubscription = await SSEUtils().chatStream(
@@ -295,50 +302,55 @@ class ChatPageController extends GetxController {
         onMessage: (data) {
           logPrint('📨 收到 SSE 事件 - eventType: ${data.eventType}');
           
-          // 累积思考过程（reasoningContent）
-          if (data.reasoningContent != null &&
-              data.reasoningContent!.isNotEmpty) {
+          // 检测后端是否支持思考模式
+          if (data.reasoningContent != null && data.reasoningContent!.isNotEmpty) {
+            backendSupportsThinking = true;
             thinkingContent += data.reasoningContent!;
             logPrint('✅ 收到思考内容: ${data.reasoningContent}');
             logPrint('📊 累积思考内容: $thinkingContent');
           }
 
-          // 累积回复内容（content）
+          // 累积回复内容
           if (data.content != null && data.content!.isNotEmpty) {
+            hasReceivedContent = true;
             replyContent += _sanitizeText(data.content!);
             logPrint('✅ 收到回复内容: ${data.content}');
             logPrint('📊 累积回复内容: $replyContent');
           }
 
+          // 自动判断模式
+          // 情况1：后端支持思考模式 - 有 reasoningContent
+          // 情况2：后端不支持思考模式 - 只有 content，即使前端发送了 think: true
+          final actualMode = backendSupportsThinking ? '思考模式' : '直接回复模式';
+          
           // 移除"思考中"消息（只移除一次）
           messages.removeWhere((e) => e.id == 'think_id');
 
           // 创建更新的消息
           final aiMessage = UiMessage(
             id: aiMessageId,
-            text: replyContent, // 直接使用 replyContent，可以为空
+            text: replyContent, // 回复内容，可能为空（思考阶段）或有内容（直接回复）
             isAi: true,
             createdAt: DateTime.now(),
             thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
-            isThinkingDone: false, // 思考中
+            isThinkingDone: false, // 流式传输中，未完成
           );
 
           // 查找是否已存在该消息
           final existingIndex = messages.indexWhere((m) => m.id == aiMessageId);
           if (existingIndex != -1) {
-            // 更新现有消息
-            messages[existingIndex] = aiMessage;
+            // 更新现有消息 - 使用 replaceRange 确保触发响应式更新
+            messages.replaceRange(existingIndex, existingIndex + 1, [aiMessage]);
             logPrint(
-              '🔄 更新消息 - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符',
+              '🔄 更新消息 [$actualMode] - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符',
             );
           } else {
             // 添加新消息
             messages.add(aiMessage);
             logPrint(
-              '➕ 添加新消息 - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符',
+              '➕ 添加新消息 [$actualMode] - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符',
             );
           }
-          messages.refresh();
 
           // 触发滚动
           scheduleScrollDuringTyping();
@@ -365,13 +377,20 @@ class ChatPageController extends GetxController {
               .difference(startTime)
               .inSeconds;
 
-          logPrint('✅ 消息接收完成');
+          final actualMode = backendSupportsThinking ? '思考模式' : '直接回复模式';
+          
+          logPrint('✅ 消息接收完成 [$actualMode]');
           logPrint('📊 最终思考过程: $thinkingContent (${thinkingContent.length} 字符)');
           logPrint('📊 最终回复内容: $replyContent (${replyContent.length} 字符)');
-          logPrint('⏱️ 思考用时: $thinkingSeconds 秒');
+          logPrint('⏱️ 用时: $thinkingSeconds 秒');
           
-          if (replyContent.isEmpty) {
-            logPrint('⚠️ 警告：replyContent 为空！');
+          if (replyContent.isEmpty && thinkingContent.isEmpty) {
+            logPrint('⚠️ 警告：没有收到任何内容！');
+          }
+          
+          // 如果后端不支持思考模式但没有收到内容，可能是错误
+          if (!backendSupportsThinking && !hasReceivedContent) {
+            logPrint('⚠️ 后端可能不支持当前请求');
           }
           
           isLoading.value = false;
@@ -382,21 +401,19 @@ class ChatPageController extends GetxController {
           // 最终更新消息，包含完整的思考过程和用时
           final index = messages.indexWhere((m) => m.id == aiMessageId);
           if (index != -1) {
-            messages[index] = UiMessage(
+            final finalMessage = UiMessage(
               id: aiMessageId,
               text: replyContent.isNotEmpty ? replyContent : '未识别出内容',
               isAi: true,
               createdAt: messages[index].createdAt,
-              hasAnimated: false,
-              // 设置为 false 以触发打字动画
-              thinkingProcess: thinkingContent.isNotEmpty
-                  ? thinkingContent
-                  : null,
+              hasAnimated: true, // 流式传输已经是逐字显示，不需要打字动画
+              thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
               thinkingSeconds: thinkingSeconds,
-              isThinkingDone: true, // 思考完成
+              isThinkingDone: true, // 流式传输完成
             );
-            logPrint('🎯 最终消息已更新');
-            messages.refresh();
+            // 使用 replaceRange 确保触发响应式更新
+            messages.replaceRange(index, index + 1, [finalMessage]);
+            logPrint('🎯 最终消息已更新 [$actualMode]');
           } else {
             logPrint('⚠️ 未找到消息 ID: $aiMessageId');
           }

@@ -119,6 +119,8 @@ dependencies:
   easy_refresh: ^3.4.0
   #uuid生成
   uuid: ^4.5.1
+  #文件浏览
+  native_file_preview: ^1.0.1
   #日历
   flutter_advanced_calendar:
     path: plugins/flutter_advanced_calendar-1.4.3

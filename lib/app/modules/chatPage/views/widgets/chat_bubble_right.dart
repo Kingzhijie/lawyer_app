@@ -3,6 +3,7 @@ import 'package:lawyer_app/app/common/constants/app_colors.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../common/extension/widget_extension.dart';
+import '../../../../utils/file_preview_util.dart';
 import '../../../../utils/image_utils.dart';
 import '../../../../utils/object_utils.dart';
 import '../../../../utils/screen_utils.dart';
@@ -64,47 +65,57 @@ class ChatBubbleRight extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: message.files!
             .map(
-              (e) => Container(
-                width: 120.toW,
-                height: 80.toW,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6.toW),
-                  border: Border.all(color: AppColors.color_line, width: 0.5),
-                  color: Colors.white,
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 8.toW),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      (e.name ?? '').replaceAll('.${e.type}', ''),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: AppColors.color_E6000000,
-                        fontSize: 13.toSp,
-                      ),
-                    ),
-                    Height(2.toW),
-                    Row(
-                      children: [
-                        ImageUtils(
-                          imageUrl: Assets.common.actionFileIcon.path,
-                          width: 16.toW,
-                        ),
-                        Text(
-                          e.type ?? '.pdf',
-                          style: TextStyle(
-                            color: AppColors.color_E6000000,
-                            fontSize: 12.toSp,
+              (e) =>
+                  Container(
+                        width: 120.toW,
+                        height: 80.toW,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6.toW),
+                          border: Border.all(
+                            color: AppColors.color_line,
+                            width: 0.5,
                           ),
-                        ).withExpanded(),
-                      ],
-                    ),
-                  ],
-                ),
-              ).withMarginOnly(left: 6.toW),
+                          color: Colors.white,
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 8.toW),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              (e.name ?? '').replaceAll('.${e.type}', ''),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: AppColors.color_E6000000,
+                                fontSize: 13.toSp,
+                              ),
+                            ),
+                            Height(2.toW),
+                            Row(
+                              children: [
+                                ImageUtils(
+                                  imageUrl: Assets.common.actionFileIcon.path,
+                                  width: 16.toW,
+                                ),
+                                Text(
+                                  e.type ?? '.pdf',
+                                  style: TextStyle(
+                                    color: AppColors.color_E6000000,
+                                    fontSize: 12.toSp,
+                                  ),
+                                ).withExpanded(),
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                      .withOnTap(() {
+                        FilePreviewUtil.previewFile(
+                          filePath: e.path ?? (e.url ?? ''),
+                        );
+                      })
+                      .withMarginOnly(left: 6.toW),
             )
             .toList(),
       ),

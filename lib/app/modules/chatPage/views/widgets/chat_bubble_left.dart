@@ -2,9 +2,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../utils/image_utils.dart';
-import '../../controllers/chat_page_controller.dart';
 import '../../models/ui_message.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
@@ -29,33 +29,56 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
   bool _showFinalAnswer = false;
   String _thinkingText = '';
   String? _previousThinkingProcess;
+  String _previousText = '';
 
   @override
   void initState() {
     super.initState();
     _previousThinkingProcess = widget.message.thinkingProcess;
+    _previousText = widget.message.text;
     _initDisplay();
   }
 
   @override
   void didUpdateWidget(ChatBubbleLeft oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // 检测思考内容是否有更新
+    
+    bool needsUpdate = false;
+    
+    // 检测思考内容是否有更新（情况1：有思考过程）
     if (widget.message.thinkingProcess != _previousThinkingProcess) {
       _previousThinkingProcess = widget.message.thinkingProcess;
-      // 实时更新思考内容
-      if (widget.message.thinkingProcess != null) {
-        setState(() {
-          _showThinking = true;
-          _thinkingText = widget.message.thinkingProcess!;
-        });
+      if (widget.message.thinkingProcess != null && widget.message.thinkingProcess!.isNotEmpty) {
+        _showThinking = true;
+        _thinkingText = widget.message.thinkingProcess!;
+        needsUpdate = true;
+        logPrint('🧠 思考内容更新: ${widget.message.thinkingProcess!.length} 字符');
       }
     }
-    // 检测是否思考完成，显示最终答案
-    if (widget.message.isThinkingDone && !_showFinalAnswer && widget.message.text.isNotEmpty) {
-      setState(() {
+    
+    // 检测文本内容是否有更新（情况1和情况2都需要）
+    if (widget.message.text != _previousText) {
+      _previousText = widget.message.text;
+      if (widget.message.text.isNotEmpty) {
         _showFinalAnswer = true;
-      });
+        needsUpdate = true;
+        logPrint('💬 文本内容更新: ${widget.message.text.length} 字符');
+      }
+    }
+    
+    // 检测是否思考完成（情况1：从思考中 -> 思考完成）
+    if (widget.message.isThinkingDone && !oldWidget.message.isThinkingDone) {
+      needsUpdate = true;
+      logPrint('✅ 思考完成');
+      // 思考完成后，如果有文本就显示
+      if (widget.message.text.isNotEmpty) {
+        _showFinalAnswer = true;
+      }
+    }
+    
+    // 只在需要时调用 setState
+    if (needsUpdate) {
+      setState(() {});
     }
   }
 
@@ -66,17 +89,24 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
       _showFinalAnswer = true;
       _thinkingText = widget.message.thinkingProcess ?? '';
     } else {
-      // 未动画过
+      // 未动画过 - 判断是哪种情况
+      
+      // 情况1：有思考过程（think: true）
       if (widget.message.thinkingProcess != null) {
-        // 有思考过程
         _showThinking = true;
         _thinkingText = widget.message.thinkingProcess!;
+        // 只有在思考完成且有文本时才显示最终答案
         if (widget.message.isThinkingDone && widget.message.text.isNotEmpty) {
           _showFinalAnswer = true;
         }
-      } else {
-        // 没有思考过程（如开场白），直接显示文本
-        _showFinalAnswer = widget.message.text.isNotEmpty;
+      } 
+      // 情况2：没有思考过程，直接流式输出结果（think: false 或开场白）
+      else {
+        // 如果有文本内容，直接显示
+        if (widget.message.text.isNotEmpty) {
+          _showFinalAnswer = true;
+        }
+        // 如果文本为空且未完成，显示"思考中..."（通过 build 方法的最后一个判断）
       }
     }
   }
@@ -218,13 +248,13 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
   }
 
   Widget _buildAnimatedText(Color textColor) {
-    if (widget.message.hasAnimated) {
-      return Text(
-        widget.message.text,
-        style: TextStyle(color: textColor, fontSize: 15, height: 1.5),
-      );
+    // 如果已经动画过，或者是流式传输完成的消息，直接显示完整内容
+    // 流式传输本身就是逐字显示，不需要再加打字动画
+    if (widget.message.hasAnimated || widget.message.isThinkingDone) {
+      return _setMarkDownWidget(widget.message.text, textColor);
     }
 
+    // 只有非流式的消息（如历史消息）才使用打字动画
     final total = widget.message.text.length;
     final duration = Duration(milliseconds: max(600, 40 * total.clamp(1, 80)));
 
