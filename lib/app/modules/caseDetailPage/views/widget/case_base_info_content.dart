@@ -78,15 +78,16 @@ class CaseBaseInfoContent extends StatelessWidget {
                   color: AppColors.color_E6000000,
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  controller.onCaseBaseInfoEdit();
-                },
-                child: Text(
-                  '编辑',
-                  style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),
+              if (caseDetail.caseBase?.status != 2)
+                GestureDetector(
+                  onTap: () {
+                    controller.onCaseBaseInfoEdit();
+                  },
+                  child: Text(
+                    '编辑',
+                    style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),
+                  ),
                 ),
-              ),
             ],
           ),
           SizedBox(height: 16.toW),
@@ -245,15 +246,16 @@ class CaseBaseInfoContent extends StatelessWidget {
                   color: AppColors.color_E6000000,
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  controller.editConcernedPerson();
-                },
-                child: Text(
-                  '新增',
-                  style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),
+              if (caseDetail.caseBase?.status != 2)
+                GestureDetector(
+                  onTap: () {
+                    controller.editConcernedPerson();
+                  },
+                  child: Text(
+                    '新增',
+                    style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),
+                  ),
                 ),
-              ),
             ],
           ),
           SizedBox(height: 16.toW),
@@ -562,15 +564,16 @@ class CaseBaseInfoContent extends StatelessWidget {
                   color: AppColors.color_E6000000,
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  controller.attorneysFeePage();
-                },
-                child: Text(
-                  '编辑',
-                  style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),
+              if (caseDetail.caseBase?.status != 2)
+                GestureDetector(
+                  onTap: () {
+                    controller.attorneysFeePage();
+                  },
+                  child: Text(
+                    '编辑',
+                    style: TextStyle(fontSize: 14.toSp, color: AppColors.theme),
+                  ),
                 ),
-              ),
             ],
           ),
 

@@ -7,6 +7,7 @@ class CaseBaseModel {
   int? caseType;
   int? casePartyRole;
   int? caseProcedure;
+  List<dynamic>? caseProcedureList;
   String? caseReason;
   dynamic commissionDate;
   String? receivingUnit;
@@ -34,6 +35,7 @@ class CaseBaseModel {
     this.caseType,
     this.casePartyRole,
     this.caseProcedure,
+    this.caseProcedureList,
     this.caseReason,
     this.commissionDate,
     this.receivingUnit,
@@ -62,6 +64,7 @@ class CaseBaseModel {
     caseType: json['caseType'] as int?,
     casePartyRole: json['casePartyRole'] as int?,
     caseProcedure: json['caseProcedure'] as int?,
+    caseProcedureList: json['caseProcedureList'] as List<dynamic>?,
     caseReason: json['caseReason'] as String?,
     receivingUnit: json['receivingUnit'] as String?,
     commissionDate: json['commissionDate'] as dynamic,
@@ -92,6 +95,7 @@ class CaseBaseModel {
     'caseType': caseType,
     'casePartyRole': casePartyRole,
     'caseProcedure': caseProcedure,
+    'caseProcedureList': caseProcedureList,
     'caseReason': caseReason,
     'commissionDate': commissionDate,
     'receivingUnit': receivingUnit,

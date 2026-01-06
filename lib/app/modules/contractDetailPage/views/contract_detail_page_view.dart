@@ -1,10 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
-import 'package:lawyer_app/app/common/extension/widget_extension.dart';
-import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../utils/image_utils.dart';
@@ -17,7 +13,6 @@ import 'widget/case_save_detail_widget.dart';
 import 'widget/case_task_list_widget.dart';
 
 enum CaseActionType {
-  caseClosed('结案'),
   caseArchiving('归档'),
   caseAppeal('上诉'),
   caseDelete('删除');
@@ -51,9 +46,9 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
             children: [
               _buildAppBar(),
               Obx(
-                () => controller.caseDetail.value == null
-                    ? SizedBox.shrink()
-                    : _buildTrialTabs(),
+                () => controller.currentCaseProcedure.value > 1
+                    ? _buildTrialTabs()
+                    : SizedBox.shrink(),
               ),
               Expanded(
                 child: SingleChildScrollView(
@@ -183,10 +178,6 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
             elevation: 8,
             padding: EdgeInsets.zero,
             itemBuilder: (BuildContext context) => [
-              _buildPopupMenuItem(
-                icon: Assets.my.jieanIcon.path,
-                label: CaseActionType.caseClosed,
-              ),
               _buildPopupMenuItem(
                 icon: Assets.my.guidangIcon.path,
                 label: CaseActionType.caseArchiving,
