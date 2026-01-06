@@ -110,7 +110,7 @@ class CaseProgressWidget extends StatelessWidget {
                     children: [
                       ImageUtils(
                         imageUrl: item.relatedTaskId != null
-                            ? Assets.home.caseProgressTaskIcon.path
+                            ? Assets.home.caseProgressTask.path
                             : Assets.home.susongfeiIcon.path,
                         width: 24.toW,
                         height: 24.toW,
@@ -132,7 +132,7 @@ class CaseProgressWidget extends StatelessWidget {
                       ),
                       if (item.relatedTaskId != null)
                         ImageUtils(
-                          imageUrl: Assets.home.caseProgressArrowIcon.path,
+                          imageUrl: Assets.home.caseProgressTask.path,
                           width: 14.toW,
                           height: 14.toW,
                           fit: BoxFit.cover,

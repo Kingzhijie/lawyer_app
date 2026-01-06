@@ -1,7 +1,10 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
+import 'package:lawyer_app/app/modules/newHomePage/views/widgets/link_user_widget.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 import 'package:lawyer_app/app/utils/loading.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
 
 import '../../../../main.dart';
 import '../../../common/components/bottom_sheet_utils.dart';
@@ -131,7 +134,28 @@ class CasePageController extends GetxController {
 
   ////查看案件详情
   void lookCaseDetail(CaseBaseInfoModel model) {
-    Get.toNamed(Routes.CASE_DETAIL_PAGE);
+    Get.toNamed(Routes.CASE_DETAIL_PAGE, arguments: {'caseId': model.id});
   }
 
+  void onLinkUser() {
+    final userModel =
+        getFindController<NewHomePageController>()?.userModel.value;
+    if (userModel == null) {
+      return;
+    }
+
+    if (userModel.hasTeamOffice == false) {
+      showToast('跳转引导开会员');
+      return;
+    }
+
+    BottomSheetUtils.show(
+      currentContext,
+      radius: 12.toW,
+      isShowCloseIcon: true,
+      height: AppScreenUtil.screenHeight - 217.toW,
+      isSetBottomInset: false,
+      contentWidget: LinkUserWidget(),
+    );
+  }
 }

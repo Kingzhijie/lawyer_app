@@ -1,21 +1,25 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/pres_asset_model.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
 class CaseSaveDetailWidget extends StatelessWidget {
-  final List<dynamic> presAssetList;
-  const CaseSaveDetailWidget({super.key, required this.presAssetList});
+  final List<PresAssetModel> presAssetList;
+  final VoidCallback onCheckAssetsTap;
+  const CaseSaveDetailWidget({
+    super.key,
+    required this.presAssetList,
+    required this.onCheckAssetsTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final effectiveToList = presAssetList.map((item) {
-      final effectiveTo = item['effectiveTo'] as int? ?? 0;
+      final effectiveTo = item.effectiveTo ?? 0;
       return effectiveTo;
     }).toList();
     final max = effectiveToList.reduce((a, b) => a > b ? a : b);
@@ -42,7 +46,8 @@ class CaseSaveDetailWidget extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: onCheckAssetsTap,
+                behavior: HitTestBehavior.opaque,
                 child: Row(
                   children: [
                     Text(
@@ -73,7 +78,7 @@ class CaseSaveDetailWidget extends StatelessWidget {
             child: Wrap(
               children: [
                 ...presAssetList.map((item) {
-                  final assetType = item['assetType'] as int? ?? 0;
+                  final assetType = item.assetType ?? 0;
                   var icon = '';
                   var label = '';
                   var value = '';
@@ -81,23 +86,22 @@ class CaseSaveDetailWidget extends StatelessWidget {
                     case 1:
                       icon = Assets.my.budongchanIcon.path;
                       label = '不动产：';
-                      value = '${item['quantity'] as int? ?? 1}处';
+                      value = '${item.quantity ?? 1}处';
                       break;
                     case 2:
                       icon = Assets.my.cheliangIcon.path;
                       label = '车辆：';
-                      value = '${item['quantity'] as int? ?? 1}台';
+                      value = '${item.quantity ?? 1}台';
                       break;
                     case 4:
                       icon = Assets.my.zijianIcon.path;
                       label = '资金：';
-                      value =
-                          '¥${(item['amount'] as double? ?? 0.0).toStringAsFixed(2)}';
+                      value = '¥${(item.amount ?? 0.0).toStringAsFixed(2)}';
                       break;
                     default:
                       icon = Assets.my.zijianIcon.path;
-                      label = item['assetName'] as String? ?? '';
-                      value = (item['quantity'] as int? ?? 1).toString();
+                      label = item.assetName ?? '';
+                      value = (item.quantity ?? 1).toString();
                   }
                   return _buildAssetItem(
                     icon: icon,

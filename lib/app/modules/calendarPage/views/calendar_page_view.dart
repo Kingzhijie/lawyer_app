@@ -5,6 +5,7 @@ import 'package:lawyer_app/app/common/components/common_app_bar.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/modules/calendarPage/views/widgets/today_wait_work_widget.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
@@ -17,24 +18,39 @@ class CalendarPageView extends GetView<CalendarPageController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CommonAppBar(isShowLeading: false, leadingWidth: 200,leftActionWidget: Container(
-        padding: EdgeInsets.only(left: 10.toW),
-        child: Obx((){
-          // 通过访问 selectedDate 来触发更新，然后获取当前月份
-          final date = controller.currentDisplayMonth.value;
-          return Row(
-            children: [
-              // Icon(Icons.arrow_back_ios, size: 22.toW, color: Colors.black).withMarginOnly(left: 6.toW),
-              Width(10.toW),
-              Text('${date.year}年${date.month}月', style: TextStyle(color: Colors.black, fontSize: 17.toSp, fontWeight: FontWeight.w600))
-            ],
-          );
-        }).withOnTap((){
-          Get.back();
-        }),
-      )),
+      appBar: CommonAppBar(
+        isShowLeading: false,
+        leadingWidth: 200,
+        leftActionWidget: Container(
+          padding: EdgeInsets.only(left: 10.toW),
+          child:
+              Obx(() {
+                // 通过访问 selectedDate 来触发更新，然后获取当前月份
+                final date = controller.currentDisplayMonth.value;
+                return Row(
+                  children: [
+                    // Icon(Icons.arrow_back_ios, size: 22.toW, color: Colors.black).withMarginOnly(left: 6.toW),
+                    Width(10.toW),
+                    Text(
+                      '${date.year}年${date.month}月',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 17.toSp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                );
+              }).withOnTap(() {
+                Get.back();
+              }),
+        ),
+      ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(top: 12.toW, bottom: AppScreenUtil.bottomBarHeight + 50.toW),
+        padding: EdgeInsets.only(
+          top: 12.toW,
+          bottom: AppScreenUtil.bottomBarHeight + 50.toW,
+        ),
         child: Column(children: [_buildCalendarSection(), _buildTodoList()]),
       ),
     );
@@ -48,26 +64,25 @@ class CalendarPageView extends GetView<CalendarPageController> {
     );
   }
 
-
   Widget _buildExpandedCalendar() {
     return Theme(
       data: ThemeData.light().copyWith(
         primaryColor: AppColors.theme,
         highlightColor: AppColors.theme,
         textTheme: ThemeData.light().textTheme.copyWith(
-              bodyLarge: TextStyle(
-                fontSize: 14.toSp,
-                color: const Color(0x42000000), // 星期标签颜色
-              ),
-              bodyMedium: TextStyle(
-                fontSize: 12.toSp,
-                color: AppColors.color_99000000,
-              ),
-              titleMedium: TextStyle(
-                fontSize: 16.toSp,
-                color: Colors.transparent, // 隐藏 Today 文本
-              ),
-            ),
+          bodyLarge: TextStyle(
+            fontSize: 14.toSp,
+            color: const Color(0x42000000), // 星期标签颜色
+          ),
+          bodyMedium: TextStyle(
+            fontSize: 12.toSp,
+            color: AppColors.color_99000000,
+          ),
+          titleMedium: TextStyle(
+            fontSize: 16.toSp,
+            color: Colors.transparent, // 隐藏 Today 文本
+          ),
+        ),
       ),
       child: Stack(
         children: [
@@ -93,12 +108,11 @@ class CalendarPageView extends GetView<CalendarPageController> {
           Obx(() {
             // 通过访问可观察变量来触发更新
             final _ = controller.selectedDate.value;
-            final events = controller.eventDates;
             return AdvancedCalendar(
               controller: controller.calendarController,
               weekLineHeight: 50.toW,
               startWeekDay: 0, // 周日开始
-              events: events, // 显示事件点
+              events: controller.eventDates.value, // 显示事件点
               innerDot: true, // 显示小点
               onHorizontalDrag: controller.onMonthChanged, // 监听月份切换
               headerStyle: TextStyle(
@@ -137,19 +151,23 @@ class CalendarPageView extends GetView<CalendarPageController> {
       padding: EdgeInsets.symmetric(horizontal: 16.toW, vertical: 12.toW),
       child: Row(
         children: [
-          Text(
-            '今日待办',
-            style: TextStyle(
-              fontSize: 20.toSp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.color_E6000000,
+          Obx(
+            () => Text(
+              controller.selectedDate.value.isDay(DateTime.now())
+                  ? '今日待办'
+                  : '${controller.selectedDate.value.year}-${controller.selectedDate.value.month.toString().padLeft(2, '0')}-${controller.selectedDate.value.day.toString().padLeft(2, '0')}',
+              style: TextStyle(
+                fontSize: 20.toSp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.color_E6000000,
+              ),
             ),
           ),
           const Spacer(),
           Container(
             decoration: BoxDecoration(
               color: AppColors.color_FFF3F3F3,
-              borderRadius: BorderRadius.circular(16.toW)
+              borderRadius: BorderRadius.circular(16.toW),
             ),
             width: 120.toW,
             height: 32.toW,
@@ -157,7 +175,13 @@ class CalendarPageView extends GetView<CalendarPageController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('搜索', style: TextStyle(color: AppColors.color_42000000, fontSize: 14.toSp),),
+                Text(
+                  '搜索',
+                  style: TextStyle(
+                    color: AppColors.color_42000000,
+                    fontSize: 14.toSp,
+                  ),
+                ),
                 ImageUtils(
                   imageUrl: Assets.home.searchIcon.path,
                   width: 16.toW,
@@ -165,17 +189,16 @@ class CalendarPageView extends GetView<CalendarPageController> {
                 ),
               ],
             ),
-          ).withOnTap((){
+          ).withOnTap(() {
             controller.searchAction();
-          })
+          }),
         ],
       ),
     );
   }
 
-
   Widget _buildTodoItems(DateTime date) {
-    final tasks = _getTasksForDate(date);
+    final tasks = controller.todoTaskList.value;
 
     if (tasks.isEmpty) {
       return Padding(
@@ -195,65 +218,17 @@ class CalendarPageView extends GetView<CalendarPageController> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.only(
-        left: 16.toW,
-        right: 16.toW,
-        bottom: 40.toW,
-      ),
+      padding: EdgeInsets.only(left: 16.toW, right: 16.toW, bottom: 40.toW),
       itemCount: tasks.length,
       itemBuilder: (context, index) {
-        return TodayWaitWorkWidget(task: tasks[index], addRemarkAction: (){
-          controller.addRemarkAction();
-        },);
+        final task = tasks[index];
+        return TodayWaitWorkWidget(
+          task: task,
+          addRemarkAction: () {
+            controller.addRemarkAction(task);
+          },
+        );
       },
     );
-  }
-
-  bool _isToday(DateTime date) {
-    final now = DateTime.now();
-    return date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day;
-  }
-
-  List<Map<String, dynamic>> _getTasksForDate(DateTime date) {
-    if (_isToday(date)) {
-      return [
-        {
-          'time': '9:00',
-          'icon': Assets.home.anjianZongs.path,
-          'title': '缴纳诉讼费',
-          'isUrgent': true,
-          'role': '原告',
-          'case': '张三诉讼李四合同纠纷案',
-          'deadline': '2025-12-31',
-          'handler': '李世斌',
-          'phone': '13759200942',
-        },
-        {
-          'time': '11:00',
-          'icon': Assets.home.bqqdIcon.path,
-          'title': '催促保全结果',
-          'isUrgent': true,
-          'role': '被告',
-          'case': '张三诉讼李四合同纠纷案',
-          'deadline': '2025-12-31',
-          'handler': '李世斌',
-          'phone': '13759200942',
-        },
-        {
-          'time': '13:30',
-          'icon': Assets.home.anjianZongs.path,
-          'title': '第一次开庭',
-          'isUrgent': false,
-          'role': '原告',
-          'case': '张三诉讼李四合同纠纷案',
-          'deadline': '2025-12-31',
-          'handler': '李世斌',
-          'phone': '13759200942',
-        },
-      ];
-    }
-    return [];
   }
 }

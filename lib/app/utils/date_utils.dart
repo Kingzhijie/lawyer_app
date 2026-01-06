@@ -378,4 +378,16 @@ extension DateTimeExtensions on DateTime {
     final DateTime now = DateTime.now();
     return year == now.year;
   }
+
+  bool isMonth(DateTime current) {
+    return year == current.year && month == current.month;
+  }
+
+  bool isDay(DateTime current) {
+    return year == current.year && month == current.month && day == current.day;
+  }
+
+  int daysInMonth() {
+    return DateTime(year, month + 1, 0).day;
+  }
 }

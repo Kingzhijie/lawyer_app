@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/doc_list_model.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/gen/assets.gen.dart';
 
 import '../../controllers/case_detail_page_controller.dart';
 
@@ -11,10 +15,7 @@ class CaseDocumentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 模拟文档数据
-    final documents = [
-      {'title': '起诉状', 'updateTime': '2026-08-12'},
-      {'title': '保全结果通知书', 'updateTime': '2026-08-12'},
-    ];
+    final documents = controller.caseDetail.value?.docList ?? [];
 
     return SingleChildScrollView(
       child: Column(
@@ -57,10 +58,7 @@ class CaseDocumentWidget extends StatelessWidget {
                       SizedBox(height: 12.toW),
                   itemBuilder: (context, index) {
                     final doc = documents[index];
-                    return _buildDocumentItem(
-                      title: doc['title'] as String,
-                      updateTime: doc['updateTime'] as String,
-                    );
+                    return _buildDocumentItem(doc);
                   },
                 ),
               ],
@@ -72,10 +70,7 @@ class CaseDocumentWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDocumentItem({
-    required String title,
-    required String updateTime,
-  }) {
+  Widget _buildDocumentItem(DocListModel item) {
     return Container(
       padding: EdgeInsets.all(12.toW),
       decoration: BoxDecoration(
@@ -85,14 +80,11 @@ class CaseDocumentWidget extends StatelessWidget {
       child: Row(
         children: [
           // 文档图标
-          Container(
+          ImageUtils(
+            imageUrl: Assets.home.caseDoc.path,
             width: 40.toW,
             height: 40.toW,
-            decoration: BoxDecoration(
-              color: const Color(0xFF9C27B0),
-              borderRadius: BorderRadius.circular(8.toW),
-            ),
-            child: Icon(Icons.description, size: 24.toW, color: Colors.white),
+            fit: BoxFit.cover,
           ),
           SizedBox(width: 12.toW),
           // 文档信息
@@ -101,7 +93,9 @@ class CaseDocumentWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  item.docTitle != null && item.docTitle!.isNotEmpty
+                      ? item.docTitle!
+                      : '-',
                   style: TextStyle(
                     fontSize: 15.toSp,
                     fontWeight: FontWeight.w500,
@@ -110,7 +104,7 @@ class CaseDocumentWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 4.toW),
                 Text(
-                  '更新于: $updateTime',
+                  '更新于: ${DateTimeUtils.formatTimestamp(item.updateTime ?? 0)}',
                   style: TextStyle(
                     fontSize: 12.toSp,
                     color: AppColors.color_99000000,
@@ -119,6 +113,7 @@ class CaseDocumentWidget extends StatelessWidget {
               ],
             ),
           ),
+          SizedBox(width: 6.toW),
           // 箭头图标
           Icon(
             Icons.arrow_forward_ios,

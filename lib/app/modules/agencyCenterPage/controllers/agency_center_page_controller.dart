@@ -1,6 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/widgets/link_user_widget.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 
@@ -18,6 +19,9 @@ import '../../newHomePage/views/widgets/add_case_remark_widget.dart';
 import '../../newHomePage/views/widgets/create_case_widget.dart';
 
 class AgencyCenterPageController extends GetxController {
+  final int? caseId;
+  AgencyCenterPageController({this.caseId});
+
   /// 顶部筛选 tab 下标：0 全部、1 紧急任务、2 今日到期, 3. 已逾期
   final RxInt tabIndex = 0.obs;
 
@@ -34,7 +38,6 @@ class AgencyCenterPageController extends GetxController {
 
   var taskTypeModel = Rx<ChooseTypeModel?>(null);
   //任务类型（1行程任务 2诉讼缴费 3开庭 4提交证据 5质证意见 6答辩状 7举证 8保全裁定 9保全 10判决上诉 11非诉任务 12判决生效）
-
 
   @override
   void onInit() {
@@ -58,7 +61,8 @@ class AgencyCenterPageController extends GetxController {
       'page': pageNo,
       'pageSize': 10,
       'tabStatus': tabIndex.value,
-      'taskType': taskTypeModel.value?.id
+      'taskType': taskTypeModel.value?.id,
+      'caseId': caseId,
     };
     var result = await NetUtils.get(
       Apis.getTaskPage,
@@ -134,14 +138,25 @@ class AgencyCenterPageController extends GetxController {
   }
 
   void linkUserAlert() {
-    // BottomSheetUtils.show(
-    //   currentContext,
-    //   radius: 12.toW,
-    //   isShowCloseIcon: true,
-    //   height: AppScreenUtil.screenHeight - 217.toW,
-    //   isSetBottomInset: false,
-    //   contentWidget: LinkUserWidget(),
-    // );
+    final userModel =
+        getFindController<NewHomePageController>()?.userModel.value;
+    if (userModel == null) {
+      return;
+    }
+
+    if (userModel.hasTeamOffice == false) {
+      showToast('跳转引导开会员');
+      return;
+    }
+
+    BottomSheetUtils.show(
+      currentContext,
+      radius: 12.toW,
+      isShowCloseIcon: true,
+      height: AppScreenUtil.screenHeight - 217.toW,
+      isSetBottomInset: false,
+      contentWidget: LinkUserWidget(),
+    );
   }
 
   ///添加任务

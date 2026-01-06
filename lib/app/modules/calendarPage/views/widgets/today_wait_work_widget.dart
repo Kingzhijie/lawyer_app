@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/newHomePage/models/case_task_model.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
 
 import '../../../../common/constants/app_colors.dart';
@@ -7,10 +9,15 @@ import '../../../../utils/image_utils.dart';
 import '../../../../utils/screen_utils.dart';
 
 class TodayWaitWorkWidget extends StatelessWidget {
-  final Map<String, dynamic> task;
+  final CaseTaskModel task;
   final bool isShowTime;
   final Function()? addRemarkAction;
-  const TodayWaitWorkWidget({super.key, required this.task, this.isShowTime = true, this.addRemarkAction});
+  const TodayWaitWorkWidget({
+    super.key,
+    required this.task,
+    this.isShowTime = true,
+    this.addRemarkAction,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,7 @@ class TodayWaitWorkWidget extends StatelessWidget {
   }
 
   Widget _buildTodoItemWithTimeline() {
-    final bool isPlaintiff = task['role'] == '原告';
+    final bool isPlaintiff = task.partyRole == 2;
 
     return IntrinsicHeight(
       child: Row(
@@ -26,19 +33,22 @@ class TodayWaitWorkWidget extends StatelessWidget {
         children: [
           // 左侧时间和时间轴
           if (isShowTime)
-          Container(
-            width: 42.toW,
-            alignment: Alignment.topRight,
-            margin: EdgeInsets.only(top: 23.toW),
-            child: Text(
-              task['time'],
-              style: TextStyle(
-                fontSize: 14.toSp,
-                fontWeight: FontWeight.w500,
-                color: AppColors.color_66000000,
+            Container(
+              width: 42.toW,
+              alignment: Alignment.topRight,
+              margin: EdgeInsets.only(top: 23.toW),
+              child: Text(
+                DateTimeUtils.formatTimestamp(
+                  task.createTime ?? 0,
+                  format: 'HH:mm',
+                ),
+                style: TextStyle(
+                  fontSize: 14.toSp,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.color_66000000,
+                ),
               ),
-            ),
-          ).withMarginOnly(right: 12.toW),
+            ).withMarginOnly(right: 12.toW),
           // 右侧卡片
           Expanded(
             child: Container(
@@ -85,20 +95,20 @@ class TodayWaitWorkWidget extends StatelessWidget {
                         Row(
                           children: [
                             ImageUtils(
-                              imageUrl: task['icon'],
+                              imageUrl: Assets.home.anjianZongs.path,
                               width: 20.toW,
                               height: 20.toW,
                             ),
                             SizedBox(width: 8.toW),
                             Text(
-                              task['title'],
+                              task.caseName ?? '-',
                               style: TextStyle(
                                 fontSize: 15.toSp,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.color_E6000000,
                               ),
                             ),
-                            if (task['isUrgent'] == true) ...[
+                            if (task.isEmergency == true) ...[
                               SizedBox(width: 6.toW),
                               Container(
                                 padding: EdgeInsets.symmetric(
@@ -122,13 +132,16 @@ class TodayWaitWorkWidget extends StatelessWidget {
                           ],
                         ),
                         SizedBox(height: 12.toW),
-                        _infoRow('案件：', task['case']),
+                        _infoRow('案件：', task.title ?? '-'),
                         SizedBox(height: 6.toW),
-                        _infoRow('截止：', task['deadline']),
+                        _infoRow(
+                          '截止：',
+                          DateTimeUtils.formatTimestamp(task.dueAt ?? 0),
+                        ),
                         SizedBox(height: 6.toW),
-                        _infoRow('承办人（法官）:', task['handler']),
+                        _infoRow('承办人（法官）:', task.handler ?? '-'),
                         SizedBox(height: 6.toW),
-                        _infoRow('电话：', task['phone']),
+                        _infoRow('电话：', task.handlerPhone ?? '-'),
                         SizedBox(height: 12.toW),
                         _smallButton('备注'),
                       ],
@@ -176,8 +189,8 @@ class TodayWaitWorkWidget extends StatelessWidget {
         text,
         style: TextStyle(fontSize: 13.toSp, color: AppColors.color_E6000000),
       ),
-    ).withOnTap((){
-      if (addRemarkAction!=null){
+    ).withOnTap(() {
+      if (addRemarkAction != null) {
         addRemarkAction!();
       }
     });

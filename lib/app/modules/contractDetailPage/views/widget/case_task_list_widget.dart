@@ -9,10 +9,12 @@ import 'package:lawyer_app/app/utils/screen_utils.dart';
 class CaseTaskListWidget extends StatelessWidget {
   final List<TaskListModel> tasks;
   final VoidCallback onAddTap;
+  final VoidCallback onCheckTasksTap;
   const CaseTaskListWidget({
     super.key,
     required this.tasks,
     required this.onAddTap,
+    required this.onCheckTasksTap,
   });
 
   @override
@@ -42,9 +44,8 @@ class CaseTaskListWidget extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  debugPrint('查看全部任务');
-                },
+                onTap: onCheckTasksTap,
+                behavior: HitTestBehavior.opaque,
                 child: Row(
                   children: [
                     Text(

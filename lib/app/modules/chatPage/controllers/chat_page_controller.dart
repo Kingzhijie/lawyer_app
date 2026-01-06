@@ -68,7 +68,7 @@ class ChatPageController extends GetxController {
   final TextEditingController textController = TextEditingController();
   final FocusNode inputFocusNode = FocusNode();
   final ChatBottomPanelContainerController<ChatPanelType> panelController =
-      ChatBottomPanelContainerController<ChatPanelType>();
+  ChatBottomPanelContainerController<ChatPanelType>();
   final ScrollController scrollController = ScrollController();
 
   final RxList<UiMessage> messages = <UiMessage>[].obs;
@@ -243,7 +243,7 @@ class ChatPageController extends GetxController {
       );
 
       _scheduleScrollToBottom();
-      
+
       // 使用真实的 SSE 连接替代模拟回复
       _sendMessageWithSSE(text, sessionId!);
     }
@@ -256,7 +256,7 @@ class ChatPageController extends GetxController {
 
     isLoading.value = true;
     currentMessage.value = '';
-    
+
     // 用于累积思考过程和回复内容
     String thinkingContent = '';
     String replyContent = '';
@@ -288,7 +288,7 @@ class ChatPageController extends GetxController {
             logPrint('✅ 收到思考内容: ${data.reasoningContent}');
             logPrint('📊 累积思考内容: $thinkingContent');
           }
-          
+
           // 累积回复内容（content）
           if (data.content != null && data.content!.isNotEmpty) {
             replyContent += data.content!;
@@ -320,7 +320,7 @@ class ChatPageController extends GetxController {
             messages.add(aiMessage);
             logPrint('➕ 添加新消息 - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符');
           }
-          
+
           // 触发滚动
           scheduleScrollDuringTyping();
         },
@@ -328,7 +328,7 @@ class ChatPageController extends GetxController {
           logPrint('SSE 错误: $error');
           showToast('连接失败: $error');
           isLoading.value = false;
-          
+
           // 更新消息为错误状态
           final index = messages.indexWhere((m) => m.id == aiMessageId);
           if (index != -1) {
@@ -343,16 +343,16 @@ class ChatPageController extends GetxController {
         onDone: () {
           // 计算思考用时（秒）
           final thinkingSeconds = DateTime.now().difference(startTime).inSeconds;
-          
+
           logPrint('✅ 消息接收完成');
           logPrint('📊 最终思考过程: $thinkingContent (${thinkingContent.length} 字符)');
           logPrint('📊 最终回复内容: $replyContent (${replyContent.length} 字符)');
           logPrint('⏱️ 思考用时: $thinkingSeconds 秒');
           isLoading.value = false;
-          
+
           // 移除"思考中"消息（确保清理）
           messages.removeWhere((e) => e.id == 'think_id');
-          
+
           // 最终更新消息，包含完整的思考过程和用时
           final index = messages.indexWhere((m) => m.id == aiMessageId);
           if (index != -1) {
@@ -370,7 +370,7 @@ class ChatPageController extends GetxController {
           } else {
             logPrint('⚠️ 未找到消息 ID: $aiMessageId');
           }
-          
+
           _scheduleScrollToBottom();
         },
       );
@@ -378,7 +378,7 @@ class ChatPageController extends GetxController {
       logPrint('发送消息失败: $e');
       showToast('发送失败: $e');
       isLoading.value = false;
-      
+
       // 更新消息为错误状态
       final index = messages.indexWhere((m) => m.id == aiMessageId);
       if (index != -1) {
@@ -548,7 +548,7 @@ class ChatPageController extends GetxController {
       if (await _audioRecorder.hasPermission()) {
         final directory = await getTemporaryDirectory();
         _recordingPath =
-            '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
         await _audioRecorder.start(
           const RecordConfig(
@@ -641,10 +641,10 @@ class ChatPageController extends GetxController {
     _amplitudeSubscription = _audioRecorder
         .onAmplitudeChanged(const Duration(milliseconds: 100))
         .listen((amplitude) {
-          if (isClosed) return;
-          final normalized = (amplitude.current + 160) / 160;
-          recordingAmplitude.value = normalized.clamp(0.0, 1.0);
-        });
+      if (isClosed) return;
+      final normalized = (amplitude.current + 160) / 160;
+      recordingAmplitude.value = normalized.clamp(0.0, 1.0);
+    });
   }
 
   void _stopAmplitudeListener() {

@@ -162,6 +162,17 @@ class $AssetsHomeGen {
   AssetGenImage get bqqdIcon =>
       const AssetGenImage('assets/home/bqqd_icon.png');
 
+  /// File path: assets/home/case_doc.png
+  AssetGenImage get caseDoc => const AssetGenImage('assets/home/case_doc.png');
+
+  /// File path: assets/home/case_progress_arrow.png
+  AssetGenImage get caseProgressArrow =>
+      const AssetGenImage('assets/home/case_progress_arrow.png');
+
+  /// File path: assets/home/case_progress_task.png
+  AssetGenImage get caseProgressTask =>
+      const AssetGenImage('assets/home/case_progress_task.png');
+
   /// File path: assets/home/check-circle.png
   AssetGenImage get checkCircle =>
       const AssetGenImage('assets/home/check-circle.png');
@@ -265,15 +276,6 @@ class $AssetsHomeGen {
   AssetGenImage get zhengzaiTingIcon =>
       const AssetGenImage('assets/home/zhengzai_ting_icon.png');
 
-  AssetGenImage get caseDocIcon =>
-      const AssetGenImage('assets/home/case_doc.png');
-
-  AssetGenImage get caseProgressArrowIcon =>
-      const AssetGenImage('assets/home/case_progress_arrow.png');
-
-  AssetGenImage get caseProgressTaskIcon =>
-      const AssetGenImage('assets/home/case_progress_task.png');
-
   /// List of all assets
   List<AssetGenImage> get values => [
     addCrileIcon,
@@ -285,6 +287,9 @@ class $AssetsHomeGen {
     beigaoLongBg,
     beigaoNoticeBg,
     bqqdIcon,
+    caseDoc,
+    caseProgressArrow,
+    caseProgressTask,
     checkCircle,
     dbrwIcon,
     defaultUserIcon,
@@ -311,9 +316,6 @@ class $AssetsHomeGen {
     yuangaoLongBg,
     yuangaoNoticeBg,
     zhengzaiTingIcon,
-    caseDocIcon,
-    caseProgressArrowIcon,
-    caseProgressTaskIcon,
   ];
 }
 
@@ -332,9 +334,25 @@ class $AssetsMyGen {
   AssetGenImage get cheliangIcon =>
       const AssetGenImage('assets/my/cheliang_icon.png');
 
+  /// File path: assets/my/delete_ht_icon.png
+  AssetGenImage get deleteHtIcon =>
+      const AssetGenImage('assets/my/delete_ht_icon.png');
+
+  /// File path: assets/my/guidang_icon.png
+  AssetGenImage get guidangIcon =>
+      const AssetGenImage('assets/my/guidang_icon.png');
+
   /// File path: assets/my/invite_friend.png
   AssetGenImage get inviteFriend =>
       const AssetGenImage('assets/my/invite_friend.png');
+
+  /// File path: assets/my/jiean_icon.png
+  AssetGenImage get jieanIcon =>
+      const AssetGenImage('assets/my/jiean_icon.png');
+
+  /// File path: assets/my/shangsu_icon.png
+  AssetGenImage get shangsuIcon =>
+      const AssetGenImage('assets/my/shangsu_icon.png');
 
   /// File path: assets/my/vip_card_bg.png
   AssetGenImage get vipCardBg =>
@@ -349,7 +367,11 @@ class $AssetsMyGen {
     aboutUsIcon,
     budongchanIcon,
     cheliangIcon,
+    deleteHtIcon,
+    guidangIcon,
     inviteFriend,
+    jieanIcon,
+    shangsuIcon,
     vipCardBg,
     zijianIcon,
   ];

@@ -13,12 +13,12 @@ import 'package:lawyer_app/gen/assets.gen.dart';
 class LinkUserWidget extends StatefulWidget {
   final Function(UserModel model)? relevanceSuccess;
   final int manageType; //管理类型 1-案件 2-任务
-  final num manageId; //案件id 或 任务id
+  final num? manageId; //案件id 或 任务id
   const LinkUserWidget({
     super.key,
     this.relevanceSuccess,
     this.manageType = 1,
-    required this.manageId,
+    this.manageId,
   });
 
   @override

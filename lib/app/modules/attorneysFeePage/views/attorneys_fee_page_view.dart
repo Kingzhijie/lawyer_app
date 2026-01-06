@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/components/common_app_bar.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
-import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 
 import '../controllers/attorneys_fee_page_controller.dart';
@@ -249,7 +248,7 @@ class AttorneysFeePageView extends GetView<AttorneysFeePageController> {
           ),
           child: TextField(
             controller: textController,
-            onTap: (){
+            onTap: () {
               controller.chooseChargeStylePage();
             },
             readOnly: true,

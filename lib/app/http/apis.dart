@@ -31,8 +31,26 @@ class Apis {
   ///案件基本信息
   static String caseBasicInfo = '/legal/case-basic-info/get';
 
+  ///更新案件基本信息
+  static String updateCaseBasicInfo = '/legal/case-basic-info/update';
+
   ///案件进展
   static String caseTimeline = '/legal/case-timeline/list';
+
+  ///待办
+  static String todoCaseList = '/legal/task/list';
+
+  ///当事人角色列表
+  static String partyRoleList = '/legal/case-party/role-list';
+
+  ///新增当事人
+  static String createPartyRole = '/legal/case-party/create';
+
+  ///新增律师费记录
+  static String createAgencyFee = '/legal/agency-fee/create';
+
+  ///编辑律师费记录
+  static String updateAgencyFee = '/legal/agency-fee/update';
 
   ///获取案件任务分页
   static String getTaskPage = '/legal/task/page';
@@ -45,6 +63,7 @@ class Apis {
 
   ///设置任务的备注
   static String setTaskRemark = '/legal/task/remark';
+
 
   ///搜索用户列表
   static String searchUserList = '/member/user/list';
@@ -63,9 +82,9 @@ class Apis {
   ///AI智能体UI配置
   static String agentUIConfig = '/ai/agent-ui-config/get';
 
+
   ///AI智能体聊天流式接口
   static String aiChatStream(String agentId) => '/ai/super-agent/chat/stream/$agentId';
 
 
 }
-

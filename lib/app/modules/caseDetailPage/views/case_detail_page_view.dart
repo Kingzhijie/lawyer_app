@@ -16,11 +16,15 @@ class CaseDetailPageView extends GetView<CaseDetailPageController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(title: '案件详情'),
-      body: Column(
-        children: [
-          CaseDetailBaseInfo(),
-          _setTabWidget().withExpanded()
-        ],
+      body: Obx(
+        () => controller.caseDetail.value == null
+            ? Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  CaseDetailBaseInfo(caseDetail: controller.caseDetail.value!),
+                  _setTabWidget().withExpanded(),
+                ],
+              ),
       ),
     );
   }
@@ -30,23 +34,30 @@ class CaseDetailPageView extends GetView<CaseDetailPageController> {
     if (controller.tabModelArr.isEmpty) {
       return Container();
     }
-    return LabelTabBar(
-      controller.tabModelArr,
-      padding: EdgeInsets.symmetric(horizontal: 12.toW),
-      // isScrollable: true,
-      indicatorWeight: 2.toW,
-      bgColor: Colors.transparent,
-      defaultSelectIndex: 0,
-      height: 37.toW,
-      labelColor: AppColors.theme,
-      unselectedLabelColor: AppColors.color_E6000000,
-      isShowBottomLine: true,
-      labelStyle: TextStyle(
-          color: AppColors.theme, fontSize: 14.toSp, fontWeight: FontWeight.w600),
-      unselectedLabelStyle: TextStyle(color: AppColors.color_E6000000, fontSize: 14.toSp),
-      indicator: _indicator,
-      switchPageCallBack: (index) {
-      },
+    return Obx(
+      () => LabelTabBar(
+        controller.tabModelArr,
+        padding: EdgeInsets.symmetric(horizontal: 12.toW),
+        // isScrollable: true,
+        indicatorWeight: 2.toW,
+        bgColor: Colors.transparent,
+        defaultSelectIndex: controller.defaultSelectIndex.value,
+        height: 37.toW,
+        labelColor: AppColors.theme,
+        unselectedLabelColor: AppColors.color_E6000000,
+        isShowBottomLine: true,
+        labelStyle: TextStyle(
+          color: AppColors.theme,
+          fontSize: 14.toSp,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: TextStyle(
+          color: AppColors.color_E6000000,
+          fontSize: 14.toSp,
+        ),
+        indicator: _indicator,
+        switchPageCallBack: (index) {},
+      ),
     );
   }
 
@@ -54,12 +65,7 @@ class CaseDetailPageView extends GetView<CaseDetailPageController> {
   Decoration get _indicator {
     return MyUnderlineTabIndicator(
       width: 16.toW,
-      borderSide: BorderSide(
-        width: 3.toW,
-        color: AppColors.theme,
-      ),
+      borderSide: BorderSide(width: 3.toW, color: AppColors.theme),
     );
   }
-
-
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:lawyer_app/app/http/net/tool/dio_utils.dart';
 import '../../config/dio_config.dart';
 import '../../utils/storage_utils.dart';
 import 'tool/logger.dart';
@@ -150,6 +151,8 @@ class SSEUtils {
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
       };
+
+      logPrint('SSE 请求 headers: $headers');
 
       final response = await dio.post<ResponseBody>(
         url,

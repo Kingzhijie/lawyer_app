@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
-import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_detail_model.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 
 class CaseBaseInfoWidget extends StatelessWidget {
   final CaseDetailModel caseDetail;
-  const CaseBaseInfoWidget({super.key, required this.caseDetail});
+  final VoidCallback onCaseEditTap;
+  const CaseBaseInfoWidget({
+    super.key,
+    required this.caseDetail,
+    required this.onCaseEditTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,11 @@ class CaseBaseInfoWidget extends StatelessWidget {
     var roleText = '';
     for (var item in roles) {
       if (item.name != null && item.name!.isNotEmpty) {
-        roleText += '${item.name}(${getRuleText(item.partyRole ?? 0)})';
+        if (roleText.isEmpty) {
+          roleText += '${item.name}(${getRuleText(item.partyRole ?? 0)})';
+        } else {
+          roleText += '/${item.name}(${getRuleText(item.partyRole ?? 0)})';
+        }
       }
     }
     return Container(
@@ -103,7 +111,8 @@ class CaseBaseInfoWidget extends StatelessWidget {
                 const Spacer(),
                 // 编辑案件按钮
                 GestureDetector(
-                  onTap: () {},
+                  onTap: onCaseEditTap,
+                  behavior: HitTestBehavior.opaque,
                   child: Row(
                     children: [
                       Text(

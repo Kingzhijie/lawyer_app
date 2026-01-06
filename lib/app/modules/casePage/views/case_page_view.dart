@@ -40,7 +40,9 @@ class CasePageView extends GetView<CasePageController> {
               _buildTabs(),
               Container(
                 alignment: Alignment.topCenter,
-                margin: EdgeInsets.only(bottom: AppScreenUtil.bottomBarHeight + 90.toW),
+                margin: EdgeInsets.only(
+                  bottom: AppScreenUtil.bottomBarHeight + 90.toW,
+                ),
                 child: Obx(() {
                   if (controller.caseBaseInfoList.isEmpty) {
                     return EmptyContentWidget();
@@ -58,13 +60,13 @@ class CasePageView extends GetView<CasePageController> {
                       return ListView.builder(
                         itemCount: controller.caseBaseInfoList.length,
                         physics: physics,
-                        padding: EdgeInsets.only(
-                          left: 16.toW,
-                          right: 16.toW,
-                        ),
+                        padding: EdgeInsets.only(left: 16.toW, right: 16.toW),
                         itemBuilder: (context, index) {
                           var model = controller.caseBaseInfoList[index];
-                          return AddTaskItem(model: model).withOnTap(() {
+                          return AddTaskItem(
+                            model: model,
+                            onLinkUserTap: () => controller.onLinkUser(),
+                          ).withOnTap(() {
                             controller.lookCaseDetail(model);
                           });
                         },
@@ -74,7 +76,7 @@ class CasePageView extends GetView<CasePageController> {
                 }),
               ).withExpanded(),
             ],
-          )
+          ),
         ],
       ),
     );

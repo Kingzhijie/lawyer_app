@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../utils/image_utils.dart';
 import '../../../utils/screen_utils.dart';
@@ -10,6 +15,17 @@ import 'widget/case_progress_widget.dart';
 import 'widget/case_related_certificate_widget.dart';
 import 'widget/case_save_detail_widget.dart';
 import 'widget/case_task_list_widget.dart';
+
+enum CaseActionType {
+  caseClosed('结案'),
+  caseArchiving('归档'),
+  caseAppeal('上诉'),
+  caseDelete('删除');
+
+  const CaseActionType(this.title);
+
+  final String title;
+}
 
 class ContractDetailPageView extends GetView<ContractDetailPageController> {
   const ContractDetailPageView({super.key});
@@ -51,12 +67,16 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
                             children: [
                               CaseBaseInfoWidget(
                                 caseDetail: controller.caseDetail.value!,
+                                onCaseEditTap: () =>
+                                    controller.onCaseDetail(tabIndex: 0),
                               ),
                               Height(16.toW),
                               CaseTaskListWidget(
                                 tasks:
                                     controller.caseDetail.value!.taskList ?? [],
                                 onAddTap: controller.addTask,
+                                onCheckTasksTap: () =>
+                                    controller.onCaseDetail(tabIndex: 3),
                               ),
 
                               if (controller.caseDetail.value!.presAssetList !=
@@ -74,12 +94,16 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
                                           .value!
                                           .presAssetList ??
                                       [],
+                                  onCheckAssetsTap: () =>
+                                      controller.onCaseDetail(tabIndex: 1),
                                 ),
                               ],
                               Height(16.toW),
                               CaseRelatedCertificateWidget(
                                 docList:
                                     controller.caseDetail.value!.docList ?? [],
+                                onCheckDocsTap: () =>
+                                    controller.onCaseDetail(tabIndex: 2),
                               ),
                               if (controller.caseTimelineList.isNotEmpty) ...[
                                 Height(16.toW),
@@ -97,7 +121,16 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
             ],
           ),
           // 底部栏
-          Positioned(left: 0, right: 0, bottom: 0, child: _buildBottomBar()),
+          Obx(
+            () => controller.caseDetail.value == null
+                ? SizedBox.shrink()
+                : Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: _buildBottomBar(),
+                  ),
+          ),
         ],
       ),
     );
@@ -117,10 +150,14 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
         children: [
           GestureDetector(
             onTap: () => Get.back(),
-            child: Icon(
-              Icons.arrow_back_ios,
-              size: 20.toW,
-              color: Colors.black,
+            child: Container(
+              alignment: Alignment.centerLeft,
+              width: 30.toW,
+              child: Icon(
+                Icons.arrow_back_ios,
+                size: 20.toW,
+                color: Colors.black,
+              ),
             ),
           ),
           Expanded(
@@ -136,7 +173,37 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
               ),
             ),
           ),
-          SizedBox(width: 20.toW),
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_horiz, color: Colors.black, size: 22.toW),
+            offset: Offset(0, 40.toW),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.toW),
+            ),
+            color: Colors.white,
+            elevation: 8,
+            padding: EdgeInsets.zero,
+            itemBuilder: (BuildContext context) => [
+              _buildPopupMenuItem(
+                icon: Assets.my.jieanIcon.path,
+                label: CaseActionType.caseClosed,
+              ),
+              _buildPopupMenuItem(
+                icon: Assets.my.guidangIcon.path,
+                label: CaseActionType.caseArchiving,
+              ),
+              _buildPopupMenuItem(
+                icon: Assets.my.shangsuIcon.path,
+                label: CaseActionType.caseAppeal,
+              ),
+              _buildPopupMenuItem(
+                icon: Assets.my.deleteHtIcon.path,
+                label: CaseActionType.caseDelete,
+              ),
+            ],
+            onSelected: (String value) {
+              controller.handleMenuAction(value);
+            },
+          ),
         ],
       ),
     );
@@ -211,7 +278,8 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
           Spacer(),
           // 上传文件按钮
           GestureDetector(
-            onTap: () {},
+            onTap: controller.uploadFile,
+            behavior: HitTestBehavior.opaque,
             child: Container(
               height: 44.toW,
               width: 95.toW,
@@ -261,97 +329,95 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
 
   // 团队成员头像
   Widget _buildTeamAvatars() {
+    final relateUsers = controller.caseDetail.value?.relateUsers ?? [];
     return SizedBox(
       width: 100.toW,
       height: 44.toW,
       child: Stack(
-        alignment: AlignmentGeometry.center,
         children: [
-          // 第一个头像
-          Positioned(
-            left: 0,
-            child: Container(
-              width: 36.toW,
-              height: 36.toW,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF9800),
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-              ),
-              child: Center(
-                child: Text(
-                  '张',
-                  style: TextStyle(
-                    fontSize: 14.toSp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
+          ...relateUsers.take(3).toList().asMap().entries.map((item) {
+            return Stack(
+              children: [
+                ImageUtils(
+                  imageUrl: item.value.avatar,
+                  width: 36.toW,
+                  height: 36.toW,
+                  fit: BoxFit.cover,
+                  circularRadius: 18.toW,
                 ),
-              ),
-            ),
-          ),
-          // 第二个头像
-          Positioned(
-            left: 24.toW,
-            child: Container(
-              width: 36.toW,
-              height: 36.toW,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF5252),
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-              ),
-              child: Center(
-                child: Text(
-                  '李',
-                  style: TextStyle(
-                    fontSize: 14.toSp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+                if (ObjectUtils.boolValue(item.value.isSponsor))
+                  Positioned(
+                    left: 3.toW,
+                    right: 3.toW,
+                    bottom: 0,
+                    child: Container(
+                      height: 10.toW,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.toW),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xFFFFE9CD), Color(0xFFE0AF7D)],
+                        ),
+                      ),
+                      child: Text(
+                        '发起人',
+                        style: TextStyle(
+                          color: Color(0xFF603619),
+                          fontSize: 6.toSp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ),
-          // 第三个头像
-          Positioned(
-            left: 48.toW,
-            child: Container(
-              width: 36.toW,
-              height: 36.toW,
-              decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50),
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-              ),
-              child: Center(
-                child: Text(
-                  '王',
-                  style: TextStyle(
-                    fontSize: 14.toSp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          ),
+              ],
+            );
+          }),
           // 添加按钮
           Positioned(
-            left: 72.toW,
-            child: Container(
-              width: 36.toW,
-              height: 36.toW,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.color_line, width: 0.5),
+            left: relateUsers.length * 24.toW,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: controller.onLinkUser,
+              child: Container(
+                width: 36.toW,
+                height: 36.toW,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.color_line, width: 0.5),
+                ),
+                child: Icon(
+                  Icons.add,
+                  size: 20.toW,
+                  color: AppColors.color_99000000,
+                ),
               ),
-              child: Icon(
-                Icons.add,
-                size: 20.toW,
-                color: AppColors.color_99000000,
-              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 构建弹出菜单项
+  PopupMenuItem<String> _buildPopupMenuItem({
+    required String icon,
+    required CaseActionType label,
+  }) {
+    return PopupMenuItem<String>(
+      value: label.title,
+      height: 48.toW,
+      child: Row(
+        children: [
+          ImageUtils(imageUrl: icon, width: 20.toW),
+          SizedBox(width: 12.toW),
+          Text(
+            label.title,
+            style: TextStyle(
+              fontSize: 15.toSp,
+              color: AppColors.color_E6000000,
             ),
           ),
         ],

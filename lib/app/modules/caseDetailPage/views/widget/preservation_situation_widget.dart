@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/pres_asset_model.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 
 import '../../controllers/case_detail_page_controller.dart';
@@ -10,39 +12,40 @@ class PreservationSituationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 模拟保全事项数据
-    final preservationList = [
-      {
-        'target': '杭州韩秀美学医疗美容门诊部有限公司',
-        'account': '工商银行帐户',
-        'amount': '¥200,000.00',
-        'date': '2026年10月16日',
-      },
-      {
-        'target': '杭州韩秀美学医疗美容门诊部有限公司',
-        'account': '工商银行帐户',
-        'amount': '¥200,000.00',
-        'date': '2026年10月16日',
-      },
-      {
-        'target': '马星（个人）',
-        'account': '工商银行帐户',
-        'amount': '¥200,000.00',
-        'date': '2026年10月16日',
-      },
-      {
-        'target': '马星（个人）',
-        'account': '工商银行帐户',
-        'amount': '¥200,000.00',
-        'date': '2026年10月16日',
-      },
-      {
-        'target': '马星（个人）',
-        'account': '工商银行帐户',
-        'amount': '¥200,000.00',
-        'date': '2026年10月16日',
-      },
-    ];
+    // // 模拟保全事项数据
+    // final preservationList = [
+    //   {
+    //     'target': '杭州韩秀美学医疗美容门诊部有限公司',
+    //     'account': '工商银行帐户',
+    //     'amount': '¥200,000.00',
+    //     'date': '2026年10月16日',
+    //   },
+    //   {
+    //     'target': '杭州韩秀美学医疗美容门诊部有限公司',
+    //     'account': '工商银行帐户',
+    //     'amount': '¥200,000.00',
+    //     'date': '2026年10月16日',
+    //   },
+    //   {
+    //     'target': '马星（个人）',
+    //     'account': '工商银行帐户',
+    //     'amount': '¥200,000.00',
+    //     'date': '2026年10月16日',
+    //   },
+    //   {
+    //     'target': '马星（个人）',
+    //     'account': '工商银行帐户',
+    //     'amount': '¥200,000.00',
+    //     'date': '2026年10月16日',
+    //   },
+    //   {
+    //     'target': '马星（个人）',
+    //     'account': '工商银行帐户',
+    //     'amount': '¥200,000.00',
+    //     'date': '2026年10月16日',
+    //   },
+    // ];
+    final preservationList = controller.caseDetail.value?.presAssetList ?? [];
 
     return SingleChildScrollView(
       padding: EdgeInsets.only(bottom: AppScreenUtil.bottomBarHeight + 12.toW),
@@ -86,12 +89,7 @@ class PreservationSituationWidget extends StatelessWidget {
                       SizedBox(height: 12.toW),
                   itemBuilder: (context, index) {
                     final item = preservationList[index];
-                    return _buildPreservationItem(
-                      target: item['target'] as String,
-                      account: item['account'] as String,
-                      amount: item['amount'] as String,
-                      date: item['date'] as String,
-                    );
+                    return _buildPreservationItem(item);
                   },
                 ),
               ],
@@ -102,12 +100,7 @@ class PreservationSituationWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPreservationItem({
-    required String target,
-    required String account,
-    required String amount,
-    required String date,
-  }) {
+  Widget _buildPreservationItem(PresAssetModel item) {
     return Container(
       padding: EdgeInsets.all(12.toW),
       decoration: BoxDecoration(
@@ -117,13 +110,22 @@ class PreservationSituationWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow('保全对象:', target),
+          _buildInfoRow('保全对象:', item.assetName ?? '-'),
           SizedBox(height: 8.toW),
-          _buildInfoRow('涉及账户/资产:', account),
+          _buildInfoRow(
+            '涉及账户/资产:',
+            ((item.assetType == 1 ? item.accountInfo : item.assetName) ?? '-')
+                .replaceAll('账号：', ''),
+          ),
+          if (item.assetType != 2) ...[
+            SizedBox(height: 8.toW),
+            _buildInfoRow('实际冻结金额:', '${item.amount ?? 0}'.toString()),
+          ],
           SizedBox(height: 8.toW),
-          _buildInfoRow('实际冻结金额:', amount),
-          SizedBox(height: 8.toW),
-          _buildInfoRow('到期日:', date),
+          _buildInfoRow(
+            '到期日:',
+            DateTimeUtils.formatTimestamp(item.effectiveTo ?? 0),
+          ),
         ],
       ),
     );

@@ -13,7 +13,8 @@ class ChooseChargeStyle extends StatefulWidget {
     super.key,
     required this.title,
     required this.contents,
-    required this.chooseResult, this.selectStr,
+    required this.chooseResult,
+    this.selectStr,
   });
 
   @override
@@ -59,7 +60,7 @@ class _ChooseChargeStyleState extends State<ChooseChargeStyle> {
                   '确定',
                   style: TextStyle(color: AppColors.theme, fontSize: 14.toSp),
                 ),
-              ).withOnTap((){
+              ).withOnTap(() {
                 widget.chooseResult(selectName ?? '');
                 Navigator.pop(context);
               }),
@@ -90,7 +91,7 @@ class _ChooseChargeStyleState extends State<ChooseChargeStyle> {
                     Icon(Icons.check, color: AppColors.theme, size: 22.toW),
                 ],
               ),
-            ).withOnTap((){
+            ).withOnTap(() {
               setState(() {
                 selectName = name;
               });

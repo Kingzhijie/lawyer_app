@@ -16,6 +16,7 @@ enum TaskEnum { choose, close, none }
 
 class AddTaskItem extends StatelessWidget {
   final Function()? closeCardCallBack;
+  final Function()? onLinkUserTap;
   final TaskEnum type;
   final bool isSelect;
   final CaseBaseInfoModel? model;
@@ -23,6 +24,7 @@ class AddTaskItem extends StatelessWidget {
   const AddTaskItem({
     super.key,
     this.closeCardCallBack,
+    this.onLinkUserTap,
     this.type = TaskEnum.none,
     this.isSelect = false,
     this.model,
@@ -129,7 +131,9 @@ class AddTaskItem extends StatelessWidget {
                         ),
                       ).withMarginOnly(right: 8.toW),
                     ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: AppScreenUtil.screenWidth - 162.toW),
+                      constraints: BoxConstraints(
+                        maxWidth: AppScreenUtil.screenWidth - 162.toW,
+                      ),
                       child: Text(
                         model?.caseName ?? '',
                         style: TextStyle(
@@ -199,7 +203,11 @@ class AddTaskItem extends StatelessWidget {
                   children: [
                     CooperationPersonWidget(
                       relateUsers: model?.relateUsers,
-                      linkUserAction: () {},
+                      linkUserAction: () {
+                        if (onLinkUserTap != null) {
+                          onLinkUserTap!();
+                        }
+                      },
                     ).withExpanded(),
                     if (_isMyJoin())
                       Text(
@@ -286,7 +294,7 @@ class AddTaskItem extends StatelessWidget {
       for (var e in model!.casePartyResVOS!) {
         if (!ObjectUtils.isEmptyString(e.name)) {
           type =
-          '${type.isEmpty ? '' : '$type '}${e.name}(${getPartyRole(e.partyRole ?? 0)})';
+              '${type.isEmpty ? '' : '$type '}${e.name}(${getPartyRole(e.partyRole ?? 0)})';
         }
       }
     }
