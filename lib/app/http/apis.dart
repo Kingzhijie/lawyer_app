@@ -34,6 +34,9 @@ class Apis {
   ///更新案件基本信息
   static String updateCaseBasicInfo = '/legal/case-basic-info/update';
 
+  ///案件操作（归档/上诉/删除）
+  static String caseOperator = '/legal/case-basic-info/operate';
+
   ///案件进展
   static String caseTimeline = '/legal/case-timeline/list';
 
@@ -64,12 +67,11 @@ class Apis {
   ///设置任务的备注
   static String setTaskRemark = '/legal/task/remark';
 
-
   ///搜索用户列表
   static String searchUserList = '/member/user/list';
 
   ///关联用户
-  static String relateUser= '/legal/manager/relate-user';
+  static String relateUser = '/legal/manager/relate-user';
 
   ///创建聊天id
   static String createChatId = '/ai/chat-his/create';
@@ -83,9 +85,7 @@ class Apis {
   ///AI智能体UI配置
   static String agentUIConfig = '/ai/agent-ui-config/get';
 
-
   ///AI智能体聊天流式接口
-  static String aiChatStream(String agentId) => '/ai/super-agent/chat/stream/$agentId';
-
-
+  static String aiChatStream(String agentId) =>
+      '/ai/super-agent/chat/stream/$agentId';
 }

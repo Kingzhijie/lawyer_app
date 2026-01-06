@@ -9,6 +9,7 @@ import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/modules/addTaskPage/views/widgets/choose_case_alert.dart';
 import 'package:lawyer_app/app/modules/addTaskPage/views/widgets/notice_date_choose.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/controllers/contract_detail_page_controller.dart';
+import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
@@ -118,6 +119,7 @@ class AddTaskPageController extends GetxController {
     ).then((result) {
       if (result.code == NetCodeHandle.success) {
         showToast('添加任务成功');
+        getFindController<NewHomePageController>()?.onRefresh();
         getFindController<ContractDetailPageController>()
             ?.getContractDetailInfo();
         Get.back();
