@@ -186,7 +186,8 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                 children: [
                   _buildAnimatedText(textColor),
                   SizedBox(height: 14.toW),
-                  if (!widget.message.isPrologue)
+                  // 只在 AI 回复完成时显示操作按钮
+                  if (!widget.message.isPrologue && widget.message.isThinkingDone)
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

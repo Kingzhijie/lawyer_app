@@ -35,6 +35,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
               width: AppScreenUtil.screenWidth,
             ),
           ),
+
           MSEasyRefresher(
             controller: controller.easyRefreshController,
             onRefresh: () {
@@ -46,7 +47,7 @@ class NewHomePageView extends GetView<NewHomePageController> {
             childBuilder: (context, physics) {
               return _setContentWidget(physics);
             },
-          ).withMarginOnly(top: AppScreenUtil.navigationBarHeight + 50.toW, bottom: 20.toW),
+          ).withMarginOnly(top: AppScreenUtil.navigationBarHeight + 50.toW, bottom: AppScreenUtil.bottomBarHeight + 90.toW),
           Positioned(
             top: 0,
             right: 16.toW,

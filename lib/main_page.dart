@@ -3,24 +3,23 @@ import 'dart:io';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app/common/components/router_navigator_observer.dart';
 import 'app/common/constants/app_colors.dart';
 import 'app/http/net/tool/logger.dart';
 import 'app/routes/app_pages.dart';
+import 'generated/l10n.dart';
 
 import 'app/utils/app_common_instance.dart';
 import 'app/utils/loading.dart';
 import 'app/utils/push/pushUtil.dart';
 import 'app/utils/screen_utils.dart';
 import 'main.dart';
-import 'dart:ui' as ui;
-
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -50,34 +49,42 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-        designSize: AppScreenUtil.defaultSize,
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (mContext, child) {
-          return GetMaterialApp(
-            title: "灵动",
-            initialRoute: AppPages.INITIAL,
-            getPages: AppPages.routes,
-            navigatorKey: navigatorKey,
-            debugShowCheckedModeBanner: false,
-            navigatorObservers: [RouteHistoryObserver()],
-            locale: const Locale('zh', 'CH'),
-            theme: ThemeData(
-              dividerColor: Colors.transparent,
-              scaffoldBackgroundColor: AppColors.color_white,
-              fontFamily: Platform.isIOS ? 'PingFang SC' : 'NotoSansSC',
-              appBarTheme: AppBarTheme(
-                scrolledUnderElevation: 0.0,
-              ),
-              platform: TargetPlatform.iOS,
-              pageTransitionsTheme: const PageTransitionsTheme(builders: {
+      designSize: AppScreenUtil.defaultSize,
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (mContext, child) {
+        return GetMaterialApp(
+          title: "灵动",
+          initialRoute: AppPages.INITIAL,
+          getPages: AppPages.routes,
+          navigatorKey: navigatorKey,
+          debugShowCheckedModeBanner: false,
+          navigatorObservers: [RouteHistoryObserver()],
+          locale: const Locale('zh', 'CN'),
+          localizationsDelegates: const [
+            S.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: S.delegate.supportedLocales,
+          theme: ThemeData(
+            dividerColor: Colors.transparent,
+            scaffoldBackgroundColor: AppColors.color_white,
+            fontFamily: Platform.isIOS ? 'PingFang SC' : 'NotoSansSC',
+            appBarTheme: AppBarTheme(scrolledUnderElevation: 0.0),
+            platform: TargetPlatform.iOS,
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: {
                 TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
                 TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-              }),
+              },
             ),
-            builder: EasyLoading.init(),
-          );
-        });
+          ),
+          builder: EasyLoading.init(),
+        );
+      },
+    );
   }
 
   Future<void> _init() async {
@@ -111,10 +118,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   //   logPrint(link.path);
   //   logPrint(link.query);
   // }
-
-  _commonOpenPage(Uri link) {
-    // PushUtil.pushTargetSchema(link.toString());
-  }
+  //
+  // _commonOpenPage(Uri link) {
+  //   // PushUtil.pushTargetSchema(link.toString());
+  // }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -146,4 +153,3 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     }
   }
 }
-

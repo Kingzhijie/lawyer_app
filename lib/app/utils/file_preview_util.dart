@@ -23,6 +23,7 @@ class FilePreviewUtil {
     'md',
     'txt',
     'pdf',
+    'json',
   ];
 
   /// 预览文件

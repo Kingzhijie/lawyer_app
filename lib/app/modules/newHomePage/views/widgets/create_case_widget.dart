@@ -87,6 +87,7 @@ class _CreateCaseWidgetState extends State<CreateCaseWidget> {
                   borderRadius: BorderRadius.circular(8.toW),
                 ),
                 padding: EdgeInsets.symmetric(horizontal: 12.toW),
+                alignment: Alignment.centerLeft,
                 child: TextField(
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -103,7 +104,7 @@ class _CreateCaseWidgetState extends State<CreateCaseWidget> {
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.zero,
                     // 移除默认内边距
-                    hintText: '请输入任务名称',
+                    hintText: '请输入案件名称',
                     hintStyle: TextStyle(
                       color: AppColors.color_FFC5C5C5,
                       fontSize: 16.toSp,
