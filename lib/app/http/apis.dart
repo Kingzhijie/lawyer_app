@@ -74,7 +74,8 @@ class Apis {
   ///创建聊天id
   static String createChatId = '/ai/chat-his/create';
 
-
+  ///任务添加到日历提醒
+  static String taskAddCalendar = '/legal/task/addCalendar';
 
   ///系统配置
   static String systemConfig = '/system/parameter-config/all';

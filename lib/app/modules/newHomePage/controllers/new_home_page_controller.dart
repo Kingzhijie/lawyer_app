@@ -243,4 +243,18 @@ class NewHomePageController extends GetxController {
       }
     });
   }
+
+  ///添加日历提醒
+  void addCalendar(CaseTaskModel model) {
+    NetUtils.post(
+      Apis.taskAddCalendar,
+      params: {'addCalendar': !ObjectUtils.boolValue(model.isAddCalendar), 'id': model.id},
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        model.isAddCalendar = !ObjectUtils.boolValue(model.isAddCalendar);
+        caseTaskList.refresh();
+      }
+    });
+  }
+
 }

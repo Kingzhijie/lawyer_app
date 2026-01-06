@@ -13,7 +13,7 @@ import '../../models/case_task_model.dart';
 import 'remark_case_widget.dart';
 
 class TaskCard extends StatelessWidget {
-  final Function(int type) clickItemType; //0: 备注, 1:关联用户
+  final Function(int type) clickItemType; //0: 备注, 1:关联用户, 2: 添加任务到日历提醒
   final CaseTaskModel? model;
 
   const TaskCard({super.key, required this.clickItemType, this.model});
@@ -110,6 +110,24 @@ class TaskCard extends StatelessWidget {
               RemarkCaseWidget(notes: model?.notes),
             ],
           ).withPaddingAll(14.toW),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Container(
+              width: 50.toW,
+              height: 50.toW,
+              alignment: Alignment.topRight,
+              child: ImageUtils(
+                imageUrl: ObjectUtils.boolValue(model?.isAddCalendar)
+                    ? Assets.home.noticeNormalIcon.path
+                    : Assets.home.unNoticeIcon.path,
+                width: 30.toW,
+                height: 30.toW,
+              ),
+            ).withOnTap((){
+              clickItemType(2);
+            }),
+          ),
         ],
       ),
     );
@@ -152,17 +170,6 @@ class TaskCard extends StatelessWidget {
               : Assets.home.beigaoNoticeBg.path,
           width: 300.toW,
           fit: BoxFit.contain,
-        ),
-      ),
-      Positioned(
-        top: 0,
-        right: 0,
-        child: ImageUtils(
-          imageUrl: ObjectUtils.boolValue(model?.isAddCalendar)
-              ? Assets.home.noticeNormalIcon.path
-              : Assets.home.unNoticeIcon.path,
-          width: 30.toW,
-          height: 30.toW,
         ),
       ),
       Positioned(

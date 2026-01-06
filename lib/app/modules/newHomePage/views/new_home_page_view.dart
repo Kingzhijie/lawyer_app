@@ -261,6 +261,10 @@ class NewHomePageView extends GetView<NewHomePageController> {
                   //备注
                   controller.addRemarkMethod(model);
                 }
+                if (type == 2) {
+                  //日历提醒
+                  controller.addCalendar(model);
+                }
               },
             )
             .withOnTap(() {

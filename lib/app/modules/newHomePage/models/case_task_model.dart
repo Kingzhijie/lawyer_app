@@ -54,7 +54,7 @@ class CaseTaskModel {
     _isEmergency = isEmergency;
     _dueAt = dueAt;
     _remindTimes = remindTimes;
-    _isAddCalendar = isAddCalendar;
+    isAddCalendar = isAddCalendar;
     _notes = notes;
     _createTime = createTime;
     _relateUsers = relateUsers;
@@ -75,7 +75,7 @@ class CaseTaskModel {
     _isEmergency = json['isEmergency'];
     _dueAt = json['dueAt'];
     _remindTimes = json['remindTimes'];
-    _isAddCalendar = json['isAddCalendar'];
+    isAddCalendar = json['isAddCalendar'];
     if (json['notes'] != null) {
       _notes = [];
       json['notes'].forEach((v) {
@@ -104,7 +104,7 @@ class CaseTaskModel {
   bool? _isEmergency;
   num? _dueAt;
   num? _remindTimes;
-  bool? _isAddCalendar;
+  bool? isAddCalendar;
   List<Notes>? _notes;
   num? _createTime;
   List<RelateUsers>? _relateUsers;
@@ -142,7 +142,7 @@ class CaseTaskModel {
     isEmergency: isEmergency ?? _isEmergency,
     dueAt: dueAt ?? _dueAt,
     remindTimes: remindTimes ?? _remindTimes,
-    isAddCalendar: isAddCalendar ?? _isAddCalendar,
+    isAddCalendar: isAddCalendar ?? isAddCalendar,
     notes: notes ?? _notes,
     createTime: createTime ?? _createTime,
     relateUsers: relateUsers ?? _relateUsers,
@@ -161,7 +161,6 @@ class CaseTaskModel {
   bool? get isEmergency => _isEmergency;
   num? get dueAt => _dueAt;
   num? get remindTimes => _remindTimes;
-  bool? get isAddCalendar => _isAddCalendar;
   List<Notes>? get notes => _notes;
   num? get createTime => _createTime;
   List<RelateUsers>? get relateUsers => _relateUsers;
@@ -182,7 +181,7 @@ class CaseTaskModel {
     map['isEmergency'] = _isEmergency;
     map['dueAt'] = _dueAt;
     map['remindTimes'] = _remindTimes;
-    map['isAddCalendar'] = _isAddCalendar;
+    map['isAddCalendar'] = isAddCalendar;
     if (_notes != null) {
       map['notes'] = _notes?.map((v) => v.toJson()).toList();
     }
