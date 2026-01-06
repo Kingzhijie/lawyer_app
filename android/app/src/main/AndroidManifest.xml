@@ -51,6 +51,12 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- 语音识别权限 -->
+    <uses-permission android:name="android.permission.BIND_RECOGNITION_SERVICE" />
+    
+    <!-- 华为语音识别服务权限 -->
+    <uses-permission android:name="com.huawei.vassistant.permission.BIND_RECOGNITION_SERVICE" />
+
     <!-- 可能会有蓝牙耳机 -->
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>

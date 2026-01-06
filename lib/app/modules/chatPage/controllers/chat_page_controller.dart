@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:lawyer_app/app/common/extension/string_extension.dart';
 import 'package:lawyer_app/app/http/apis.dart';
 import 'package:lawyer_app/app/http/net/net_utils.dart';
@@ -23,47 +24,7 @@ import 'package:vibration/vibration.dart';
 import '../../../http/net/sse_utils.dart';
 import '../../../utils/image_picker_util.dart';
 import '../models/chat_agent_ui_config.dart';
-
-class UiMessage {
-  UiMessage({
-    required this.id,
-    required this.text,
-    required this.isAi,
-    required this.createdAt,
-    this.hasAnimated = false,
-    this.thinkingProcess,
-    this.thinkingSeconds,
-    this.isThinkingDone = false, // 思考是否完成
-    this.isPrologue = false
-  });
-
-  final String id;
-  final String text;
-  final bool isAi;
-  final DateTime createdAt;
-  final bool hasAnimated;
-  final String? thinkingProcess; // 思考过程内容
-  final int? thinkingSeconds; // 思考用时
-  final bool isThinkingDone; // 思考是否完成
-  final bool isPrologue; //是否开场白
-
-  UiMessage copyWith({
-    bool? hasAnimated,
-    String? thinkingProcess,
-    int? thinkingSeconds,
-    bool? isThinkingDone,
-  }) => UiMessage(
-    id: id,
-    text: text,
-    isAi: isAi,
-    createdAt: createdAt,
-    isPrologue: isPrologue,
-    hasAnimated: hasAnimated ?? this.hasAnimated,
-    thinkingProcess: thinkingProcess ?? this.thinkingProcess,
-    thinkingSeconds: thinkingSeconds ?? this.thinkingSeconds,
-    isThinkingDone: isThinkingDone ?? this.isThinkingDone,
-  );
-}
+import '../models/ui_message.dart';
 
 enum ChatPanelType { none, keyboard, tool }
 
@@ -71,7 +32,7 @@ class ChatPageController extends GetxController {
   final TextEditingController textController = TextEditingController();
   final FocusNode inputFocusNode = FocusNode();
   final ChatBottomPanelContainerController<ChatPanelType> panelController =
-  ChatBottomPanelContainerController<ChatPanelType>();
+      ChatBottomPanelContainerController<ChatPanelType>();
   final ScrollController scrollController = ScrollController();
 
   final RxList<UiMessage> messages = <UiMessage>[].obs;
@@ -91,6 +52,7 @@ class ChatPageController extends GetxController {
 
   ///聊天智能体id
   String? agentId;
+
   ///聊天id
   String? sessionId;
 
@@ -100,8 +62,14 @@ class ChatPageController extends GetxController {
   // 加载状态
   final RxBool isLoading = false.obs;
 
+  RxList<MessageFileModel> files = <MessageFileModel>[].obs;// 文件数组
+  RxList<MessageImageModel> images = <MessageImageModel>[].obs; // 图片数组
+
   // SSE 订阅
   StreamSubscription<SSEEvent>? _sseSubscription;
+  
+  // 语音识别是否可用（华为设备可能不支持）
+  bool _isSpeechRecognitionAvailable = true;
 
   void updatePanelType(ChatPanelType type) {
     final targetPanelType = _toBottomPanel(type);
@@ -219,13 +187,16 @@ class ChatPageController extends GetxController {
     _scheduleScrollToBottom(animated: false);
   }
 
-
   ///添加发送消息
   Future<void> _addUserMessage(String text) async {
+    logPrint('🚀 开始发送消息: $text');
+    
     if (ObjectUtils.isEmptyString(agentId)) {
+      logPrint('⚠️ agentId 为空');
       return;
     }
     if (ObjectUtils.isEmptyString(sessionId)) {
+      logPrint('📝 创建会话 ID...');
       var result = await NetUtils.post(
         Apis.createChatId,
         params: {'agentId': agentId, 'subject': text},
@@ -233,15 +204,19 @@ class ChatPageController extends GetxController {
       );
       if (result.code == NetCodeHandle.success) {
         sessionId = result.data.toString();
+        logPrint('✅ 会话 ID: $sessionId');
       }
     }
 
     if (!ObjectUtils.isEmptyString(sessionId)) {
+      logPrint('📤 添加用户消息');
       messages.add(
         UiMessage(
           id: 'user-${DateTime.now().microsecondsSinceEpoch}',
           text: text,
           isAi: false,
+          images: images.isNotEmpty ? images.map((img) => img.copyWith()).toList() : null,
+          files: files.isNotEmpty ? files.map((file) => file.copyWith()).toList() : null,
           createdAt: DateTime.now(),
         ),
       );
@@ -249,12 +224,16 @@ class ChatPageController extends GetxController {
       _scheduleScrollToBottom();
 
       // 使用真实的 SSE 连接替代模拟回复
+      logPrint('🔄 调用 _sendMessageWithSSE');
       _sendMessageWithSSE(text, sessionId!);
     }
   }
 
   /// 使用 SSE 发送消息并接收 AI 回复
   Future<void> _sendMessageWithSSE(String message, String sessionId) async {
+    logPrint('🎯 _sendMessageWithSSE 开始执行');
+    logPrint('📝 message: $message, sessionId: $sessionId');
+    
     // 取消之前的连接
     cancelConnection();
 
@@ -268,14 +247,42 @@ class ChatPageController extends GetxController {
 
     // 创建一个临时的 AI 消息用于显示实时回复
     final aiMessageId = 'ai-${DateTime.now().microsecondsSinceEpoch}';
+    
+    // 立即添加一个 AI 消息占位（text 为空，聊天气泡会显示"思考中..."）
+    messages.add(
+      UiMessage(
+        id: aiMessageId,
+        text: '', // 空文本，让聊天气泡组件显示"思考中..."
+        isAi: true,
+        createdAt: DateTime.now(),
+        isThinkingDone: false,
+      ),
+    );
+    _scheduleScrollToBottom();
 
     // 生成唯一的请求 ID
     final requestId = const Uuid().v4();
+
+    List<SSEFileModel> uploadFiles = [];
+    if (images.isNotEmpty) {
+      for (var e in images) {
+        uploadFiles.add(SSEFileModel(name: '', url: e.url ?? ''));
+      }
+    } else if (files.isNotEmpty) {
+      for (var e in files) {
+        uploadFiles.add(SSEFileModel(name: e.name ?? '', url: e.url ?? ''));
+      }
+    }
+
+    // 清空图片和文件数组
+    images.clear();
+    files.clear();
 
     final request = SSEChatRequest(
       message: message,
       requestId: requestId,
       hisId: sessionId.toNullInt(),
+      files: uploadFiles,
       think: true,
     );
 
@@ -286,8 +293,11 @@ class ChatPageController extends GetxController {
         agentId: agentId!,
         request: request,
         onMessage: (data) {
+          logPrint('📨 收到 SSE 事件 - eventType: ${data.eventType}');
+          
           // 累积思考过程（reasoningContent）
-          if (data.reasoningContent != null && data.reasoningContent!.isNotEmpty) {
+          if (data.reasoningContent != null &&
+              data.reasoningContent!.isNotEmpty) {
             thinkingContent += data.reasoningContent!;
             logPrint('✅ 收到思考内容: ${data.reasoningContent}');
             logPrint('📊 累积思考内容: $thinkingContent');
@@ -295,7 +305,7 @@ class ChatPageController extends GetxController {
 
           // 累积回复内容（content）
           if (data.content != null && data.content!.isNotEmpty) {
-            replyContent += data.content!;
+            replyContent += _sanitizeText(data.content!);
             logPrint('✅ 收到回复内容: ${data.content}');
             logPrint('📊 累积回复内容: $replyContent');
           }
@@ -306,7 +316,7 @@ class ChatPageController extends GetxController {
           // 创建更新的消息
           final aiMessage = UiMessage(
             id: aiMessageId,
-            text: replyContent,
+            text: replyContent, // 直接使用 replyContent，可以为空
             isAi: true,
             createdAt: DateTime.now(),
             thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
@@ -318,11 +328,15 @@ class ChatPageController extends GetxController {
           if (existingIndex != -1) {
             // 更新现有消息
             messages[existingIndex] = aiMessage;
-            logPrint('🔄 更新消息 - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符');
+            logPrint(
+              '🔄 更新消息 - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符',
+            );
           } else {
             // 添加新消息
             messages.add(aiMessage);
-            logPrint('➕ 添加新消息 - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符');
+            logPrint(
+              '➕ 添加新消息 - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符',
+            );
           }
           messages.refresh();
 
@@ -347,12 +361,19 @@ class ChatPageController extends GetxController {
         },
         onDone: () {
           // 计算思考用时（秒）
-          final thinkingSeconds = DateTime.now().difference(startTime).inSeconds;
+          final thinkingSeconds = DateTime.now()
+              .difference(startTime)
+              .inSeconds;
 
           logPrint('✅ 消息接收完成');
           logPrint('📊 最终思考过程: $thinkingContent (${thinkingContent.length} 字符)');
           logPrint('📊 最终回复内容: $replyContent (${replyContent.length} 字符)');
           logPrint('⏱️ 思考用时: $thinkingSeconds 秒');
+          
+          if (replyContent.isEmpty) {
+            logPrint('⚠️ 警告：replyContent 为空！');
+          }
+          
           isLoading.value = false;
 
           // 移除"思考中"消息（确保清理）
@@ -363,11 +384,14 @@ class ChatPageController extends GetxController {
           if (index != -1) {
             messages[index] = UiMessage(
               id: aiMessageId,
-              text: replyContent.isNotEmpty ? replyContent : '未收到回复内容',
+              text: replyContent.isNotEmpty ? replyContent : '未识别出内容',
               isAi: true,
               createdAt: messages[index].createdAt,
-              hasAnimated: false, // 设置为 false 以触发打字动画
-              thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
+              hasAnimated: false,
+              // 设置为 false 以触发打字动画
+              thinkingProcess: thinkingContent.isNotEmpty
+                  ? thinkingContent
+                  : null,
               thinkingSeconds: thinkingSeconds,
               isThinkingDone: true, // 思考完成
             );
@@ -396,12 +420,6 @@ class ChatPageController extends GetxController {
         );
       }
     }
-  }
-
-  /// 发送文本消息（已废弃，使用 _sendMessageWithSSE 替代）
-  @Deprecated('使用 _sendMessageWithSSE 替代')
-  Future<void> sendTextMessage(String message, String sessionId) async {
-    // 此方法已被 _sendMessageWithSSE 替代
   }
 
   void markMessageAnimated(String id) {
@@ -477,7 +495,29 @@ class ChatPageController extends GetxController {
     super.onInit();
     textController.addListener(_handleTextChanged);
     inputFocusNode.addListener(_handleFocusChange);
+    _checkSpeechRecognitionAvailability();
     getSystemConfig();
+  }
+  
+  /// 检查语音识别是否可用
+  Future<void> _checkSpeechRecognitionAvailability() async {
+    try {
+      _isSpeechRecognitionAvailable = await _speechToText.initialize(
+        onError: (error) {
+          logPrint('语音识别初始化错误: ${error.errorMsg}');
+          _isSpeechRecognitionAvailable = false;
+        },
+      );
+      
+      if (!_isSpeechRecognitionAvailable) {
+        logPrint('⚠️ 语音识别不可用，录音功能已禁用');
+      } else {
+        logPrint('✅ 语音识别可用');
+      }
+    } catch (e) {
+      _isSpeechRecognitionAvailable = false;
+      logPrint('⚠️ 语音识别检测失败: $e');
+    }
   }
 
   @override
@@ -514,6 +554,12 @@ class ChatPageController extends GetxController {
   }
 
   Future<void> handleVoicePressed() async {
+    // 检查语音识别是否可用
+    if (!_isSpeechRecognitionAvailable) {
+      showToast('当前设备不支持语音识别功能');
+      return;
+    }
+    
     bool isAuth = false;
     if (Platform.isIOS) {
       bool isMicAuth = await PermissionUtils.requestMicrophonePermission();
@@ -554,7 +600,7 @@ class ChatPageController extends GetxController {
       if (await _audioRecorder.hasPermission()) {
         final directory = await getTemporaryDirectory();
         _recordingPath =
-        '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
+            '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
         await _audioRecorder.start(
           const RecordConfig(
@@ -647,10 +693,10 @@ class ChatPageController extends GetxController {
     _amplitudeSubscription = _audioRecorder
         .onAmplitudeChanged(const Duration(milliseconds: 100))
         .listen((amplitude) {
-      if (isClosed) return;
-      final normalized = (amplitude.current + 160) / 160;
-      recordingAmplitude.value = normalized.clamp(0.0, 1.0);
-    });
+          if (isClosed) return;
+          final normalized = (amplitude.current + 160) / 160;
+          recordingAmplitude.value = normalized.clamp(0.0, 1.0);
+        });
   }
 
   void _stopAmplitudeListener() {
@@ -660,30 +706,24 @@ class ChatPageController extends GetxController {
   }
 
   Future<void> _startSpeechRecognition() async {
+    if (!_isSpeechRecognitionAvailable) {
+      logPrint('⚠️ 语音识别不可用，跳过');
+      return;
+    }
+    
     try {
-      final available = await _speechToText.initialize(
-        onError: (error) {
-          logPrint('语音识别错误: ${error.errorMsg}');
+      await _speechToText.listen(
+        onResult: (result) {
+          final text = _sanitizeText(result.recognizedWords);
+          recognizedText.value = text;
+          logPrint('语音识别: $text');
         },
-        onStatus: (status) {
-          logPrint('语音识别状态: $status');
-        },
+        localeId: 'zh_CN',
       );
-
-      if (available) {
-        await _speechToText.listen(
-          onResult: (result) {
-            final text = _sanitizeText(result.recognizedWords);
-            recognizedText.value = text;
-            logPrint('语音识别: $text');
-          },
-          localeId: 'zh_CN',
-        );
-      } else {
-        logPrint('语音识别不可用');
-      }
     } catch (e) {
-      logPrint('启动语音识别失败: $e');
+      _isSpeechRecognitionAvailable = false;
+      logPrint('⚠️ 启动语音识别失败: $e');
+      showToast('语音识别启动失败');
     }
   }
 
@@ -726,34 +766,83 @@ class ChatPageController extends GetxController {
   Future<void> clickAction(ActionType type) async {
     switch (type) {
       case ActionType.camera:
-        await ImagePickerUtil.takePhotoOrFromLibrary(
+        if (images.length >= 10) {
+          showToast('最大上传10张图片');
+          return;
+        }
+        var file = await ImagePickerUtil.takePhotoOrFromLibrary(
           imageSource: ImageSourceType.camera,
         );
+        if (file != null) {
+          uploadImage([file]);
+        }
       case ActionType.photo:
-        await ImagePickerUtil.takePhotoOrFromLibrary(
+        if (images.length >= 10) {
+          showToast('最大上传10张图片');
+          return;
+        }
+        var imgFiles = await ImagePickerUtil.takeManyPhotoOrFromLibrary(
           imageSource: ImageSourceType.gallery,
+          maxCount: 10 - images.length,
         );
+        uploadImage(imgFiles);
       case ActionType.file:
+        // if (files.length >= 10) {
+        //   showToast('最多上传10个文档');
+        //   return;
+        // }
         try {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
             type: FileType.any, // 所有类型
-            allowMultiple: false, // 单选
+            allowMultiple: true, // 允许多选
           );
           if (result != null && result.files.isNotEmpty) {
-            PlatformFile file = result.files.first;
-            logPrint('文件名: ${file.name}');
-            logPrint('文件大小: ${file.size} bytes');
-            logPrint('文件路径: ${file.path}');
-            logPrint('文件扩展名: ${file.extension}');
-
-            NetUtils.uploadSingleFile(file.path!).then((result) {
-              logPrint('result====$result');
-            });
+            for (var file in result.files) {
+              // PlatformFile file = result.files.first;
+              logPrint('文件名: ${file.name}');
+              logPrint('文件大小: ${file.size} bytes');
+              logPrint('文件路径: ${file.path}');
+              logPrint('文件扩展名: ${file.extension}');
+              if (file.path != null) {
+                NetUtils.uploadSingleFile(file.path!).then((result) {
+                  logPrint('result====$result');
+                  if (result != null) {
+                    images.clear();
+                    files.add(MessageFileModel(path: file.path, url: result, name: file.extension));
+                  }
+                });
+              }
+            }
           }
         } catch (e) {
           logPrint('选取错误===$e');
         }
     }
+  }
+
+  ///上传图片
+  void uploadImage(List<XFile>? imgFiles){
+    imgFiles?.forEach((file){
+      images.add(MessageImageModel(path: file.path));
+
+      NetUtils.uploadSingleImage(file.path).then((result){
+        if (result != null) {
+          files.clear();
+          // 找到对应的图片
+          final index = images.indexWhere((e) => e.path == file.path);
+          if (index != -1) {
+            // 使用 copyWith 更新 url
+            images[index] = images[index].copyWith(url: result);
+            images.refresh(); // 刷新 UI
+          }
+        }
+      }).catchError((error) {
+        logPrint('上传图片失败: $error');
+        // 可选：上传失败时移除该图片
+        images.removeWhere((e) => e.path == file.path);
+        images.refresh();
+      });
+    });
   }
 
   ///获取系统配置
@@ -781,7 +870,6 @@ class ChatPageController extends GetxController {
     });
   }
 
-
   /// 取消当前连接
   void cancelConnection() {
     _sseSubscription?.cancel();
@@ -789,6 +877,4 @@ class ChatPageController extends GetxController {
     isLoading.value = false;
     logPrint('SSE 连接已取消');
   }
-
-
 }

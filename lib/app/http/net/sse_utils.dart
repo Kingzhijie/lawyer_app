@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:lawyer_app/app/http/net/tool/dio_utils.dart';
 import '../../config/dio_config.dart';
-import '../../utils/storage_utils.dart';
 import 'tool/logger.dart';
 
 /// SSE 消息数据模型
@@ -13,6 +11,7 @@ class SSEMessageData {
   final String? phase;
   final String? status;
   final String? role;
+  final String? eventType; // 事件类型
 
   SSEMessageData({
     this.content,
@@ -20,15 +19,19 @@ class SSEMessageData {
     this.phase,
     this.status,
     this.role,
+    this.eventType,
   });
 
-  factory SSEMessageData.fromJson(Map<String, dynamic> json) {
+  factory SSEMessageData.fromJson(Map<String, dynamic> json, {String? eventType}) {
+    String? content = json['content']?.toString();
+    
     return SSEMessageData(
-      content: json['content']?.toString(),
+      content: content,
       reasoningContent: json['reasoningContent']?.toString(),
       phase: json['phase']?.toString(),
       status: json['status']?.toString(),
       role: json['role']?.toString(),
+      eventType: eventType,
     );
   }
 }
@@ -203,11 +206,7 @@ class SSEUtils {
               }
             }
             
-            // 跳过 tools 事件
-            if (eventType == 'tools') {
-              logPrint('⏭️ 跳过 tools 事件');
-              continue;
-            }
+            // 注意：不再跳过 tools 事件，让它正常处理
             
             if (eventData != null && eventData.isNotEmpty) {
               logPrint('SSE 提取数据: $eventData');
@@ -245,16 +244,26 @@ class SSEUtils {
                       onError(json['error'].toString());
                     }
                   } else if (json is Map) {
-                    // 解析消息数据
-                    final messageData = SSEMessageData.fromJson(Map<String, dynamic>.from(json));
+                    // 解析消息数据，传递事件类型
+                    final messageData = SSEMessageData.fromJson(
+                      Map<String, dynamic>.from(json),
+                      eventType: eventType,
+                    );
                     
-                    logPrint('解析后的数据 - content: ${messageData.content}, reasoningContent: ${messageData.reasoningContent}');
+                    logPrint('解析后的数据 - eventType: $eventType, content: ${messageData.content}, reasoningContent: ${messageData.reasoningContent}');
                     
                     // 检查是否有实际内容（content 或 reasoningContent）
                     final hasContent = (messageData.content != null && messageData.content!.isNotEmpty) ||
                                       (messageData.reasoningContent != null && messageData.reasoningContent!.isNotEmpty);
                     
-                    if (hasContent) {
+                    // tools、tools-res、ocr_file_type 等事件即使没有 content 也要处理
+                    final isSpecialEvent = eventType != null && 
+                                          (eventType == 'tools' || 
+                                           eventType == 'tools-res' || 
+                                           eventType == 'ocr_file_type' ||
+                                           eventType == 'ocr_result');
+                    
+                    if (hasContent || isSpecialEvent) {
                       // 正常消息
                       final event = SSEEvent(
                         type: SSEEventType.message,
@@ -262,8 +271,12 @@ class SSEUtils {
                       );
                       streamController.add(event);
                       onMessage(messageData);
+                      
+                      if (isSpecialEvent && !hasContent) {
+                        logPrint('✅ 处理特殊事件: $eventType (无 content)');
+                      }
                     } else {
-                      logPrint('跳过空内容的消息');
+                      logPrint('⏭️ 跳过空内容的消息 (eventType: $eventType)');
                     }
                   } else {
                     // 不是 Map 类型，直接作为文本消息

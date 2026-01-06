@@ -2,7 +2,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../utils/image_utils.dart';
 import '../../controllers/chat_page_controller.dart';
+import '../../models/ui_message.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 class ChatBubbleLeft extends StatefulWidget {
   const ChatBubbleLeft({
@@ -164,6 +168,36 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                 ],
               ),
             ),
+          // 如果没有思考过程，也没有文本内容，但正在思考中，显示加载提示
+          if (!widget.message.isThinkingDone && 
+              widget.message.thinkingProcess == null && 
+              widget.message.text.isEmpty)
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 14.toW),
+              child: Row(
+                children: [
+                  Text(
+                    '思考中...',
+                    style: TextStyle(
+                      fontSize: 14.toSp,
+                      color: AppColors.color_E6000000,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(width: 6.toW),
+                  SizedBox(
+                    width: 14.toW,
+                    height: 14.toW,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(
+                        Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -203,11 +237,109 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
         widget.onTick();
         final count = value.clamp(0, total.toDouble()).floor();
         final text = widget.message.text.substring(0, count);
-        return Text(
-          text.isEmpty ? ' ' : text,
-          style: TextStyle(color: textColor, fontSize: 15, height: 1.5),
-        );
+        return _setMarkDownWidget(text, textColor);
       },
     );
   }
+
+  Widget _setMarkDownWidget(String text, Color textColor) {
+    return MarkdownBody(
+      data: text.isEmpty ? ' ' : text,
+      selectable: true, // 支持文本选择
+      imageBuilder: (uri, title, alt) {
+        // 自定义图片渲染，支持图文混排
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.toW),
+          child: ImageUtils(
+            imageUrl: uri.toString(),
+            fit: BoxFit.cover,
+            circularRadius: 8,
+            placeholderColor: Colors.grey.shade200,
+          ),
+        );
+      },
+      onTapLink: (text, href, title) async {
+        // 处理超链接点击
+        if (href != null) {
+          final uri = Uri.parse(href);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(
+              uri,
+              mode: LaunchMode.externalApplication,
+            );
+          } else {
+
+          }
+        }
+      },
+      styleSheet: MarkdownStyleSheet(
+        p: TextStyle(color: textColor, fontSize: 15, height: 1.5),
+        code: TextStyle(
+          fontSize: 14,
+          backgroundColor: Colors.grey.shade300,
+          color: textColor,
+        ),
+        codeblockDecoration: BoxDecoration(
+          color: Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        codeblockPadding: EdgeInsets.all(12.toW),
+        blockquote: TextStyle(
+          fontSize: 15,
+          color: Colors.black54,
+          fontStyle: FontStyle.italic,
+        ),
+        blockquoteDecoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          border: Border(
+            left: BorderSide(color: Colors.grey.shade400, width: 4),
+          ),
+        ),
+        blockquotePadding: EdgeInsets.all(10.toW),
+        h1: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: textColor,
+          height: 1.3,
+        ),
+        h2: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: textColor,
+          height: 1.3,
+        ),
+        h3: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: textColor,
+          height: 1.3,
+        ),
+        h1Padding: EdgeInsets.only(top: 16.toW, bottom: 8.toW),
+        h2Padding: EdgeInsets.only(top: 14.toW, bottom: 6.toW),
+        h3Padding: EdgeInsets.only(top: 12.toW, bottom: 4.toW),
+        listBullet: TextStyle(fontSize: 15, color: textColor),
+        listIndent: 24.toW,
+        a: TextStyle(
+          fontSize: 15,
+          color: Colors.blue.shade700,
+          decoration: TextDecoration.underline,
+        ),
+        em: TextStyle(fontStyle: FontStyle.italic),
+        strong: TextStyle(fontWeight: FontWeight.bold),
+        del: TextStyle(decoration: TextDecoration.lineThrough),
+        tableBorder: TableBorder.all(
+          color: Colors.grey.shade300,
+          width: 1,
+        ),
+        tableHead: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: textColor,
+        ),
+        tableBody: TextStyle(color: textColor),
+        tableCellsPadding: EdgeInsets.all(8.toW),
+      ),
+    );
+  }
+
+
 }

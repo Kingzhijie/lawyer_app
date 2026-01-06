@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 
+import '../../../../common/extension/widget_extension.dart';
+import '../../../../utils/image_utils.dart';
+import '../../../../utils/object_utils.dart';
+import '../../../../utils/screen_utils.dart';
 import '../../controllers/chat_page_controller.dart';
+import '../../models/ui_message.dart';
 
 
 class ChatBubbleRight extends StatelessWidget {
@@ -25,6 +30,20 @@ class ChatBubbleRight extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          if (!ObjectUtils.isEmptyList(message.images))
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: message.images!.map((e)=>ImageUtils(
+                  imageUrl: e.url ?? e.path,
+                  width: 80.toW,
+                  height: 80.toW,
+                  circularRadius: 6.toW,
+                ).withMarginOnly(left: 4.toW)).toList(),
+              ),
+            ).withMargin(EdgeInsets.symmetric(vertical: 6)),
+
           Container(
             margin: const EdgeInsets.symmetric(vertical: 6),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

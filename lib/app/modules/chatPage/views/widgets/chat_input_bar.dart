@@ -18,14 +18,14 @@ class ChatInputBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.toW, vertical: 8.toW),
-      padding: EdgeInsets.symmetric(horizontal: 16.toW),
+      padding: EdgeInsets.symmetric(horizontal: 12.toW),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Color(0x14000000),
             blurRadius: 14,
-            offset: const Offset(0, 6),
+            offset: const Offset(0, 0),
           ),
         ],
         borderRadius: BorderRadius.circular(12.toW),
@@ -33,85 +33,134 @@ class ChatInputBar extends StatelessWidget {
       child: Obx(() {
         final hasText = controller.hasText.value;
         final hasVoice = controller.hasVoice.value;
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ImageUtils(
-              imageUrl: Assets.common.addPhotoIcon.path,
-              width: 24.toW,
-            ).withOnTap((){
-              controller.clickAction(ActionType.photo);
-            }),
-            if (!hasVoice)
-              Flexible(
-                child: Listener(
-                  onPointerUp: (_) => controller.handleInputPointerUp(),
-                  child: NotificationListener<SizeChangedLayoutNotification>(
-                    onNotification: (_) {
-                      controller.handleInputSizeChanged(Size.zero);
-                      return false;
-                    },
-                    child: const SizeChangedLayoutNotifier(
-                      child: _InputField(),
-                    ),
-                  ),
+            if (controller.images.isNotEmpty)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: controller.images
+                      .map(
+                        (e) => Stack(
+                          children: [
+                            ImageUtils(
+                              imageUrl: e.path ?? e.url,
+                              width: 60.toW,
+                              height: 60.toW,
+                              circularRadius: 5.toW,
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child:
+                                  Container(
+                                    width: 20.toW,
+                                    height: 20.toW,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.3),
+                                      borderRadius: BorderRadius.circular(
+                                        10.toW,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.close,
+                                      size: 12.toW,
+                                      color: Colors.white,
+                                    ),
+                                  ).withOnTap(() {
+                                    controller.images.value.remove(e);
+                                    controller.images.refresh();
+                                  }),
+                            ),
+                          ],
+                        ).withMarginOnly(right: 6.toW, top: 6.toW),
+                      )
+                      .toList(),
                 ),
-              )
-            else
-              Expanded(
-                child: GestureDetector(
-                  onLongPressStart: (details) {
-                    controller.startRecording(details.globalPosition);
-                  },
-                  onLongPressEnd: (details) {
-                    if (controller.isCancelMode.value) {
-                      controller.cancelRecording();
-                    } else {
-                      controller.stopRecording();
-                    }
-                  },
-                  onLongPressMoveUpdate: (details) {
-                    controller.checkCancelMode(details.globalPosition);
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(vertical: 12.toW),
-                    child: Text(
-                      '按住说话',
-                      style: TextStyle(
-                        color: AppColors.color_E6000000,
-                        fontSize: 16.toSp,
+              ).withMarginOnly(bottom: 12.toW),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ImageUtils(
+                  imageUrl: Assets.common.addPhotoIcon.path,
+                  width: 24.toW,
+                ).withOnTap(() {
+                  controller.clickAction(ActionType.photo);
+                }),
+                if (!hasVoice)
+                  Flexible(
+                    child: Listener(
+                      onPointerUp: (_) => controller.handleInputPointerUp(),
+                      child:
+                          NotificationListener<SizeChangedLayoutNotification>(
+                            onNotification: (_) {
+                              controller.handleInputSizeChanged(Size.zero);
+                              return false;
+                            },
+                            child: const SizeChangedLayoutNotifier(
+                              child: _InputField(),
+                            ),
+                          ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: GestureDetector(
+                      onLongPressStart: (details) {
+                        controller.startRecording(details.globalPosition);
+                      },
+                      onLongPressEnd: (details) {
+                        if (controller.isCancelMode.value) {
+                          controller.cancelRecording();
+                        } else {
+                          controller.stopRecording();
+                        }
+                      },
+                      onLongPressMoveUpdate: (details) {
+                        controller.checkCancelMode(details.globalPosition);
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(vertical: 12.toW),
+                        child: Text(
+                          '按住说话',
+                          style: TextStyle(
+                            color: AppColors.color_E6000000,
+                            fontSize: 16.toSp,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            if (!hasText)
-              ImageUtils(
-                    imageUrl: hasVoice
-                        ? Assets.common.jianpanIcon.path
-                        : Assets.common.voiceChangeIcon.path,
-                    width: 24.toW,
-                  )
-                  .withOnTap(() {
-                    controller.handleVoicePressed();
-                  })
-                  .withMarginOnly(right: 8.toW),
+                if (!hasText)
+                  ImageUtils(
+                        imageUrl: hasVoice
+                            ? Assets.common.jianpanIcon.path
+                            : Assets.common.voiceChangeIcon.path,
+                        width: 24.toW,
+                      )
+                      .withOnTap(() {
+                        controller.handleVoicePressed();
+                      })
+                      .withMarginOnly(right: 8.toW),
 
-            ImageUtils(
-                  imageUrl: hasText
-                      ? Assets.home.sendIcon.path
-                      : Assets.common.addActionIcon.path,
-                  width: 24.toW,
-                )
-                .withOnTap(() {
-                  if (hasText) {
-                    controller.handleSendPressed(isFocus: false);
-                  } else {
-                    controller.handleToolBtnClick();
-                  }
-                })
-                .withMarginOnly(left: hasText ? 8.toW : 0),
+                ImageUtils(
+                      imageUrl: hasText
+                          ? Assets.home.sendIcon.path
+                          : Assets.common.addActionIcon.path,
+                      width: 24.toW,
+                    )
+                    .withOnTap(() {
+                      if (hasText) {
+                        controller.handleSendPressed(isFocus: false);
+                      } else {
+                        controller.handleToolBtnClick();
+                      }
+                    })
+                    .withMarginOnly(left: hasText ? 8.toW : 0),
+              ],
+            ),
           ],
         );
       }),
