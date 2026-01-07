@@ -43,6 +43,15 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+// 强制所有子项目的 Kotlin 编译使用 JVM 17
+subprojects {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+    }
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }

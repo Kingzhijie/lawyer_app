@@ -19,6 +19,8 @@ import 'package:lawyer_app/app/utils/toast_utils.dart';
 import 'package:lawyer_app/main.dart';
 
 import '../../../common/components/bottom_sheet_utils.dart';
+import '../../../config/app_config.dart';
+import '../../../utils/device_calendar_util.dart';
 import '../../../utils/screen_utils.dart';
 import '../models/case_task_model.dart';
 import '../views/widgets/cooperation_person_widget.dart';
@@ -37,6 +39,8 @@ class NewHomePageController extends GetxController {
   var homeStatistics = Rx<HomeStatistics?>(null);
 
   int pageNo = 1;
+
+  String? eventId;
 
   final EasyRefreshController easyRefreshController = EasyRefreshController(
     controlFinishRefresh: true,
@@ -101,9 +105,12 @@ class NewHomePageController extends GetxController {
       isShowCloseIcon: true,
       height: AppScreenUtil.screenHeight - 217.toW,
       isSetBottomInset: false,
-      contentWidget: LinkUserWidget(manageId: model.id!, relevanceSuccess: (m){
-        getCaseListData(true);
-      }),
+      contentWidget: LinkUserWidget(
+        manageId: model.id!,
+        relevanceSuccess: (m) {
+          getCaseListData(true);
+        },
+      ),
     );
   }
 
@@ -245,10 +252,35 @@ class NewHomePageController extends GetxController {
   }
 
   ///添加日历提醒
-  void addCalendar(CaseTaskModel model) {
+  Future<void> addCalendar(CaseTaskModel model) async {
+    // if (model.remindTimes == null || model.remindTimes == 0) {
+    //   logPrint('提醒时间不能为空');
+    //   return;
+    // }
+    // if (ObjectUtils.boolValue(model.isAddCalendar)) {
+    //   // 静默添加提醒（不跳转系统日历）
+    //   eventId = await DeviceCalendarUtil.addReminder(
+    //     title: model.title ?? '案件提醒',
+    //     dateTime: DateTime.fromMillisecondsSinceEpoch(
+    //       model.remindTimes!.toInt(),
+    //     ),
+    //     description: '点击连接: ${AppConfig.appSchemeFull}\n${model.content}',
+    //     reminderMinutes: 120, // 提前2小时提醒
+    //   );
+    //   if (eventId != null) {
+    //     logPrint('添加成功');
+    //   }
+    // } else {
+    //   bool isSuc = await DeviceCalendarUtil.deleteEvent(
+    //     eventId:eventId!,
+    //   );
+    // }
     NetUtils.post(
       Apis.taskAddCalendar,
-      params: {'addCalendar': !ObjectUtils.boolValue(model.isAddCalendar), 'id': model.id},
+      params: {
+        'addCalendar': !ObjectUtils.boolValue(model.isAddCalendar),
+        'id': model.id,
+      },
     ).then((result) {
       if (result.code == NetCodeHandle.success) {
         model.isAddCalendar = !ObjectUtils.boolValue(model.isAddCalendar);

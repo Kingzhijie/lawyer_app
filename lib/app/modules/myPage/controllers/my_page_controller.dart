@@ -55,11 +55,17 @@ class MyPageController extends GetxController {
 
   ///邀请好友
   void pushInviteFriendPage() {
+    Get.toNamed(Routes.INVITE_FRIEND_PAGE);
   }
 
   ///用户信息
   void pushUserInfoPage() {
     Get.toNamed(Routes.USER_INFO_PAGE);
+  }
+
+  ///打开会员中心
+  void openVipCenterPage() {
+    Get.toNamed(Routes.VIP_CENTER_PAGE);
   }
 
   

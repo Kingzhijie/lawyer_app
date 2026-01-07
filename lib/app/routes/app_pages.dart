@@ -24,6 +24,8 @@ import '../modules/editCaseBaseInfo/bindings/edit_case_base_info_binding.dart';
 import '../modules/editCaseBaseInfo/views/edit_case_base_info_view.dart';
 import '../modules/editConcernedPersonPage/bindings/edit_concerned_person_page_binding.dart';
 import '../modules/editConcernedPersonPage/views/edit_concerned_person_page_view.dart';
+import '../modules/inviteFriendPage/bindings/invite_friend_page_binding.dart';
+import '../modules/inviteFriendPage/views/invite_friend_page_view.dart';
 import '../modules/loginCodePage/bindings/login_code_page_binding.dart';
 import '../modules/loginCodePage/views/login_code_page_view.dart';
 import '../modules/loginPage/bindings/login_page_binding.dart';
@@ -46,6 +48,8 @@ import '../modules/tabPage/bindings/tab_page_binding.dart';
 import '../modules/tabPage/views/tab_page_view.dart';
 import '../modules/userInfoPage/bindings/user_info_page_binding.dart';
 import '../modules/userInfoPage/views/user_info_page_view.dart';
+import '../modules/vipCenterPage/bindings/vip_center_page_binding.dart';
+import '../modules/vipCenterPage/views/vip_center_page_view.dart';
 
 part 'app_routes.dart';
 
@@ -169,6 +173,16 @@ class AppPages {
       name: _Paths.EDIT_CASE_BASE_INFO,
       page: () => const EditCaseBaseInfoView(),
       binding: EditCaseBaseInfoBinding(),
+    ),
+    GetPage(
+      name: _Paths.VIP_CENTER_PAGE,
+      page: () => const VipCenterPageView(),
+      binding: VipCenterPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.INVITE_FRIEND_PAGE,
+      page: () => const InviteFriendPageView(),
+      binding: InviteFriendPageBinding(),
     ),
   ];
 }
