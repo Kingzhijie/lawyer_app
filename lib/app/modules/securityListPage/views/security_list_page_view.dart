@@ -208,7 +208,10 @@ class SecurityListPageView extends GetView<SecurityListPageController> {
         physics: physics,
         itemBuilder: (context, index) {
           final item = cases[index];
-          return SecurityListItem(caseInfo: item)
+          return SecurityListItem(
+                caseInfo: item,
+                onRemindAction: (caseInfo) => controller.remindAction(caseInfo),
+              )
               .withOnTap(() {
                 controller.pushDetailPage(item);
               })

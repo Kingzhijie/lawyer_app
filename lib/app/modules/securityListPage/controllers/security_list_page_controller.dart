@@ -1,13 +1,16 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/config/app_config.dart';
 import 'package:lawyer_app/app/http/apis.dart';
 import 'package:lawyer_app/app/http/net/net_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/modules/securityListPage/models/assets_tab_count_model.dart';
 import 'package:lawyer_app/app/modules/securityListPage/models/security_item_model.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
+import 'package:lawyer_app/app/utils/device_calendar_util.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
 
 class SecurityListPageController extends GetxController {
   /// 当前选中的标签索引
@@ -134,13 +137,36 @@ class SecurityListPageController extends GetxController {
   }
 
   /// 提醒操作
-  void remindAction(Map<String, dynamic> caseInfo) {
-    // TODO: 实现提醒功能
-  }
+  void remindAction(SecurityItemModel item) async {
+    if (ObjectUtils.boolValue(item.isAddCalendar)) {
+      return;
+    }
 
-  /// 添加备注
-  void addNoteAction(Map<String, dynamic> caseInfo) {
-    // TODO: 实现添加备注功能
+    // 静默添加提醒（不跳转系统日历）
+    final eventId = await DeviceCalendarUtil.addReminder(
+      title: item.caseName ?? '案件提醒',
+      dateTime: DateTime.fromMillisecondsSinceEpoch(
+        item.nearestExpiryDate!.toInt(),
+      ),
+      description: '点击连接: ${AppConfig.appSchemeFull}\n${item.caseName}最近到期了',
+      reminderMinutes: 120, // 提前2小时提醒
+    );
+    if (eventId != null) {
+      NetUtils.post(
+        Apis.addCalendarPreservationAsset,
+        params: {
+          'caseId': item.caseId,
+          'addCalendar': !ObjectUtils.boolValue(item.isAddCalendar),
+          'addCalendarId': eventId,
+        },
+      ).then((result) {
+        if (result.code == NetCodeHandle.success) {
+          item.isAddCalendar = !ObjectUtils.boolValue(item.isAddCalendar);
+          securityList.refresh();
+          showToast('已添加提醒');
+        }
+      });
+    }
   }
 
   void pushDetailPage(SecurityItemModel item) {

@@ -11,8 +11,12 @@ import '../../../../utils/screen_utils.dart';
 
 class SecurityListItem extends StatelessWidget {
   final SecurityItemModel caseInfo;
-
-  const SecurityListItem({super.key, required this.caseInfo});
+  final Function(SecurityItemModel caseInfo) onRemindAction;
+  const SecurityListItem({
+    super.key,
+    required this.caseInfo,
+    required this.onRemindAction,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +99,7 @@ class SecurityListItem extends StatelessWidget {
                         ),
                       ),
                     ).withOnTap(() {
-                      // controller.remindAction(caseInfo);
+                      onRemindAction(caseInfo);
                     }),
               ),
             ],
