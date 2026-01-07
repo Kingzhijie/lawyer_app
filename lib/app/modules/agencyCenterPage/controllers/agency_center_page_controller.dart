@@ -42,6 +42,10 @@ class AgencyCenterPageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    final index = Get.arguments ?? 0;
+    if (index > 0) {
+      tabIndex.value = index;
+    }
   }
 
   @override
