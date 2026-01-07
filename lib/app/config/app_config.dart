@@ -1,3 +1,4 @@
 class AppConfig {
-  static const String appScheme = 'ntwaistapp';
+  static const String appScheme = 'lingbanapp';
+  static const String appSchemeFull = 'lingbanapp://lawyer/';
 }

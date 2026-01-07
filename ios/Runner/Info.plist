@@ -6,11 +6,6 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>zh_CN</string>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>zh_CN</string>
-		<string>en</string>
-	</array>
 	<key>CFBundleDisplayName</key>
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
@@ -19,6 +14,11 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>zh_CN</string>
+		<string>en</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>lawyer_app</string>
 	<key>CFBundlePackageType</key>
@@ -27,6 +27,17 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>lingbanapp</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -40,8 +51,12 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>需要您的日历权限，以便将案件任务提醒等日程添加到您的设备日历中</string>
 	<key>NSCameraUsageDescription</key>
 	<string>需要访问相机权限, 方便您拍照修改头像, 意见反馈等功能</string>
+	<key>NSContactsUsageDescription</key>
+	<string>此权限仅用于在系统日历界面中自动填充位置信息</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>需要您的同意,才能访问本地网络, 提供数据请求服务</string>
 	<key>NSMicrophoneUsageDescription</key>

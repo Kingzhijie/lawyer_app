@@ -93,7 +93,7 @@ dependencies:
   #个推
   getuiflut: ^0.2.39
   #本地通知
-  flutter_local_notifications: ^19.5.0
+  flutter_local_notifications: ^18.0.1
   #图片浏览
   photo_view: ^0.14.0
   #键盘和工具栏切换
@@ -123,6 +123,9 @@ dependencies:
   uuid: ^4.5.1
   #文件浏览
   native_file_preview: ^1.0.1
+  #设备添加日历提醒事件
+  device_calendar: ^4.3.3
+  timezone: ^0.9.0
   #日历
   flutter_advanced_calendar:
     path: plugins/flutter_advanced_calendar-1.4.3

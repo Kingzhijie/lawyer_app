@@ -102,7 +102,9 @@ class MyPageView extends GetView<MyPageController> {
 
   /// PRO 会员卡片
   Widget _buildProMemberCard() {
-    return ImageUtils(imageUrl: Assets.my.vipCardBg.path);
+    return ImageUtils(imageUrl: Assets.my.vipCardBg.path).withOnTap((){
+      controller.openVipCenterPage();
+    });
   }
 
   /// 菜单项
