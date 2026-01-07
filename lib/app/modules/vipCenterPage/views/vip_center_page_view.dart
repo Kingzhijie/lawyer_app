@@ -35,6 +35,12 @@ class VipCenterPageView extends GetView<VipCenterPageController> {
             bottom: 100.toW,
           ),
           _setBottomWidget(),
+          Positioned(
+            left: 15.toW,
+              top: AppScreenUtil.statusBarHeight + 10.toW,
+              child: Icon(Icons.arrow_back_ios, color: Colors.black, size: 24.toW).withOnTap((){
+                Get.back();
+              }))
         ],
       ),
     );
@@ -101,88 +107,93 @@ class VipCenterPageView extends GetView<VipCenterPageController> {
         padding: EdgeInsets.all(24.toW),
         margin: EdgeInsets.only(bottom: AppScreenUtil.bottomBarHeight),
         child: Container(
-          height: 52.toW,
+          height: 60.toW,
           child: Stack(
             children: [
               // 底部背景图
-              Positioned.fill(
+              Positioned(
+                right: 0,
+                top: 8.toW,
                 child: ImageUtils(
                   imageUrl: Assets.common.lizfBg.path,
-                  width: AppScreenUtil.screenWidth,
+                  height: 52.toW,
                   fit: BoxFit.fill,
                 ),
               ),
+              // 底部背景图
+              Positioned(
+                left: 0,
+                top: 8.toW,
+                child: ImageUtils(
+                  imageUrl: Assets.common.vipPriceBg.path,
+                  height: 52.toW,
+                  fit: BoxFit.fill,
+                ),
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                child: ImageUtils(
+                  imageUrl: Assets.common.hyzhekIcon.path,
+                  height: 21.toW,
+                ),
+              ),
+              Positioned(
+                left: 10.toW,
+                top: 3.toW,
+                child: Text(
+                  '限时折扣价',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 9.toSp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // 左侧价格区域
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        // 价格背景图
-                        Positioned.fill(
-                          child: ImageUtils(
-                            imageUrl: Assets.common.vipPriceBg.path,
-                            fit: BoxFit.fill,
-                          ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Text(
+                        '¥198',
+                        style: TextStyle(
+                          fontSize: 20.toSp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15.toW),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // 限时折扣价标签
-                              ImageUtils(
-                                imageUrl: Assets.common.hyzhekIcon.path,
-                                height: 18.toW,
-                              ),
-                              SizedBox(height: 4.toW),
-                              // 价格行
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.baseline,
-                                textBaseline: TextBaseline.alphabetic,
-                                children: [
-                                  Text(
-                                    '¥198',
-                                    style: TextStyle(
-                                      fontSize: 32.toSp,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    '/年',
-                                    style: TextStyle(
-                                      fontSize: 14.toSp,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10.toW),
-                                  Text(
-                                    '原价: ¥600',
-                                    style: TextStyle(
-                                      fontSize: 12.toSp,
-                                      color: Colors.white.withOpacity(0.7),
-                                      decoration: TextDecoration.lineThrough,
-                                      decorationColor: Colors.white.withOpacity(0.7),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                      ),
+                      Text(
+                        '/年',
+                        style: TextStyle(
+                          fontSize: 12.toSp,
+                          color: Colors.white,
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(width: 10.toW),
+                      Text(
+                        '原价: ¥600',
+                        style: TextStyle(
+                          fontSize: 12.toSp,
+                          color: Colors.white.withOpacity(0.7),
+                          decoration: TextDecoration.lineThrough,
+                          decorationColor: Colors.white.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
                   ),
                   // 右侧确认支付按钮
                   Container(
-                    width: 140.toW,
                     alignment: Alignment.center,
+                    padding: EdgeInsets.only(top: 5.toW, right: 13.toW),
                     child: Text(
                       '确认并支付',
                       style: TextStyle(
-                        fontSize: 18.toSp,
+                        fontSize: 16.toSp,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF6D4520),
                       ),
@@ -191,7 +202,7 @@ class VipCenterPageView extends GetView<VipCenterPageController> {
                     // 点击支付
                   }),
                 ],
-              ),
+              ).withPaddingOnly(left: 12.toW, top: 5.toW),
             ],
           ),
         ),
