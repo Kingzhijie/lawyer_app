@@ -1,8 +1,6 @@
 class CasePartyModel {
   int? id;
-  int? casePartyId;
   String? name;
-  int? partyRole;
   int? partyType;
   int? idType;
   String? idNumber;
@@ -12,12 +10,13 @@ class CasePartyModel {
   String? phone;
   String? email;
   String? address;
+  String? legalRepresentative;
+  String? remark;
+  int? createTime;
 
   CasePartyModel({
     this.id,
-    this.casePartyId,
     this.name,
-    this.partyRole,
     this.partyType,
     this.idType,
     this.idNumber,
@@ -27,14 +26,17 @@ class CasePartyModel {
     this.phone,
     this.email,
     this.address,
+    this.legalRepresentative,
+    this.remark,
+    this.createTime,
   });
 
-  factory CasePartyModel.fromJson(Map<String, dynamic> json) {
+  factory CasePartyModel.fromId23NamePartyType1IdType1IdNumberNationalityGender0IsCustomerFalsePhoneEmailAddressLegalRepresentativeRemarkCreateTime1767605374000(
+    Map<String, dynamic> json,
+  ) {
     return CasePartyModel(
       id: json['id'] as int?,
-      casePartyId: json['casePartyId'] as int?,
       name: json['name'] as String?,
-      partyRole: json['partyRole'] as int?,
       partyType: json['partyType'] as int?,
       idType: json['idType'] as int?,
       idNumber: json['idNumber'] as String?,
@@ -44,15 +46,17 @@ class CasePartyModel {
       phone: json['phone'] as String?,
       email: json['email'] as String?,
       address: json['address'] as String?,
+      legalRepresentative: json['legalRepresentative'] as String?,
+      remark: json['remark'] as String?,
+      createTime: json['createTime'] as int?,
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic>
+  toId23NamePartyType1IdType1IdNumberNationalityGender0IsCustomerFalsePhoneEmailAddressLegalRepresentativeRemarkCreateTime1767605374000() {
     return {
       'id': id,
-      'casePartyId': casePartyId,
       'name': name,
-      'partyRole': partyRole,
       'partyType': partyType,
       'idType': idType,
       'idNumber': idNumber,
@@ -62,6 +66,9 @@ class CasePartyModel {
       'phone': phone,
       'email': email,
       'address': address,
+      'legalRepresentative': legalRepresentative,
+      'remark': remark,
+      'createTime': createTime,
     };
   }
 }

@@ -93,7 +93,15 @@ class AgencyCenterPageView extends StatelessWidget {
         () => Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _setFilterItemWidget('当事人').withOnTap(() {
+            _setFilterItemWidget(
+              controller.casePartyIdModel.value?.name ?? '当事人',
+              textColor:
+                  !ObjectUtils.isEmptyString(
+                    controller.casePartyIdModel.value?.name,
+                  )
+                  ? AppColors.color_E6000000
+                  : AppColors.color_66000000,
+            ).withOnTap(() {
               controller.chooseConcernedAction(0);
             }),
             _setFilterItemWidget(
@@ -133,7 +141,7 @@ class AgencyCenterPageView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.toW),
-        border: Border.all(color: AppColors.color_line, width: 0.4)
+        border: Border.all(color: AppColors.color_line, width: 0.4),
       ),
       padding: EdgeInsets.symmetric(horizontal: 16.toW),
       child: Row(
@@ -229,7 +237,9 @@ class AgencyCenterPageView extends StatelessWidget {
           ),
         );
       },
-    ).withMarginOnly(top: 110.toW + (tag == null ? AppScreenUtil.navigationBarHeight : 0));
+    ).withMarginOnly(
+      top: 110.toW + (tag == null ? AppScreenUtil.navigationBarHeight : 0),
+    );
   }
 
   Widget _setFloatingActionWidget() {

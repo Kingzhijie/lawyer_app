@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/string_extension.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/pres_asset_model.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
@@ -114,12 +115,16 @@ class PreservationSituationWidget extends StatelessWidget {
           SizedBox(height: 8.toW),
           _buildInfoRow(
             '涉及账户/资产:',
-            ((item.assetType == 1 ? item.accountInfo : item.assetName) ?? '-')
-                .replaceAll('账号：', ''),
+            item.accountInfo?.replaceAll('账号：', '') ?? '',
           ),
           if (item.assetType != 2) ...[
             SizedBox(height: 8.toW),
-            _buildInfoRow('实际冻结金额:', '${item.amount ?? 0}'.toString()),
+            _buildInfoRow(
+              '实际冻结金额:',
+              ((item.amount ?? 0) / 100).toString().toRMBPrice(
+                fractionDigits: 2,
+              ),
+            ),
           ],
           SizedBox(height: 8.toW),
           _buildInfoRow(

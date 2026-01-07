@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lawyer_app/app/common/components/common_app_bar.dart';
+import 'package:lawyer_app/app/common/components/easy_refresher.dart';
+import 'package:lawyer_app/app/common/components/empty_content_widget.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/modules/securityListPage/views/widgets/security_list_item.dart';
@@ -30,11 +31,61 @@ class SecurityListPageView extends GetView<SecurityListPageController> {
               width: AppScreenUtil.screenWidth,
             ),
           ),
-          _buildTopBar(context),
-          Container(
-            margin: EdgeInsets.only(top: 110.toW + AppScreenUtil.navigationBarHeight),
-            child:_buildCaseList(),
-          )
+          Column(
+            children: [
+              Container(
+                height: AppScreenUtil.navigationBarHeight,
+                padding: EdgeInsets.only(
+                  top: AppScreenUtil.statusBarHeight,
+                  left: 16.toW,
+                  right: 16.toW,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: 34.toW,
+                      height: 34.toW,
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        size: 24.toW,
+                        color: Colors.black,
+                      ),
+                    ).withOnTap(() {
+                      Get.back();
+                    }),
+                    Text(
+                      '保全清单',
+                      style: TextStyle(
+                        fontSize: 18.toSp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.color_E6000000,
+                      ),
+                    ),
+                    SizedBox(width: 34.toW),
+                  ],
+                ),
+              ),
+              _buildSearchBar(),
+              Height(8.toW),
+              _buildFilterTabs(),
+              SizedBox(height: 10.toW),
+              Expanded(
+                child: MSEasyRefresher(
+                  controller: controller.easyRefreshController,
+                  onRefresh: () {
+                    controller.onRefresh();
+                  },
+                  onLoad: () {
+                    controller.onLoadMore();
+                  },
+                  childBuilder: (c, physics) {
+                    return _buildCaseList(physics);
+                  },
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     ).unfocusWhenTap();
@@ -49,7 +100,7 @@ class SecurityListPageView extends GetView<SecurityListPageController> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.toW),
-        border: Border.all(width: 0.5, color: Color(0xFFE7E7E7))
+        border: Border.all(width: 0.5, color: Color(0xFFE7E7E7)),
       ),
       child: Row(
         children: [
@@ -90,59 +141,24 @@ class SecurityListPageView extends GetView<SecurityListPageController> {
     );
   }
 
-  Widget _buildTopBar(BuildContext context) {
-    return Positioned(
-      left: 0, right: 0, top: 0,
-        child: Column(
-      children: [
-        Container(
-          height: AppScreenUtil.navigationBarHeight,
-          padding: EdgeInsets.only(
-            top: AppScreenUtil.statusBarHeight,
-            left: 16.toW,
-            right: 16.toW,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: 34.toW,
-                height: 34.toW,
-                child: Icon(Icons.arrow_back_ios, size: 24.toW, color: Colors.black),
-              ).withOnTap((){
-                Get.back();
-              }),
-              Text(
-                '保全清单',
-                style: TextStyle(
-                  fontSize: 18.toSp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.color_E6000000,
-                ),
-              ),
-              SizedBox(width: 34.toW),
-            ],
-          ),
-        ),
-        _buildSearchBar(),
-        Height(8.toW),
-        _buildFilterTabs(),
-      ],
-    ));
-  }
-
   /// 筛选标签
   Widget _buildFilterTabs() {
     return Obx(() {
-      final currentIndex = controller.selectedTabIndex.value;
-      final tabs = controller.filterTabs;
+      final selectedTabIndex = controller.selectedTabIndex.value;
+      final assetsTabCountModel = controller.assetsTabCountModel.value;
+      final tabs = [
+        '全部(${assetsTabCountModel?.totalCount ?? 0})',
+        '60日到期(${assetsTabCountModel?.expiry60Count ?? 0})',
+        '45日到期(${assetsTabCountModel?.expiry45Count ?? 0})',
+        '30日到期(${assetsTabCountModel?.expiry30Count ?? 0})',
+      ];
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16.toW),
         child: Row(
           children: List.generate(tabs.length, (index) {
             final tab = tabs[index];
-            final isSelected = currentIndex == index;
+            final isSelected = selectedTabIndex == index;
             return Padding(
               padding: EdgeInsets.only(right: 12.toW),
               child: GestureDetector(
@@ -159,7 +175,7 @@ class SecurityListPageView extends GetView<SecurityListPageController> {
                     borderRadius: BorderRadius.circular(8.toW),
                   ),
                   child: Text(
-                    tab['title'] ?? '',
+                    tab,
                     style: TextStyle(
                       fontSize: 13.toSp,
                       fontWeight: FontWeight.normal,
@@ -178,33 +194,27 @@ class SecurityListPageView extends GetView<SecurityListPageController> {
   }
 
   /// 案件列表
-  Widget _buildCaseList() {
+  Widget _buildCaseList(ScrollPhysics physics) {
     return Obx(() {
-      final cases = controller.caseList;
+      final cases = controller.securityList.value;
       if (cases.isEmpty) {
-        return Center(
-          child: Text(
-            '暂无数据',
-            style: TextStyle(
-              fontSize: 14.toSp,
-              color: AppColors.color_FFC5C5C5,
-            ),
-          ),
-        );
+        return EmptyContentWidget(content: '暂无数据', top: 100.toW);
       }
-      
+
       return ListView.builder(
         padding: EdgeInsets.symmetric(horizontal: 16.toW, vertical: 8.toW),
         itemCount: cases.length,
+        shrinkWrap: true,
+        physics: physics,
         itemBuilder: (context, index) {
-          return SecurityListItem(caseInfo: cases[index]).withOnTap((){
-            controller.pushDetailPage();
-          }).withMarginOnly(bottom: 12.toW);
+          final item = cases[index];
+          return SecurityListItem(caseInfo: item)
+              .withOnTap(() {
+                controller.pushDetailPage(item);
+              })
+              .withMarginOnly(bottom: 12.toW);
         },
       );
     });
   }
-
-
-
 }
