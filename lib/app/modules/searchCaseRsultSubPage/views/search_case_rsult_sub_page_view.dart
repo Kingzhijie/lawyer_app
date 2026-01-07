@@ -50,7 +50,7 @@ class SearchCaseRsultSubPageView
             ),
           );
         },
-      ).withExpanded(),
+      ),
     );
   }
 }

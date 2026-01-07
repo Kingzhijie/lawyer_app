@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/components/image_text_button.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
@@ -37,19 +38,7 @@ class RemarkCaseWidget extends StatelessWidget {
                       color: AppColors.color_66000000,
                       fontSize: 13.toSp,
                     ),
-                  ),
-                  ImageText(
-                    position: Position.left,
-                    space: 2.toW,
-                    imgUrl: Assets.home.checkCircle.path,
-                    width: 16.toW,
-                    height: 16.toW,
-                    title: '已知',
-                    style: TextStyle(
-                      color: AppColors.color_66000000,
-                      fontSize: 12.toSp,
-                    ),
-                  ),
+                  )
                 ],
               ),
               ListView.builder(
@@ -59,7 +48,7 @@ class RemarkCaseWidget extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
                   var model = notes![index];
-                  bool isHiddenLine = index == 3 - 1;
+                  bool isHiddenLine = index == (notes!.length - 1);
                   return Container(
                     decoration: BoxDecoration(
                       border: isHiddenLine

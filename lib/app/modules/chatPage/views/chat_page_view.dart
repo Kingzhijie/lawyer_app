@@ -18,6 +18,7 @@ import 'package:get/get.dart';
 
 class ChatPageView extends GetView<ChatPageController> {
   const ChatPageView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,8 +42,21 @@ class ChatPageView extends GetView<ChatPageController> {
             child: Column(
               children: [
                 Expanded(
-                  child: Obx(
-                    () => ListView.builder(
+                  child: Obx(() {
+                    if (controller.isShowNoCase.value) {
+                      return SingleChildScrollView(
+                        child: Container(
+                          alignment: Alignment.bottomCenter,
+                          height:
+                              AppScreenUtil.screenHeight -
+                              AppScreenUtil.navigationBarHeight -
+                              AppScreenUtil.bottomBarHeight -
+                              80.toW,
+                          child: NoFindCaseWidget(),
+                        ).unfocusWhenTap(),
+                      );
+                    }
+                    return ListView.builder(
                       padding: EdgeInsets.symmetric(
                         horizontal: 15.toW,
                         vertical: 16.toW,
@@ -62,14 +76,36 @@ class ChatPageView extends GetView<ChatPageController> {
                           return ChatBubbleRight(message: msg);
                         }
                       },
-                    ),
-                  ),
+                    );
+                  }),
                 ),
                 ChatInputBar(controller: controller),
                 ChatBottomPanel(controller: controller),
               ],
             ),
           ).withMarginOnly(top: AppScreenUtil.navigationBarHeight),
+          // Obx(() {
+          //   if (controller.isShowNoCase.value) {
+          //     return Positioned(
+          //       bottom: AppScreenUtil.bottomBarHeight +
+          //           80.toW,
+          //       left: 0,
+          //       right: 0,
+          //       child: SingleChildScrollView(
+          //         child: Container(
+          //           alignment: Alignment.bottomCenter,
+          //           height:
+          //           AppScreenUtil.screenHeight -
+          //               AppScreenUtil.navigationBarHeight -
+          //               AppScreenUtil.bottomBarHeight -
+          //               80.toW,
+          //           child: NoFindCaseWidget(),
+          //         ).unfocusWhenTap(),
+          //       ),
+          //     );
+          //   }
+          //   return Container();
+          // }),
           // 录音界面覆盖层
           Obx(() {
             if (!controller.isRecording.value) {

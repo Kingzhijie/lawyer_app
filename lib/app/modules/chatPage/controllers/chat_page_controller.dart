@@ -74,6 +74,9 @@ class ChatPageController extends GetxController {
   // 是否启用思考模式（默认启用）
   bool enableThinkingMode = true;
 
+  ///是否显示未查询到案件
+  RxBool isShowNoCase = false.obs;
+
   void updatePanelType(ChatPanelType type) {
     final targetPanelType = _toBottomPanel(type);
     final targetFocus = _toHandleFocus(type);
@@ -192,6 +195,7 @@ class ChatPageController extends GetxController {
 
   ///添加发送消息
   Future<void> _addUserMessage(String text) async {
+    isShowNoCase.value = false;
     logPrint('🚀 开始发送消息: $text');
     
     if (ObjectUtils.isEmptyString(agentId)) {
@@ -301,6 +305,11 @@ class ChatPageController extends GetxController {
         request: request,
         onMessage: (data) {
           logPrint('📨 收到 SSE 事件 - eventType: ${data.eventType}');
+
+          if (data.isOcrResult) {
+            logPrint('caseId====${data.ocrCaseId}');
+            isShowNoCase.value = true;
+          }
           
           // 检测后端是否支持思考模式
           if (data.reasoningContent != null && data.reasoningContent!.isNotEmpty) {
@@ -403,7 +412,7 @@ class ChatPageController extends GetxController {
           if (index != -1) {
             final finalMessage = UiMessage(
               id: aiMessageId,
-              text: replyContent.isNotEmpty ? replyContent : '未识别出内容',
+              text: replyContent.isNotEmpty ? replyContent : '未识别出相关案件',
               isAi: true,
               createdAt: messages[index].createdAt,
               hasAnimated: true, // 流式传输已经是逐字显示，不需要打字动画

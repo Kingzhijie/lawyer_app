@@ -18,7 +18,10 @@ import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
 import 'package:lawyer_app/main.dart';
 
+import '../../../common/components/bottom_sheet_content_widget.dart';
 import '../../../common/components/bottom_sheet_utils.dart';
+import '../../../common/components/dialog.dart';
+import '../../../common/constants/app_colors.dart';
 import '../../../config/app_config.dart';
 import '../../../utils/device_calendar_util.dart';
 import '../../../utils/screen_utils.dart';
@@ -40,7 +43,6 @@ class NewHomePageController extends GetxController {
 
   int pageNo = 1;
 
-  String? eventId;
 
   final EasyRefreshController easyRefreshController = EasyRefreshController(
     controlFinishRefresh: true,
@@ -253,40 +255,81 @@ class NewHomePageController extends GetxController {
 
   ///添加日历提醒
   Future<void> addCalendar(CaseTaskModel model) async {
-    // if (model.remindTimes == null || model.remindTimes == 0) {
-    //   logPrint('提醒时间不能为空');
-    //   return;
-    // }
-    // if (ObjectUtils.boolValue(model.isAddCalendar)) {
-    //   // 静默添加提醒（不跳转系统日历）
-    //   eventId = await DeviceCalendarUtil.addReminder(
-    //     title: model.title ?? '案件提醒',
-    //     dateTime: DateTime.fromMillisecondsSinceEpoch(
-    //       model.remindTimes!.toInt(),
-    //     ),
-    //     description: '点击连接: ${AppConfig.appSchemeFull}\n${model.content}',
-    //     reminderMinutes: 120, // 提前2小时提醒
-    //   );
-    //   if (eventId != null) {
-    //     logPrint('添加成功');
-    //   }
-    // } else {
-    //   bool isSuc = await DeviceCalendarUtil.deleteEvent(
-    //     eventId:eventId!,
-    //   );
-    // }
+    String? eventId;
+    if (model.remindTimes != null && model.remindTimes != 0) {
+      if (ObjectUtils.boolValue(model.isAddCalendar)) {
+        if (model.addCalendarId != null) {
+          bool isSuc = await DeviceCalendarUtil.deleteEvent(
+            eventId:model.addCalendarId!,
+          );
+          logPrint('提醒删除结果===$isSuc');
+        }
+      } else {
+        // 静默添加提醒（不跳转系统日历）
+        eventId = await DeviceCalendarUtil.addReminder(
+          title: model.title ?? '案件提醒',
+          dateTime: DateTime.fromMillisecondsSinceEpoch(
+            model.remindTimes!.toInt(),
+          ),
+          description: '点击连接: ${AppConfig.appSchemeFull}\n${model.content}',
+          reminderMinutes: 120, // 提前2小时提醒
+        );
+        if (eventId != null) {
+          AppDialog.singleItem(
+            title: '添加日历提醒成功',
+            titleStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 17.toSp,
+              fontWeight: FontWeight.w600,
+            ),
+            content: '事件开始前2小时, 将收到手机日历提醒, 可在系统日历中更改提醒时间',
+            contentStyle: TextStyle(color: Colors.black, fontSize: 15.toSp),
+            cancel: '我知道了',
+          ).showAlert();
+        }
+      }
+    }
+
     NetUtils.post(
       Apis.taskAddCalendar,
       params: {
         'addCalendar': !ObjectUtils.boolValue(model.isAddCalendar),
         'id': model.id,
+        'addCalendarId': eventId
       },
     ).then((result) {
       if (result.code == NetCodeHandle.success) {
         model.isAddCalendar = !ObjectUtils.boolValue(model.isAddCalendar);
+        model.addCalendarId = eventId;
         caseTaskList.refresh();
       }
     });
+  }
+
+  void chooseDateFilter() {
+    BottomSheetUtils.show(
+      currentContext,
+      isShowCloseIcon: false,
+      radius: 12.toR,
+      isSetBottomInset: false,
+      backgroundColor: Colors.white,
+      contentWidget: BottomSheetContentWidget(
+        contentModels: [
+          BottomSheetContentModel(
+            name: '本周',
+            index: 1,
+            textColor: AppColors.color_E6000000,
+          ),
+          BottomSheetContentModel(
+            name: '本月',
+            index: 2,
+            textColor: AppColors.color_E6000000,
+          ),
+        ],
+        clickItemCallBack: (contentModel) async {
+        },
+      ),
+    );
   }
 
 }

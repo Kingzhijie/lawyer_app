@@ -162,8 +162,9 @@ class CalendarPageController extends GetxController {
     ).then((result) {
       if (result.code == NetCodeHandle.success) {
         showToast('备注添加成功');
-        Get.back();
+        Navigator.pop(currentContext);
       }
     });
   }
+
 }
