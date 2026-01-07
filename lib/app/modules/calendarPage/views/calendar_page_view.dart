@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/components/common_app_bar.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/modules/calendarPage/views/widgets/today_wait_work_widget.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
@@ -214,7 +215,6 @@ class CalendarPageView extends GetView<CalendarPageController> {
         ),
       );
     }
-
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),

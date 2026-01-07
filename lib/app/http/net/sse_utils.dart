@@ -39,14 +39,23 @@ class SSEMessageData {
       content = json['content']?.toString();
       meta = json['meta'] as Map<String, dynamic>?;
       data = json['data'];
+    } else if (eventType == 'ocr_result' || eventType == 'ocr_file_type') {
+      // OCR 事件：整个 JSON 就是数据
+      data = json;
+      content = null; // OCR 事件没有 content 字段
     } else {
-      content = json['content']?.toString();
+      // 兼容两种字段名：content/text 和 reasoningContent/think
+      content = json['content']?.toString() ?? json['text']?.toString();
       data = json['data'];
     }
 
+    // 兼容 reasoningContent 和 think 字段
+    final reasoningContent =
+        json['reasoningContent']?.toString() ?? json['think']?.toString();
+
     return SSEMessageData(
       content: content,
-      reasoningContent: json['reasoningContent']?.toString(),
+      reasoningContent: reasoningContent,
       phase: json['phase']?.toString(),
       status: json['status']?.toString(),
       role: json['role']?.toString(),
@@ -62,11 +71,78 @@ class SSEMessageData {
   /// 是否是消息事件
   bool get isMessage => eventType == 'message';
 
+  /// 是否是 OCR 文件类型事件
+  bool get isOcrFileType => eventType == 'ocr_file_type';
+
+  /// 是否是 OCR 结果事件
+  bool get isOcrResult => eventType == 'ocr_result';
+
   /// 获取文档 URL（仅用于 document 事件）
   String? get documentUrl => meta?['url']?.toString();
 
   /// 获取文档名称（仅用于 document 事件）
   String? get documentName => meta?['name']?.toString();
+
+  /// 获取 OCR 结果数据（仅用于 ocr_result 事件）
+  Map<String, dynamic>? get ocrResultData {
+    if (data is Map<String, dynamic>) {
+      return data as Map<String, dynamic>;
+    }
+    return null;
+  }
+
+  /// 获取 OCR 文件列表
+  List<Map<String, dynamic>>? get ocrFiles {
+    final ocrData = ocrResultData;
+    if (ocrData != null && ocrData['files'] is List) {
+      return (ocrData['files'] as List)
+          .map((e) => e as Map<String, dynamic>)
+          .toList();
+    }
+    return null;
+  }
+
+  /// 获取 OCR 识别结果
+  Map<String, dynamic>? get ocrResult {
+    final ocrData = ocrResultData;
+    if (ocrData != null && ocrData['ocrResultDTO'] is Map) {
+      final dto = ocrData['ocrResultDTO'] as Map<String, dynamic>;
+      return dto['result'] as Map<String, dynamic>?;
+    }
+    return null;
+  }
+
+  /// 获取 OCR 文件类型代码
+  String? get ocrFileTypeCode {
+    final ocrData = ocrResultData;
+    if (ocrData != null && ocrData['ocrResultDTO'] is Map) {
+      final dto = ocrData['ocrResultDTO'] as Map<String, dynamic>;
+      return dto['fileTypeCode']?.toString();
+    }
+    return null;
+  }
+
+  /// 获取 OCR 错误信息
+  String? get ocrErrorMsg {
+    final ocrData = ocrResultData;
+    if (ocrData != null && ocrData['ocrResultDTO'] is Map) {
+      final dto = ocrData['ocrResultDTO'] as Map<String, dynamic>;
+      return dto['errorMsg']?.toString();
+    }
+    return null;
+  }
+
+  /// 获取 OCR 关联的案件 ID
+  num? get ocrCaseId {
+    final ocrData = ocrResultData;
+    return ocrData?['caseId'] as num?;
+  }
+
+  /// 获取 OCR 关联的用户 ID
+  num? get ocrUserId {
+    final ocrData = ocrResultData;
+    return ocrData?['userId'] as num?;
+  }
 }
 
 /// SSE 请求参数模型

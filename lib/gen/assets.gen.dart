@@ -66,13 +66,43 @@ class $AssetsCommonGen {
   AssetGenImage get daibanRenwuIcon =>
       const AssetGenImage('assets/common/daiban_renwu_icon.png');
 
+  /// File path: assets/common/hyzhek_icon.png
+  AssetGenImage get hyzhekIcon =>
+      const AssetGenImage('assets/common/hyzhek_icon.png');
+
+  /// File path: assets/common/invite_bg.png
+  AssetGenImage get inviteBg =>
+      const AssetGenImage('assets/common/invite_bg.png');
+
+  /// File path: assets/common/invite_icon.png
+  AssetGenImage get inviteIcon =>
+      const AssetGenImage('assets/common/invite_icon.png');
+
   /// File path: assets/common/jianpan_icon.png
   AssetGenImage get jianpanIcon =>
       const AssetGenImage('assets/common/jianpan_icon.png');
 
+  /// File path: assets/common/jifen30.png
+  AssetGenImage get jifen30 => const AssetGenImage('assets/common/jifen30.png');
+
+  /// File path: assets/common/jifen40.png
+  AssetGenImage get jifen40 => const AssetGenImage('assets/common/jifen40.png');
+
+  /// File path: assets/common/jifen_10.png
+  AssetGenImage get jifen10 =>
+      const AssetGenImage('assets/common/jifen_10.png');
+
+  /// File path: assets/common/jifen_20.png
+  AssetGenImage get jifen20 =>
+      const AssetGenImage('assets/common/jifen_20.png');
+
   /// File path: assets/common/jinji_renwu_icon.png
   AssetGenImage get jinjiRenwuIcon =>
       const AssetGenImage('assets/common/jinji_renwu_icon.png');
+
+  /// File path: assets/common/jisxi_icon.png
+  AssetGenImage get jisxiIcon =>
+      const AssetGenImage('assets/common/jisxi_icon.png');
 
   /// File path: assets/common/launch_img.png
   AssetGenImage get launchImg =>
@@ -82,9 +112,20 @@ class $AssetsCommonGen {
   AssetGenImage get lingbanIcon =>
       const AssetGenImage('assets/common/lingban_icon.png');
 
+  /// File path: assets/common/lizf_bg.png
+  AssetGenImage get lizfBg => const AssetGenImage('assets/common/lizf_bg.png');
+
+  /// File path: assets/common/open_vip_bg.png
+  AssetGenImage get openVipBg =>
+      const AssetGenImage('assets/common/open_vip_bg.png');
+
   /// File path: assets/common/quanping_icon.png
   AssetGenImage get quanpingIcon =>
       const AssetGenImage('assets/common/quanping_icon.png');
+
+  /// File path: assets/common/vip_price_bg.png
+  AssetGenImage get vipPriceBg =>
+      const AssetGenImage('assets/common/vip_price_bg.png');
 
   /// File path: assets/common/voice_change_icon.png
   AssetGenImage get voiceChangeIcon =>
@@ -113,11 +154,22 @@ class $AssetsCommonGen {
     closeBgIco,
     closeTfIcon,
     daibanRenwuIcon,
+    hyzhekIcon,
+    inviteBg,
+    inviteIcon,
     jianpanIcon,
+    jifen30,
+    jifen40,
+    jifen10,
+    jifen20,
     jinjiRenwuIcon,
+    jisxiIcon,
     launchImg,
     lingbanIcon,
+    lizfBg,
+    openVipBg,
     quanpingIcon,
+    vipPriceBg,
     voiceChangeIcon,
     weixuanzhongAnjian,
     xuanzhongAnjian,

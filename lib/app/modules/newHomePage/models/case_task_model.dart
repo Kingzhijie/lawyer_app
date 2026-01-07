@@ -36,6 +36,7 @@ class CaseTaskModel {
     num? dueAt,
     num? remindTimes,
     bool? isAddCalendar,
+    String? addCalendarId,
     List<Notes>? notes,
     num? createTime,
     List<RelateUsers>? relateUsers,
@@ -55,6 +56,7 @@ class CaseTaskModel {
     _dueAt = dueAt;
     _remindTimes = remindTimes;
     isAddCalendar = isAddCalendar;
+    addCalendarId = addCalendarId;
     _notes = notes;
     _createTime = createTime;
     _relateUsers = relateUsers;
@@ -76,6 +78,7 @@ class CaseTaskModel {
     _dueAt = json['dueAt'];
     _remindTimes = json['remindTimes'];
     isAddCalendar = json['isAddCalendar'];
+    addCalendarId = json['addCalendarId'];
     if (json['notes'] != null) {
       _notes = [];
       json['notes'].forEach((v) {
@@ -105,6 +108,7 @@ class CaseTaskModel {
   num? _dueAt;
   num? _remindTimes;
   bool? isAddCalendar;
+  String? addCalendarId;
   List<Notes>? _notes;
   num? _createTime;
   List<RelateUsers>? _relateUsers;
@@ -124,6 +128,7 @@ class CaseTaskModel {
     num? dueAt,
     num? remindTimes,
     bool? isAddCalendar,
+    String? addCalendarId,
     List<Notes>? notes,
     num? createTime,
     List<RelateUsers>? relateUsers,
@@ -143,6 +148,7 @@ class CaseTaskModel {
     dueAt: dueAt ?? _dueAt,
     remindTimes: remindTimes ?? _remindTimes,
     isAddCalendar: isAddCalendar ?? isAddCalendar,
+    addCalendarId: addCalendarId ?? addCalendarId,
     notes: notes ?? _notes,
     createTime: createTime ?? _createTime,
     relateUsers: relateUsers ?? _relateUsers,
@@ -182,6 +188,7 @@ class CaseTaskModel {
     map['dueAt'] = _dueAt;
     map['remindTimes'] = _remindTimes;
     map['isAddCalendar'] = isAddCalendar;
+    map['addCalendarId'] = addCalendarId;
     if (_notes != null) {
       map['notes'] = _notes?.map((v) => v.toJson()).toList();
     }

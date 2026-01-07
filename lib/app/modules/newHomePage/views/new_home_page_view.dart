@@ -47,7 +47,10 @@ class NewHomePageView extends GetView<NewHomePageController> {
             childBuilder: (context, physics) {
               return _setContentWidget(physics);
             },
-          ).withMarginOnly(top: AppScreenUtil.navigationBarHeight + 50.toW, bottom: AppScreenUtil.bottomBarHeight + 90.toW),
+          ).withMarginOnly(
+            top: AppScreenUtil.navigationBarHeight + 50.toW,
+            bottom: AppScreenUtil.bottomBarHeight + 90.toW,
+          ),
           Positioned(
             top: 0,
             right: 16.toW,
@@ -178,13 +181,45 @@ class NewHomePageView extends GetView<NewHomePageController> {
   }
 
   Widget _buildOverviewTitle() {
-    return Text(
-      '概览',
-      style: TextStyle(
-        fontSize: 17.toSp,
-        fontWeight: FontWeight.w700,
-        color: AppColors.color_E6000000,
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '概览',
+          style: TextStyle(
+            fontSize: 17.toSp,
+            fontWeight: FontWeight.w700,
+            color: AppColors.color_E6000000,
+          ),
+        ),
+        // Container(
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(8.toW),
+        //     border: Border.all(color: Color(0xFFDCDCDC), width: 1),
+        //   ),
+        //   width: 60.toW,
+        //   height: 25.toW,
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       Text(
+        //         '本周',
+        //         style: TextStyle(
+        //           color: AppColors.color_99000000,
+        //           fontSize: 12.toSp,
+        //         ),
+        //       ),
+        //       Icon(
+        //         Icons.keyboard_arrow_down_sharp,
+        //         size: 16.toW,
+        //         color: AppColors.color_99000000,
+        //       ),
+        //     ],
+        //   ),
+        // ).withOnTap((){
+        //   controller.chooseDateFilter();
+        // }),
+      ],
     );
   }
 

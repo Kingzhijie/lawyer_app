@@ -44,13 +44,12 @@ class SearchCaseResultPageController extends GetxController {
           SearchCaseRsultSubPageView(tagName: e.type.toString()),
         ),
       );
-      Get.lazyPut<SearchCaseRsultSubPageController>(
-        () => SearchCaseRsultSubPageController(
+      Get.put(
+        SearchCaseRsultSubPageController(
           type: e.type,
           searchText: textEditingController.text,
         ),
-        tag: e.type.toString(), // 使用 type 作为标签区分不同实例
-        fenix: true, // 允许控制器被销毁后重新创建
+        tag: e.type.toString(),
       );
     }
   }
