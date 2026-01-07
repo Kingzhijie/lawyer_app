@@ -144,18 +144,14 @@ class _OverviewCard extends StatelessWidget {
         case CaseTypeEnum.caseCount:
           getFindController<TabPageController>()?.changeIndex(1);
         case CaseTypeEnum.agencyTask:
+        case CaseTypeEnum.nonUrgentTask:
           Get.toNamed(Routes.AGENCY_CENTER_PAGE);
         case CaseTypeEnum.urgentTask:
-          // TODO: Handle this case.
-          throw UnimplementedError();
-        case CaseTypeEnum.nonUrgentTask:
-          // TODO: Handle this case.
-          throw UnimplementedError();
+          Get.toNamed(Routes.AGENCY_CENTER_PAGE, arguments: 1);
+        case CaseTypeEnum.abnormal:
+          Get.toNamed(Routes.AGENCY_CENTER_PAGE, arguments: 3);
         case CaseTypeEnum.securityList:
           Get.toNamed(Routes.SECURITY_LIST_PAGE);
-        case CaseTypeEnum.abnormal:
-          // TODO: Handle this case.
-          throw UnimplementedError();
       }
     });
   }

@@ -58,6 +58,33 @@ class Apis {
   ///获取案件任务分页
   static String getTaskPage = '/legal/task/page';
 
+  ///当事人列表
+  static String casePartyList = '/legal/case-party/party-page';
+
+  ///保全清单列表
+  static String preservationAssetList = '/legal/preservation-asset/page';
+
+  ///保全清单Tab统计
+  static String preservationAssetTabCount =
+      '/legal/preservation-asset/tab-count';
+
+  ///保全清单详情
+  static String preservationAssetDetail = '/legal/preservation-asset/get';
+
+  ///添加/编辑保全资产备注
+  static String preservationAssetNote = '/legal/preservation-asset/note';
+
+  ///添加保全资产提醒
+  static String addCalendarPreservationAsset =
+      '/legal/preservation-asset/addCalendar';
+
+  ///获得个人分销统计(邀请记录)
+  static String brokerageUserSummary = '/member/brokerage-user/get-summary';
+
+  ///获得下级分销统计分页
+  static String brokerageUserChildSummary =
+      '/member/brokerage-user/child-summary-page';
+
   ///获取案件数量
   static String getTaskCount = '/legal/task/get-count';
 

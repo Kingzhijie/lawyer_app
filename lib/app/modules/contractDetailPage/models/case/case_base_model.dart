@@ -11,6 +11,7 @@ class CaseBaseModel {
   String? caseReason;
   dynamic commissionDate;
   String? receivingUnit;
+  String? parties;
   String? currentStage;
   String? caseNumber;
   num? winningAmount;
@@ -39,6 +40,7 @@ class CaseBaseModel {
     this.caseReason,
     this.commissionDate,
     this.receivingUnit,
+    this.parties,
     this.currentStage,
     this.caseNumber,
     this.winningAmount,
@@ -67,6 +69,7 @@ class CaseBaseModel {
     caseProcedureList: json['caseProcedureList'] as List<dynamic>?,
     caseReason: json['caseReason'] as String?,
     receivingUnit: json['receivingUnit'] as String?,
+    parties: json['parties'] as String?,
     commissionDate: json['commissionDate'] as dynamic,
     currentStage: json['currentStage'] as String?,
     caseNumber: json['caseNumber'] as String?,
@@ -99,6 +102,7 @@ class CaseBaseModel {
     'caseReason': caseReason,
     'commissionDate': commissionDate,
     'receivingUnit': receivingUnit,
+    'parties': parties,
     'currentStage': currentStage,
     'caseNumber': caseNumber,
     'winningAmount': winningAmount,

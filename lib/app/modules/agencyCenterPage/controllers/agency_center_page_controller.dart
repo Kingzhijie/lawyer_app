@@ -1,6 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_party_model.dart';
 import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/widgets/link_user_widget.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
@@ -35,24 +36,40 @@ class AgencyCenterPageController extends GetxController {
   );
 
   final caseTaskList = RxList<CaseTaskModel>([]);
+  List<CasePartyModel> casePartyList = <CasePartyModel>[];
 
   var taskTypeModel = Rx<ChooseTypeModel?>(null);
+  var casePartyIdModel = Rx<ChooseTypeModel?>(null);
   //任务类型（1行程任务 2诉讼缴费 3开庭 4提交证据 5质证意见 6答辩状 7举证 8保全裁定 9保全 10判决上诉 11非诉任务 12判决生效）
 
   @override
   void onInit() {
     super.onInit();
+    final index = Get.arguments ?? 0;
+    if (index > 0) {
+      tabIndex.value = index;
+    }
   }
 
   @override
   void onReady() {
     super.onReady();
     getCaseListData(true);
+    getCasePartyList();
   }
 
   @override
   void onClose() {
     super.onClose();
+  }
+
+  void getCasePartyList() async {
+    var result = await NetUtils.get(Apis.casePartyList, isLoading: false);
+    if (result.code == NetCodeHandle.success) {
+      casePartyList = (result.data['list'] as List)
+          .map((e) => CasePartyModel.fromJson(e))
+          .toList();
+    }
   }
 
   ///获取数据
@@ -63,6 +80,8 @@ class AgencyCenterPageController extends GetxController {
       'tabStatus': tabIndex.value,
       'taskType': taskTypeModel.value?.id,
       'caseId': caseId,
+      if (casePartyIdModel.value != null)
+        'partyIds': [casePartyIdModel.value!.id],
     };
     var result = await NetUtils.get(
       Apis.getTaskPage,
@@ -178,29 +197,44 @@ class AgencyCenterPageController extends GetxController {
   }
 
   void chooseConcernedAction(int type) {
-    List<ChooseTypeModel> models = [
-      ChooseTypeModel(name: '行程任务', id: 1),
-      ChooseTypeModel(name: '诉讼缴费', id: 2),
-      ChooseTypeModel(name: '开庭', id: 3),
-      ChooseTypeModel(name: '提交证据', id: 4),
-      ChooseTypeModel(name: '质证意见', id: 5),
-      ChooseTypeModel(name: '答辩状', id: 6),
-      ChooseTypeModel(name: '举证', id: 7),
-      ChooseTypeModel(name: '保全裁定', id: 8),
-      ChooseTypeModel(name: '保全', id: 9),
-      ChooseTypeModel(name: '判决上诉', id: 10),
-      ChooseTypeModel(name: '非诉任务', id: 11),
-      ChooseTypeModel(name: '判决生效', id: 12),
-    ];
+    var title = '';
+    List<ChooseTypeModel> models = [];
+    if (type == 0) {
+      for (var item in casePartyList) {
+        models.add(ChooseTypeModel(name: item.name, id: item.id));
+      }
+      title = '选择当事人';
+    } else if (type == 1) {
+      models = [
+        ChooseTypeModel(name: '行程任务', id: 1),
+        ChooseTypeModel(name: '诉讼缴费', id: 2),
+        ChooseTypeModel(name: '开庭', id: 3),
+        ChooseTypeModel(name: '提交证据', id: 4),
+        ChooseTypeModel(name: '质证意见', id: 5),
+        ChooseTypeModel(name: '答辩状', id: 6),
+        ChooseTypeModel(name: '举证', id: 7),
+        ChooseTypeModel(name: '保全裁定', id: 8),
+        ChooseTypeModel(name: '保全', id: 9),
+        ChooseTypeModel(name: '判决上诉', id: 10),
+        ChooseTypeModel(name: '非诉任务', id: 11),
+        ChooseTypeModel(name: '判决生效', id: 12),
+      ];
+      title = '任务类型';
+    }
+
     BottomSheetUtils.show(
       currentContext,
       isShowCloseIcon: false,
       backgroundColor: Colors.transparent,
       contentWidget: ChooseConcernedPersonAlert(
         models: models,
-        title: '任务类型',
+        title: title,
         chooseAction: (model) {
-          taskTypeModel.value = model;
+          if (type == 0) {
+            casePartyIdModel.value = model;
+          } else {
+            taskTypeModel.value = model;
+          }
           getCaseListData(true);
         },
       ),

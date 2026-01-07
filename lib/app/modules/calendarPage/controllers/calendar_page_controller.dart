@@ -35,7 +35,10 @@ class CalendarPageController extends GetxController {
     getTaskList();
   }
 
-  void getTaskList({bool isOnlyShowEventDates = false}) {
+  Future<void> getTaskList({
+    bool isClickCalendar = false,
+    bool isOnlyShowEventDates = false,
+  }) async {
     NetUtils.post(
       Apis.todoCaseList,
       params: {
@@ -72,9 +75,16 @@ class CalendarPageController extends GetxController {
           taskList.sort(
             (a, b) => (a.createTime ?? 0).compareTo((b.createTime ?? 0)),
           );
-          todoTaskList.value = taskList;
+          if (isClickCalendar) {
+            debugPrint('点击了日历上不同月份的，');
+            todoTaskList.addAll(taskList);
+            eventDates.addAll(dates);
+          } else {
+            debugPrint('正常月份');
+            todoTaskList.assignAll(taskList);
+            eventDates.assignAll(dates);
+          }
         }
-        eventDates.value = dates;
       }
     });
   }
@@ -86,8 +96,17 @@ class CalendarPageController extends GetxController {
     super.onClose();
   }
 
-  void _onCalendarChanged() {
+  void _onCalendarChanged() async {
     selectedDate.value = calendarController.value;
+    if (currentDisplayMonth.value.year != selectedDate.value.year ||
+        currentDisplayMonth.value.month != selectedDate.value.month) {
+      currentDisplayMonth.value = DateTime(
+        selectedDate.value.year,
+        selectedDate.value.month,
+        selectedDate.value.day,
+      );
+      await getTaskList(isClickCalendar: true);
+    }
     if (selectedDate.value.month == currentDisplayMonth.value.month) {
       var taskList = monthsTodoTaskList.where((item) {
         final dueAt = DateTime.fromMillisecondsSinceEpoch(
@@ -100,14 +119,6 @@ class CalendarPageController extends GetxController {
         (a, b) => (a.createTime ?? 0).compareTo((b.createTime ?? 0)),
       );
       todoTaskList.value = taskList;
-    }
-    if (currentDisplayMonth.value.year != selectedDate.value.year ||
-        currentDisplayMonth.value.month != selectedDate.value.month) {
-      currentDisplayMonth.value = DateTime(
-        selectedDate.value.year,
-        selectedDate.value.month,
-        selectedDate.value.day,
-      );
     }
   }
 

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/string_extension.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/contractDetailPage/models/case/pres_asset_model.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 
 import '../../../../gen/assets.gen.dart';
@@ -33,7 +36,7 @@ class SecurityListDetailPageView
             child: Column(
               children: [_buildCaseInfoCard(), _buildSecurityListSection()],
             ),
-          ).withMarginOnly(top: AppScreenUtil.navigationBarHeight)
+          ).withMarginOnly(top: AppScreenUtil.navigationBarHeight),
         ],
       ),
     );
@@ -58,7 +61,7 @@ class SecurityListDetailPageView
           Expanded(
             child: Obx(
               () => Text(
-                controller.caseInfo['title'] ?? '',
+                controller.caseInfo.value?.caseName ?? '',
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -78,8 +81,8 @@ class SecurityListDetailPageView
 
   Widget _buildCaseInfoCard() {
     return Obx(() {
-      final caseInfo = controller.caseInfo;
-      if (caseInfo.isEmpty) return const SizedBox.shrink();
+      final caseInfo = controller.caseInfo.value;
+      if (caseInfo == null) return const SizedBox.shrink();
       return Stack(
         children: [
           Container(
@@ -97,9 +100,7 @@ class SecurityListDetailPageView
               borderRadius: BorderRadius.circular(14.toW),
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: AssetImage(
-                  Assets.home.yuangaoBg.path,
-                ),
+                image: AssetImage(Assets.home.yuangaoBg.path),
               ),
             ),
             child: Column(
@@ -114,13 +115,13 @@ class SecurityListDetailPageView
                   ),
                 ),
                 SizedBox(height: 16.toW),
-                _buildInfoRow('案号：', caseInfo['caseNumber'] ?? ''),
+                _buildInfoRow('案号：', caseInfo.caseNumber ?? ''),
                 SizedBox(height: 10.toW),
-                _buildInfoRow('案由：', caseInfo['caseReason'] ?? ''),
+                _buildInfoRow('案由：', caseInfo.caseReason ?? ''),
                 SizedBox(height: 10.toW),
-                _buildInfoRow('受理法院：', caseInfo['court'] ?? ''),
+                _buildInfoRow('受理法院：', caseInfo.receivingUnit ?? ''),
                 SizedBox(height: 10.toW),
-                _buildInfoRow('当事人：', caseInfo['parties'] ?? ''),
+                _buildInfoRow('当事人：', caseInfo.parties ?? ''),
               ],
             ),
           ),
@@ -128,7 +129,10 @@ class SecurityListDetailPageView
           Positioned(
             right: 19.toW,
             top: 10.toW,
-            child: ImageUtils(imageUrl: Assets.home.yuangaoIcon.path, width: 58.toW),
+            child: ImageUtils(
+              imageUrl: Assets.home.yuangaoIcon.path,
+              width: 58.toW,
+            ),
           ),
         ],
       );
@@ -158,7 +162,7 @@ class SecurityListDetailPageView
 
   Widget _buildSecurityListSection() {
     return Obx(() {
-      final list = controller.securityList;
+      final list = controller.securityList.value;
 
       return Container(
         margin: EdgeInsets.symmetric(horizontal: 16.toW),
@@ -188,21 +192,22 @@ class SecurityListDetailPageView
             SizedBox(height: 12.toW),
             ListView.builder(
               itemCount: list.length,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                itemBuilder: (context, index){
-                  var entry = list.asMap()[index];
-                  final isLast = index == list.length - 1;
-              return _buildSecurityItem(entry!, isLast);
-            })
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              itemBuilder: (context, index) {
+                var item = list[index];
+                final isLast = index == list.length - 1;
+                return _buildSecurityItem(item, isLast);
+              },
+            ),
           ],
         ),
       );
     });
   }
 
-  Widget _buildSecurityItem(Map<String, dynamic> item, bool isLast) {
+  Widget _buildSecurityItem(PresAssetModel item, bool isLast) {
     return Container(
       padding: EdgeInsets.all(14.toW),
       margin: EdgeInsets.only(bottom: isLast ? 0 : 12.toW),
@@ -213,13 +218,26 @@ class SecurityListDetailPageView
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildItemRow('保全对象：', item['target'] ?? ''),
+          _buildItemRow('保全对象：', item.assetName ?? '-'),
           SizedBox(height: 8.toW),
-          _buildItemRow('涉及账户/资产：', item['account'] ?? ''),
+          _buildItemRow(
+            '涉及账户/资产：',
+            item.accountInfo?.replaceAll('账号：', '') ?? '',
+          ),
+          if (item.assetType == 1) ...[
+            SizedBox(height: 8.toW),
+            _buildItemRow(
+              '实际冻结金额：',
+              ((item.amount ?? 0) / 100).toString().toRMBPrice(
+                fractionDigits: 2,
+              ),
+            ),
+          ],
           SizedBox(height: 8.toW),
-          _buildItemRow('实际冻结金额：', item['amount'] ?? ''),
-          SizedBox(height: 8.toW),
-          _buildItemRow('到期日：', item['dueDate'] ?? ''),
+          _buildItemRow(
+            '到期日：',
+            DateTimeUtils.formatTimestamp(item.effectiveTo ?? 0),
+          ),
         ],
       ),
     );
