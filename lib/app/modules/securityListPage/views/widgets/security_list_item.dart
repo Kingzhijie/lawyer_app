@@ -29,12 +29,12 @@ class SecurityListItem extends StatelessWidget {
     return Container(
       // padding: EdgeInsets.all(16.toW),
       decoration: BoxDecoration(
-        color: AppColors.color_FFF5F7FA,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12.toW),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 14,
             offset: const Offset(0, 0),
           ),
         ],

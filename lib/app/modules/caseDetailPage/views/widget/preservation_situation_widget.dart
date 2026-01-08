@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lawyer_app/app/common/components/empty_content_widget.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/string_extension.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/pres_asset_model.dart';
@@ -13,39 +14,6 @@ class PreservationSituationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // // 模拟保全事项数据
-    // final preservationList = [
-    //   {
-    //     'target': '杭州韩秀美学医疗美容门诊部有限公司',
-    //     'account': '工商银行帐户',
-    //     'amount': '¥200,000.00',
-    //     'date': '2026年10月16日',
-    //   },
-    //   {
-    //     'target': '杭州韩秀美学医疗美容门诊部有限公司',
-    //     'account': '工商银行帐户',
-    //     'amount': '¥200,000.00',
-    //     'date': '2026年10月16日',
-    //   },
-    //   {
-    //     'target': '马星（个人）',
-    //     'account': '工商银行帐户',
-    //     'amount': '¥200,000.00',
-    //     'date': '2026年10月16日',
-    //   },
-    //   {
-    //     'target': '马星（个人）',
-    //     'account': '工商银行帐户',
-    //     'amount': '¥200,000.00',
-    //     'date': '2026年10月16日',
-    //   },
-    //   {
-    //     'target': '马星（个人）',
-    //     'account': '工商银行帐户',
-    //     'amount': '¥200,000.00',
-    //     'date': '2026年10月16日',
-    //   },
-    // ];
     final preservationList = controller.caseDetail.value?.presAssetList ?? [];
 
     return SingleChildScrollView(
@@ -80,19 +48,21 @@ class PreservationSituationWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16.toW),
-                // 保全事项列表
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: preservationList.length,
-                  padding: EdgeInsets.zero,
-                  separatorBuilder: (context, index) =>
-                      SizedBox(height: 12.toW),
-                  itemBuilder: (context, index) {
-                    final item = preservationList[index];
-                    return _buildPreservationItem(item);
-                  },
-                ),
+                if (preservationList.isEmpty)
+                  EmptyContentWidget()
+                else
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: preservationList.length,
+                    padding: EdgeInsets.zero,
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.toW),
+                    itemBuilder: (context, index) {
+                      final item = preservationList[index];
+                      return _buildPreservationItem(item);
+                    },
+                  ),
               ],
             ),
           ),

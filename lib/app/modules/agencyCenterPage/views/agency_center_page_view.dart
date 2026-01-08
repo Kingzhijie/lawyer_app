@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/components/empty_content_widget.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
@@ -214,27 +215,29 @@ class AgencyCenterPageView extends StatelessWidget {
       },
       childBuilder: (context, physics) {
         return Obx(
-          () => ListView.builder(
-            physics: physics,
-            itemCount: controller.caseTaskList.length,
-            padding: EdgeInsets.only(top: 10.toW),
-            itemBuilder: (context, index) {
-              var model = controller.caseTaskList.value[index];
-              return TaskCard(
-                model: model,
-                clickItemType: (type) {
-                  if (type == 1) {
-                    //关联用户
-                    controller.linkUserAlert();
-                  }
-                  if (type == 0) {
-                    //备注
-                    controller.addRemarkMethod(model);
-                  }
-                },
-              ).withMarginOnly(bottom: 12.toW);
-            },
-          ),
+          () => controller.caseTaskList.value.isEmpty
+              ? EmptyContentWidget()
+              : ListView.builder(
+                  physics: physics,
+                  itemCount: controller.caseTaskList.length,
+                  padding: EdgeInsets.only(top: 10.toW),
+                  itemBuilder: (context, index) {
+                    var model = controller.caseTaskList.value[index];
+                    return TaskCard(
+                      model: model,
+                      clickItemType: (type) {
+                        if (type == 1) {
+                          //关联用户
+                          controller.linkUserAlert();
+                        }
+                        if (type == 0) {
+                          //备注
+                          controller.addRemarkMethod(model);
+                        }
+                      },
+                    ).withMarginOnly(bottom: 12.toW);
+                  },
+                ),
         );
       },
     ).withMarginOnly(
