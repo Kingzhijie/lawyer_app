@@ -78,6 +78,13 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
       padding: EdgeInsets.symmetric(horizontal: 20.toW),
       child: Stack(
         children: [
+          Positioned(
+            right: 0,
+            child: ImageUtils(
+              imageUrl: Assets.common.inviteIcon.path,
+              width: 184.toW,
+            ),
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -114,13 +121,6 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
                 ],
               ),
             ],
-          ),
-          Positioned(
-            right: 0,
-            child: ImageUtils(
-              imageUrl: Assets.common.inviteIcon.path,
-              width: 184.toW,
-            ),
           ),
         ],
       ),
