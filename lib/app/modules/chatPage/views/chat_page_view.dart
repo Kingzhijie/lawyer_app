@@ -56,26 +56,35 @@ class ChatPageView extends GetView<ChatPageController> {
                         ).unfocusWhenTap(),
                       );
                     }
-                    return ListView.builder(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 15.toW,
-                        vertical: 16.toW,
+                    // 使用 reverse: true 模式，新消息自动出现在底部
+                    // 消息少时使用 shrinkWrap + Align 让消息显示在顶部
+                    final reversedMessages = controller.messages.reversed.toList();
+                    final useShrinkWrap = reversedMessages.length <= 10;
+                    return Align(
+                      alignment: Alignment.topCenter,
+                      child: ListView.builder(
+                        reverse: true,
+                        shrinkWrap: useShrinkWrap,
+                        controller: controller.scrollController,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 15.toW,
+                          vertical: 16.toW,
+                        ),
+                        itemCount: reversedMessages.length,
+                        itemBuilder: (context, index) {
+                          final msg = reversedMessages[index];
+                          if (msg.isAi) {
+                            return ChatBubbleLeft(
+                              message: msg,
+                              onAnimated: () =>
+                                  controller.markMessageAnimated(msg.id),
+                              onTick: () {}, // reverse 模式不需要滚动
+                            );
+                          } else {
+                            return ChatBubbleRight(message: msg);
+                          }
+                        },
                       ),
-                      controller: controller.scrollController,
-                      itemCount: controller.messages.length,
-                      itemBuilder: (context, index) {
-                        final msg = controller.messages[index];
-                        if (msg.isAi) {
-                          return ChatBubbleLeft(
-                            message: msg,
-                            onAnimated: () =>
-                                controller.markMessageAnimated(msg.id),
-                            onTick: controller.scheduleScrollDuringTyping,
-                          );
-                        } else {
-                          return ChatBubbleRight(message: msg);
-                        }
-                      },
                     );
                   }),
                 ),

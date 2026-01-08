@@ -49,19 +49,7 @@ class ChatInputBar extends StatelessWidget {
                 }),
                 if (!hasVoice)
                   Flexible(
-                    child: Listener(
-                      onPointerUp: (_) => controller.handleInputPointerUp(),
-                      child:
-                          NotificationListener<SizeChangedLayoutNotification>(
-                            onNotification: (_) {
-                              controller.handleInputSizeChanged(Size.zero);
-                              return false;
-                            },
-                            child: const SizeChangedLayoutNotifier(
-                              child: _InputField(),
-                            ),
-                          ),
-                    ),
+                    child: _InputField(),
                   )
                 else
                   Expanded(

@@ -81,6 +81,8 @@ class ChatPageController extends GetxController {
     final targetPanelType = _toBottomPanel(type);
     final targetFocus = _toHandleFocus(type);
 
+    _scrollToBottom();
+
     void update() {
       panelController.updatePanelType(
         targetPanelType,
@@ -112,8 +114,6 @@ class ChatPageController extends GetxController {
     if (isFocus) {
       inputFocusNode.requestFocus();
     }
-    // 已经在 _addUserMessage 中调用 SSE，不需要再调用 _simulateAiReply
-    _scheduleScrollToBottom();
   }
 
   void handleInputTap() {
@@ -190,7 +190,6 @@ class ChatPageController extends GetxController {
         createdAt: DateTime.now(),
       ),
     );
-    _scheduleScrollToBottom(animated: false);
   }
 
   ///添加发送消息
@@ -227,8 +226,6 @@ class ChatPageController extends GetxController {
           createdAt: DateTime.now(),
         ),
       );
-
-      _scheduleScrollToBottom();
 
       // 使用真实的 SSE 连接替代模拟回复
       logPrint('🔄 调用 _sendMessageWithSSE');
@@ -269,7 +266,6 @@ class ChatPageController extends GetxController {
         isThinkingDone: false,
       ),
     );
-    _scheduleScrollToBottom();
 
     // 生成唯一的请求 ID
     final requestId = const Uuid().v4();
@@ -361,8 +357,6 @@ class ChatPageController extends GetxController {
             );
           }
 
-          // 触发滚动
-          scheduleScrollDuringTyping();
         },
         onError: (error) {
           logPrint('SSE 错误: $error');
@@ -426,8 +420,6 @@ class ChatPageController extends GetxController {
           } else {
             logPrint('⚠️ 未找到消息 ID: $aiMessageId');
           }
-
-          _scheduleScrollToBottom();
         },
       );
     } catch (e) {
@@ -456,71 +448,26 @@ class ChatPageController extends GetxController {
     messages[index] = current.copyWith(hasAnimated: true);
   }
 
+  // reverse: true 模式下，滚动到底部就是滚动到 position 0
   void _scrollToBottom({bool animated = true}) {
     if (!scrollController.hasClients) return;
-    final position = scrollController.position.maxScrollExtent;
     if (animated) {
       scrollController.animateTo(
-        position,
+        0,
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOut,
       );
     } else {
-      scrollController.jumpTo(position);
+      scrollController.jumpTo(0);
     }
   }
 
-  void _scheduleScrollToBottom({
-    bool animated = true,
-    Duration delay = Duration.zero,
-  }) {
-    void run() {
-      if (isClosed) return;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!isClosed) {
-          _scrollToBottom(animated: animated);
-        }
-      });
-    }
 
-    if (delay == Duration.zero) {
-      run();
-    } else {
-      Future.delayed(delay, () {
-        if (!isClosed) {
-          run();
-        }
-      });
-    }
-  }
-
-  void scheduleScrollDuringTyping() {
-    if (isClosed) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!isClosed) {
-        _scrollToBottom(animated: false);
-      }
-    });
-  }
-
-  void handleInputSizeChanged(Size _) {
-    _scheduleScrollToBottom(animated: false);
-  }
-
-  void _handleFocusChange() {
-    if (inputFocusNode.hasFocus) {
-      _scheduleScrollToBottom(
-        animated: false,
-        delay: const Duration(milliseconds: 400),
-      );
-    }
-  }
 
   @override
   void onInit() {
     super.onInit();
     textController.addListener(_handleTextChanged);
-    inputFocusNode.addListener(_handleFocusChange);
     _checkSpeechRecognitionAvailability();
     getSystemConfig();
   }
@@ -549,7 +496,6 @@ class ChatPageController extends GetxController {
   @override
   void onClose() {
     textController.removeListener(_handleTextChanged);
-    inputFocusNode.removeListener(_handleFocusChange);
     _stopAmplitudeListener();
     if (_speechToText.isListening) {
       _speechToText.stop();
@@ -602,7 +548,6 @@ class ChatPageController extends GetxController {
       );
       if (!hasVoice.value) {
         inputFocusNode.requestFocus();
-        _scheduleScrollToBottom();
       }
     }
   }
@@ -661,8 +606,6 @@ class ChatPageController extends GetxController {
         final textToSend = recognizedText.value.trim();
         if (textToSend.isNotEmpty) {
           _addUserMessage(textToSend);
-          // 已经在 _addUserMessage 中调用 SSE，不需要再调用 _simulateAiReply
-          _scheduleScrollToBottom();
         } else {
           // showToast('未识别到任何内容');
           final file = File(_recordingPath!);
