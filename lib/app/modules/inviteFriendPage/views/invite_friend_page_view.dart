@@ -168,35 +168,47 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
 
   /// 奖励卡片和进度条
   Widget _buildRewardCardsWithProgress() {
-    return Column(
-      children: [
-        // 卡片行
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            _buildRewardCard(Assets.common.jifen10.path, '达成1人', 0, 10),
-            _buildRewardCard(Assets.common.jifen20.path, '达成3人', 1, 20),
-            _buildRewardCard(Assets.common.jifen30.path, '达成10人', 2, 30),
-            _buildRewardCard(Assets.common.jifen40.path, '达成50人', 3, 50),
-          ],
-        ),
-        Height(16.toW),
-        // 进度条
-        _buildProgressBar(),
-        Height(12.toW),
-        // 目标文字
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildTargetText('达成1人'),
-            _buildTargetText('达成3人'),
-            _buildTargetText('达成10人'),
-            _buildTargetText('达成50人'),
-          ],
-        ),
-      ],
-    );
+    return Obx(() {
+      final rules = controller.inviteRules.value;
+      final images = [
+        Assets.common.jifen10.path,
+        Assets.common.jifen20.path,
+        Assets.common.jifen30.path,
+        Assets.common.jifen40.path,
+      ];
+      return Column(
+        children: [
+          // 卡片行
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ...rules.take(4).toList().asMap().entries.map((e) {
+                return _buildRewardCard(
+                  images[e.key],
+                  '达成${e.value.inviteNum ?? 0}人',
+                  e.key,
+                  e.value.rewardPoint ?? 0,
+                );
+              }),
+            ],
+          ),
+          Height(16.toW),
+          // 进度条
+          _buildProgressBar(),
+          Height(12.toW),
+          // 目标文字
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ...rules.take(4).toList().map((e) {
+                return _buildTargetText('达成${e.inviteNum!}人');
+              }),
+            ],
+          ),
+        ],
+      );
+    });
   }
 
   /// 奖励卡片
@@ -248,23 +260,44 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
   Widget _buildProgressBar() {
     return Obx(() {
       final achievedCount = controller.achievedCount.value;
+      final rules = controller.inviteRules.value;
 
-      return Row(
-        children: [
-          // 第一段：0-1人
-          _buildProgressSegment(achievedCount >= 1, 0.22),
-          _buildProgressDot(achievedCount >= 1),
-          // 第二段：1-3人
-          _buildProgressSegment(achievedCount >= 3, 0.22),
-          _buildProgressDot(achievedCount >= 3),
-          // 第三段：3-10人
-          _buildProgressSegment(achievedCount >= 10, 0.22),
-          _buildProgressDot(achievedCount >= 10),
-          // 第四段：10-50人
-          _buildProgressSegment(achievedCount >= 50, 0.22),
-          _buildProgressDot(achievedCount >= 50),
-        ],
-      );
+      return rules.isEmpty
+          ? SizedBox.shrink()
+          : Row(
+              children: [
+                // 第一段：0-1人
+                _buildProgressSegment(achievedCount >= 1, 0.22),
+                _buildProgressDot(achievedCount >= 1),
+
+                // 第二段：1-3人
+                if (rules.length > 1) ...[
+                  _buildProgressSegment(
+                    achievedCount >= rules[1].inviteNum!,
+                    0.22,
+                  ),
+                  _buildProgressDot(achievedCount >= rules[1].inviteNum!),
+                ],
+
+                // 第三段：3-10人
+                if (rules.length > 2) ...[
+                  _buildProgressSegment(
+                    achievedCount >= rules[2].inviteNum!,
+                    0.22,
+                  ),
+                  _buildProgressDot(achievedCount >= rules[2].inviteNum!),
+                ],
+
+                // 第四段：10-50人
+                if (rules.length > 3) ...[
+                  _buildProgressSegment(
+                    achievedCount >= rules[3].inviteNum!,
+                    0.22,
+                  ),
+                  _buildProgressDot(achievedCount >= rules[3].inviteNum!),
+                ],
+              ],
+            );
     });
   }
 

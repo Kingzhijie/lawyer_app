@@ -59,8 +59,8 @@ class TodayWaitWorkWidget extends StatelessWidget {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 10,
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 14,
                   offset: const Offset(0, 0),
                 ),
               ],
@@ -145,8 +145,8 @@ class TodayWaitWorkWidget extends StatelessWidget {
                       _infoRow('电话：', task.handlerPhone ?? '-'),
                       SizedBox(height: 12.toW),
                       _smallButton('备注'),
-                      if (!ObjectUtils.isEmpty(task.notes))
-                        RemarkCaseWidget(notes: task.notes),
+                      // if (!ObjectUtils.isEmpty(task.notes))
+                      //   RemarkCaseWidget(notes: task.notes),
                     ],
                   ),
                 ),

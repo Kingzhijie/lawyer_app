@@ -4,6 +4,7 @@ import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/http/apis.dart';
 import 'package:lawyer_app/app/http/net/net_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
+import 'package:lawyer_app/app/modules/inviteFriendPage/models/invite_rule_model.dart';
 import 'package:lawyer_app/app/modules/inviteFriendPage/models/invite_user_model.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
@@ -28,6 +29,7 @@ class InviteFriendPageController extends GetxController {
   final showAll = false.obs;
   var pageNo = 1;
   bool isLoading = false;
+  final inviteRules = <InviteRuleModel>[].obs;
 
   /// 邀请记录列表
   final inviteRecords = <InviteUserModel>[].obs;
@@ -35,8 +37,18 @@ class InviteFriendPageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _getInviteActivity();
     _loadInviteInfos();
     _loadInviteRecords();
+  }
+
+  void _getInviteActivity() async {
+    var result = await NetUtils.get(Apis.inviteActivity, isLoading: false);
+    if (result.code == NetCodeHandle.success) {
+      inviteRules.value = (result.data['rules'] as List)
+          .map((e) => InviteRuleModel.fromJson(e))
+          .toList();
+    }
   }
 
   /// 加载邀请记录
