@@ -242,6 +242,10 @@ class NewHomePageController extends GetxController {
 
   ///设置备注
   void setTaskRemark(String text, CaseTaskModel model) {
+    if (text.isEmpty) {
+      showToast('请输入备注');
+      return;
+    }
     NetUtils.post(
       Apis.setTaskRemark,
       params: {'content': text, 'id': model.id},

@@ -1,5 +1,7 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:lawyer_app/app/common/components/easy_refresher.dart';
 import 'package:lawyer_app/app/config/app_config.dart';
 import 'package:lawyer_app/app/http/apis.dart';
 import 'package:lawyer_app/app/http/net/net_utils.dart';
@@ -32,6 +34,11 @@ class ChatHistoryWidget extends StatefulWidget {
 
 class _ChatHistoryWidgetState extends State<ChatHistoryWidget> {
   List<ChatHistoryList> listModels = [];
+  final EasyRefreshController easyRefreshController = EasyRefreshController(
+    controlFinishLoad: true,
+  );
+
+  int pageNo = 1;
 
   @override
   void initState() {
@@ -39,30 +46,54 @@ class _ChatHistoryWidgetState extends State<ChatHistoryWidget> {
     _loadSessions();
   }
 
-  Future<void> _loadSessions() async {
+  Future<void> _loadSessions({bool isLoad = false}) async {
     if (widget.agentId != null) {
-      listModels.clear();
+      if (isLoad) {
+        pageNo += 1;
+      } else {
+        pageNo = 1;
+      }
       NetUtils.get(
         Apis.getAiHistoryList,
         queryParameters: {
           'agentId': widget.agentId,
-          'pageNo': 1,
+          'pageNo': pageNo,
           'pageSize': 10,
         },
+        isLoading: false
       ).then((result) {
         if (result.code == NetCodeHandle.success) {
           var list = (result.data['list'] as List)
               .map((e) => ChatHistoryList.fromJson(e))
               .toList();
-          listModels += list;
+          if (isLoad) {
+            listModels += list;
+          } else {
+            listModels = list;
+          }
+
+          if (list.isEmpty) {
+            easyRefreshController.finishLoad(IndicatorResult.noMore);
+          } else {
+            easyRefreshController.finishLoad();
+          }
           setState(() {});
         }
       });
     }
   }
 
-  Future<void> _deleteSession(String sessionId) async {}
-
+  ///删除聊天
+  Future<void> _deleteSession(String sessionId) async {
+    NetUtils.delete(Apis.deleteAiHistory, queryParameters: {'id': sessionId}).then((
+      result,
+    ) {
+      if (result.code == NetCodeHandle.success) {
+        listModels.removeWhere((e) => e.id.toString() == sessionId);
+        setState(() {});
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,91 +169,99 @@ class _ChatHistoryWidgetState extends State<ChatHistoryWidget> {
               ],
             ),
           ),
-          ListView.builder(
-            itemCount: listModels.length,
-            padding: EdgeInsets.only(bottom: 15.toW),
-            itemBuilder: (context, index) {
-              var model = listModels[index];
-              return Slidable(
-                key: ValueKey('${model.id}'),
-                endActionPane: ActionPane(
-                  motion: const ScrollMotion(),
-                  extentRatio: 0.25,
-                  children: [
-                    SlidableAction(
-                      onPressed: (_) => _deleteSession('${model.id}'),
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      icon: Icons.delete,
-                      label: '删除',
-                    ),
-                  ],
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: AppColors.color_line,
-                        width: 0.5,
+          MSEasyRefresher(
+            controller: easyRefreshController,
+            onLoad: (){
+              _loadSessions(isLoad: true);
+            },
+              childBuilder: (context, physics){
+            return ListView.builder(
+              itemCount: listModels.length,
+              physics: physics,
+              padding: EdgeInsets.only(bottom: 15.toW),
+              itemBuilder: (context, index) {
+                var model = listModels[index];
+                return Slidable(
+                  key: ValueKey('${model.id}'),
+                  endActionPane: ActionPane(
+                    motion: const ScrollMotion(),
+                    extentRatio: 0.25,
+                    children: [
+                      SlidableAction(
+                        onPressed: (_) => _deleteSession('${model.id}'),
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete,
+                        label: '删除',
+                      ),
+                    ],
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AppColors.color_line,
+                          width: 0.5,
+                        ),
                       ),
                     ),
-                  ),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 14.toW,
-                    vertical: 12.toW,
-                  ),
-                  child:
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 14.toW,
+                      vertical: 12.toW,
+                    ),
+                    child:
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                model.subject ?? '',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: AppColors.color_E6000000,
+                                  fontSize: 15.toSp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Height(4.toW),
+                              if (model.createTime != null)
                                 Text(
-                                  model.subject ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  DateFormatUtils.getNotificationTimeStr(
+                                    model.createTime!.toInt(),
+                                  ),
                                   style: TextStyle(
-                                    color: AppColors.color_E6000000,
-                                    fontSize: 15.toSp,
-                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.color_42000000,
+                                    fontSize: 12.toSp,
                                   ),
                                 ),
-                                Height(4.toW),
-                                if (model.createTime != null)
-                                  Text(
-                                    DateFormatUtils.getNotificationTimeStr(
-                                      model.createTime!.toInt(),
-                                    ),
-                                    style: TextStyle(
-                                      color: AppColors.color_42000000,
-                                      fontSize: 12.toSp,
-                                    ),
-                                  ),
-                              ],
+                            ],
+                          ),
+                        ),
+                        if (model.id != null &&
+                            widget.sessionId == model.id.toString()) ...[
+                          Width(12.toW),
+                          Text(
+                            '当前对话',
+                            style: TextStyle(
+                              color: AppColors.theme,
+                              fontSize: 13.toSp,
                             ),
                           ),
-                          if (model.id != null &&
-                              widget.sessionId == model.id.toString()) ...[
-                            Width(12.toW),
-                            Text(
-                              '当前对话',
-                              style: TextStyle(
-                                color: AppColors.theme,
-                                fontSize: 13.toSp,
-                              ),
-                            ),
-                          ],
                         ],
-                      ).withOnTap(() {
-                        if (widget.chooseHistoryCallBack != null) {
-                          widget.chooseHistoryCallBack!(model.id.toString());
-                        }
-                      }),
-                ),
-              );
-            },
-          ).withExpanded(),
+                      ],
+                    ).withOnTap(() {
+                      if (widget.chooseHistoryCallBack != null) {
+                        widget.chooseHistoryCallBack!(model.id.toString());
+                      }
+                    }),
+                  ),
+                );
+              },
+            );
+          }).withExpanded(),
         ],
       ),
     );

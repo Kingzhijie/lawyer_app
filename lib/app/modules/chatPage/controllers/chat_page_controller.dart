@@ -17,6 +17,7 @@ import 'package:get/get.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/utils/permission_util.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
+import 'package:pull_to_refresh_new/pull_to_refresh.dart';
 import 'package:record/record.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:uuid/uuid.dart';
@@ -36,6 +37,9 @@ class ChatPageController extends GetxController {
   final ChatBottomPanelContainerController<ChatPanelType> panelController =
       ChatBottomPanelContainerController<ChatPanelType>();
   final ScrollController scrollController = ScrollController();
+
+  /// 是否网络请求中
+  bool isNetRequesting = false;
 
   final RxList<UiMessage> messages = <UiMessage>[].obs;
   final RxBool hasText = false.obs;
@@ -64,15 +68,15 @@ class ChatPageController extends GetxController {
   // 加载状态
   final RxBool isLoading = false.obs;
 
-  RxList<MessageFileModel> files = <MessageFileModel>[].obs;// 文件数组
+  RxList<MessageFileModel> files = <MessageFileModel>[].obs; // 文件数组
   RxList<MessageImageModel> images = <MessageImageModel>[].obs; // 图片数组
 
   // SSE 订阅
   StreamSubscription<SSEEvent>? _sseSubscription;
-  
+
   // 语音识别是否可用（华为设备可能不支持）
   bool _isSpeechRecognitionAvailable = true;
-  
+
   // 是否启用思考模式（默认启用）
   bool enableThinkingMode = true;
 
@@ -198,7 +202,7 @@ class ChatPageController extends GetxController {
   Future<void> _addUserMessage(String text) async {
     isShowNoCase.value = false;
     logPrint('🚀 开始发送消息: $text');
-    
+
     if (ObjectUtils.isEmptyString(agentId.value)) {
       logPrint('⚠️ agentId 为空');
       return;
@@ -223,8 +227,12 @@ class ChatPageController extends GetxController {
           id: 'user-${DateTime.now().microsecondsSinceEpoch}',
           text: text,
           isAi: false,
-          images: images.isNotEmpty ? images.map((img) => img.copyWith()).toList() : null,
-          files: files.isNotEmpty ? files.map((file) => file.copyWith()).toList() : null,
+          images: images.isNotEmpty
+              ? images.map((img) => img.copyWith()).toList()
+              : null,
+          files: files.isNotEmpty
+              ? files.map((file) => file.copyWith()).toList()
+              : null,
           createdAt: DateTime.now(),
         ),
       );
@@ -239,7 +247,7 @@ class ChatPageController extends GetxController {
   Future<void> _sendMessageWithSSE(String message, String sId) async {
     logPrint('🎯 _sendMessageWithSSE 开始执行');
     logPrint('📝 message: $message, sessionId: $sId');
-    
+
     // 取消之前的连接
     cancelConnection();
 
@@ -250,14 +258,14 @@ class ChatPageController extends GetxController {
     String thinkingContent = '';
     String replyContent = '';
     final startTime = DateTime.now();
-    
+
     // 自动检测后端是否支持思考模式
     bool backendSupportsThinking = false;
     bool hasReceivedContent = false;
 
     // 创建一个临时的 AI 消息用于显示实时回复
     final aiMessageId = 'ai-${DateTime.now().microsecondsSinceEpoch}';
-    
+
     // 立即添加一个 AI 消息占位（text 为空，聊天气泡会显示"思考中..."）
     messages.add(
       UiMessage(
@@ -308,9 +316,10 @@ class ChatPageController extends GetxController {
             logPrint('caseId====${data.ocrCaseId}');
             isShowNoCase.value = true;
           }
-          
+
           // 检测后端是否支持思考模式
-          if (data.reasoningContent != null && data.reasoningContent!.isNotEmpty) {
+          if (data.reasoningContent != null &&
+              data.reasoningContent!.isNotEmpty) {
             backendSupportsThinking = true;
             thinkingContent += data.reasoningContent!;
             logPrint('✅ 收到思考内容: ${data.reasoningContent}');
@@ -329,7 +338,7 @@ class ChatPageController extends GetxController {
           // 情况1：后端支持思考模式 - 有 reasoningContent
           // 情况2：后端不支持思考模式 - 只有 content，即使前端发送了 think: true
           final actualMode = backendSupportsThinking ? '思考模式' : '直接回复模式';
-          
+
           // 移除"思考中"消息（只移除一次）
           messages.removeWhere((e) => e.id == 'think_id');
 
@@ -339,7 +348,9 @@ class ChatPageController extends GetxController {
             text: replyContent, // 回复内容，可能为空（思考阶段）或有内容（直接回复）
             isAi: true,
             createdAt: DateTime.now(),
-            thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
+            thinkingProcess: thinkingContent.isNotEmpty
+                ? thinkingContent
+                : null,
             isThinkingDone: false, // 流式传输中，未完成
           );
 
@@ -347,7 +358,9 @@ class ChatPageController extends GetxController {
           final existingIndex = messages.indexWhere((m) => m.id == aiMessageId);
           if (existingIndex != -1) {
             // 更新现有消息 - 使用 replaceRange 确保触发响应式更新
-            messages.replaceRange(existingIndex, existingIndex + 1, [aiMessage]);
+            messages.replaceRange(existingIndex, existingIndex + 1, [
+              aiMessage,
+            ]);
             logPrint(
               '🔄 更新消息 [$actualMode] - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符',
             );
@@ -358,7 +371,6 @@ class ChatPageController extends GetxController {
               '➕ 添加新消息 [$actualMode] - 思考: ${thinkingContent.length} 字符, 回复: ${replyContent.length} 字符',
             );
           }
-
         },
         onError: (error) {
           logPrint('SSE 错误: $error');
@@ -383,21 +395,23 @@ class ChatPageController extends GetxController {
               .inSeconds;
 
           final actualMode = backendSupportsThinking ? '思考模式' : '直接回复模式';
-          
+
           logPrint('✅ 消息接收完成 [$actualMode]');
-          logPrint('📊 最终思考过程: $thinkingContent (${thinkingContent.length} 字符)');
+          logPrint(
+            '📊 最终思考过程: $thinkingContent (${thinkingContent.length} 字符)',
+          );
           logPrint('📊 最终回复内容: $replyContent (${replyContent.length} 字符)');
           logPrint('⏱️ 用时: $thinkingSeconds 秒');
-          
+
           if (replyContent.isEmpty && thinkingContent.isEmpty) {
             logPrint('⚠️ 警告：没有收到任何内容！');
           }
-          
+
           // 如果后端不支持思考模式但没有收到内容，可能是错误
           if (!backendSupportsThinking && !hasReceivedContent) {
             logPrint('⚠️ 后端可能不支持当前请求');
           }
-          
+
           isLoading.value = false;
 
           // 移除"思考中"消息（确保清理）
@@ -412,7 +426,9 @@ class ChatPageController extends GetxController {
               isAi: true,
               createdAt: messages[index].createdAt,
               hasAnimated: true, // 流式传输已经是逐字显示，不需要打字动画
-              thinkingProcess: thinkingContent.isNotEmpty ? thinkingContent : null,
+              thinkingProcess: thinkingContent.isNotEmpty
+                  ? thinkingContent
+                  : null,
               thinkingSeconds: thinkingSeconds,
               isThinkingDone: true, // 流式传输完成
             );
@@ -464,16 +480,28 @@ class ChatPageController extends GetxController {
     }
   }
 
-
-
   @override
   void onInit() {
     super.onInit();
     textController.addListener(_handleTextChanged);
     _checkSpeechRecognitionAvailability();
     getSystemConfig();
+
+    scrollController.addListener(_scrollListener);
   }
-  
+
+  ///滚动加载更多历史聊天记录
+  void _scrollListener() {
+    // 判断是否滚动到底部（阈值 50）
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 50) {
+      if (isNetRequesting) {
+        return;
+      }
+      getChatContent(sessionId.value, isLoadMore: true);
+    }
+  }
+
   /// 检查语音识别是否可用
   Future<void> _checkSpeechRecognitionAvailability() async {
     try {
@@ -483,7 +511,7 @@ class ChatPageController extends GetxController {
           _isSpeechRecognitionAvailable = false;
         },
       );
-      
+
       if (!_isSpeechRecognitionAvailable) {
         logPrint('⚠️ 语音识别不可用，录音功能已禁用');
       } else {
@@ -533,7 +561,7 @@ class ChatPageController extends GetxController {
       showToast('当前设备不支持语音识别功能');
       return;
     }
-    
+
     bool isAuth = false;
     if (Platform.isIOS) {
       bool isMicAuth = await PermissionUtils.requestMicrophonePermission();
@@ -681,7 +709,7 @@ class ChatPageController extends GetxController {
       logPrint('⚠️ 语音识别不可用，跳过');
       return;
     }
-    
+
     try {
       await _speechToText.listen(
         onResult: (result) {
@@ -776,7 +804,13 @@ class ChatPageController extends GetxController {
               logPrint('文件扩展名: ${file.extension}');
               if (file.path != null) {
                 images.clear();
-                files.add(MessageFileModel(path: file.path, name: file.name, type: file.extension));
+                files.add(
+                  MessageFileModel(
+                    path: file.path,
+                    name: file.name,
+                    type: file.extension,
+                  ),
+                );
                 NetUtils.uploadSingleFile(file.path!).then((result) {
                   logPrint('result====$result');
                   if (result != null) {
@@ -799,27 +833,29 @@ class ChatPageController extends GetxController {
   }
 
   ///上传图片
-  void uploadImage(List<XFile>? imgFiles){
-    imgFiles?.forEach((file){
+  void uploadImage(List<XFile>? imgFiles) {
+    imgFiles?.forEach((file) {
       images.add(MessageImageModel(path: file.path));
 
-      NetUtils.uploadSingleImage(file.path).then((result){
-        if (result != null) {
-          files.clear();
-          // 找到对应的图片
-          final index = images.indexWhere((e) => e.path == file.path);
-          if (index != -1) {
-            // 使用 copyWith 更新 url
-            images[index] = images[index].copyWith(url: result);
-            images.refresh(); // 刷新 UI
-          }
-        }
-      }).catchError((error) {
-        logPrint('上传图片失败: $error');
-        // 可选：上传失败时移除该图片
-        images.removeWhere((e) => e.path == file.path);
-        images.refresh();
-      });
+      NetUtils.uploadSingleImage(file.path)
+          .then((result) {
+            if (result != null) {
+              files.clear();
+              // 找到对应的图片
+              final index = images.indexWhere((e) => e.path == file.path);
+              if (index != -1) {
+                // 使用 copyWith 更新 url
+                images[index] = images[index].copyWith(url: result);
+                images.refresh(); // 刷新 UI
+              }
+            }
+          })
+          .catchError((error) {
+            logPrint('上传图片失败: $error');
+            // 可选：上传失败时移除该图片
+            images.removeWhere((e) => e.path == file.path);
+            images.refresh();
+          });
     });
   }
 
@@ -852,11 +888,7 @@ class ChatPageController extends GetxController {
   Future<void> _loadSessions(aId) async {
     NetUtils.get(
       Apis.getAiHistoryList,
-      queryParameters: {
-        'agentId': aId,
-        'pageNo': 1,
-        'pageSize': 1,
-      },
+      queryParameters: {'agentId': aId, 'pageNo': 1, 'pageSize': 1},
     ).then((result) {
       if (result.code == NetCodeHandle.success) {
         var list = (result.data['list'] as List)
@@ -873,17 +905,23 @@ class ChatPageController extends GetxController {
   }
 
   ///获取聊天内容
-  void getChatContent(sId){
+  void getChatContent(sId, {bool isLoadMore = false}) {
     sessionId.value = sId.toString();
-    messages.clear();
+    if (!isLoadMore) {
+      messages.clear();
+    }
+    isNetRequesting = true;
     NetUtils.get(
       Apis.getAiChatContentList,
       queryParameters: {
-        'hisId': sId
+        'hisId': sId,
+        'cursor': messages.isEmpty ? sId : messages.first.id,
       },
+      isLoading: false,
     ).then((result) {
       if (result.code == NetCodeHandle.success) {
         List datas = result.data as List;
+        List<UiMessage> models = [];
         for (var map in datas) {
           var msg = map['message'].toString();
           if (!ObjectUtils.isEmptyString(msg)) {
@@ -893,18 +931,27 @@ class ChatPageController extends GetxController {
               id: map['id'].toString(),
               text: ObjectUtils.isEmptyString(content) ? '未查询到案件' : content,
               isAi: msgMap['role'] == 'assistant',
-              createdAt: DateTime.fromMillisecondsSinceEpoch(msgMap['createTime'].toString().toInt()),
+              createdAt: DateTime.fromMillisecondsSinceEpoch(
+                msgMap['createTime'].toString().toInt(),
+              ),
               hasAnimated: true, // 流式传输已经是逐字显示，不需要打字动画
               isThinkingDone: true, // 流式传输完成
             );
-            messages.value.add(finalMessage);
+            models.add(finalMessage);
           }
         }
+        if (isLoadMore) {
+          messages.value.insertAll(0, models);
+        } else {
+          messages.value = models;
+        }
+        isNetRequesting = models.isEmpty;
         messages.refresh();
+      } else {
+        isNetRequesting = false;
       }
     });
   }
-
 
   /// 取消当前连接
   void cancelConnection() {
@@ -914,5 +961,42 @@ class ChatPageController extends GetxController {
     logPrint('SSE 连接已取消');
   }
 
+  /// 刷新最后一条 AI 回复
+  void refreshLastAiMessage() {
+    logPrint('🔄 刷新最后一条 AI 回复');
 
+    // 1. 找到最后一条 AI 消息
+    final lastAiIndex = messages.lastIndexWhere((m) => m.isAi && !m.isPrologue);
+    if (lastAiIndex == -1) {
+      logPrint('⚠️ 没有找到 AI 消息');
+      return;
+    }
+
+    // 2. 找到这条 AI 消息之前的最后一条用户消息
+    final lastUserIndex = messages.lastIndexWhere(
+      (m) => !m.isAi,
+      lastAiIndex - 1,
+    );
+
+    if (lastUserIndex == -1) {
+      logPrint('⚠️ 没有找到用户消息');
+      return;
+    }
+
+    final lastUserMessage = messages[lastUserIndex];
+    logPrint('📝 找到用户消息: ${lastUserMessage.text}');
+
+    // 3. 移除最后一条 AI 消息
+    messages.removeAt(lastAiIndex);
+    logPrint('🗑️ 已移除 AI 消息');
+
+    // 4. 重新发送用户消息
+    final currentSessionId = sessionId.value;
+    if (currentSessionId != null && currentSessionId.isNotEmpty) {
+      logPrint('🔄 重新发送消息');
+      _sendMessageWithSSE(lastUserMessage.text, currentSessionId);
+    } else {
+      logPrint('⚠️ sessionId 为空');
+    }
+  }
 }

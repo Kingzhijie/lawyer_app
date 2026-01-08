@@ -34,14 +34,15 @@ class ChatBubbleRight extends StatelessWidget {
           if (!ObjectUtils.isEmptyList(message.images)) _setImageWidget(),
           if (!ObjectUtils.isEmptyList(message.files)) _setFilesWidget(),
           Container(
-            margin: const EdgeInsets.symmetric(vertical: 6),
+            // margin: const EdgeInsets.symmetric(vertical: 6),
+            margin: EdgeInsets.only(top: 6.toW, bottom: 16.toW, left: 30.toW),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               color: bubbleColor,
               borderRadius: radius,
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x0A000000),
+                  color: Color(0x1A000000),
                   blurRadius: 14,
                   offset: const Offset(0, 0),
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:lawyer_app/app/common/components/common_app_bar.dart';
+import 'package:lawyer_app/app/common/components/easy_refresher.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bottom_panel.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bubble_left.dart';
@@ -98,8 +99,16 @@ class ChatPageView extends GetView<ChatPageController> {
                         itemBuilder: (context, index) {
                           final msg = reversedMessages[index];
                           if (msg.isAi) {
+                            // 判断是否是最后一条 AI 消息（在反转列表中，第一条 AI 消息就是最后一条）
+                            final isLastAiMessage =
+                                index ==
+                                reversedMessages.indexWhere((m) => m.isAi);
                             return ChatBubbleLeft(
                               message: msg,
+                              isLastAiMessage: isLastAiMessage,
+                              onRefresh: isLastAiMessage
+                                  ? () => controller.refreshLastAiMessage()
+                                  : null,
                               onAnimated: () =>
                                   controller.markMessageAnimated(msg.id),
                               onTick: () {}, // reverse 模式不需要滚动

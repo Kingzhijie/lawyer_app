@@ -119,7 +119,10 @@ class Apis {
   static String getAiHistoryList = '/ai/chat-his/page';
 
   ///获取对话详细内容
-  static String getAiChatContentList = '/ai/chat-msg/all';
+  static String getAiChatContentList = '/ai/chat-msg/list';
+
+  ///删除历史消息
+  static String deleteAiHistory = '/ai/chat-his/delete';
 
 
   ///AI智能体聊天流式接口

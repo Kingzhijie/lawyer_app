@@ -1,10 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../utils/image_utils.dart';
+import '../../../../utils/toast_utils.dart';
 import '../../models/ui_message.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
@@ -14,11 +16,15 @@ class ChatBubbleLeft extends StatefulWidget {
     required this.message,
     required this.onAnimated,
     required this.onTick,
+    this.isLastAiMessage = false,
+    this.onRefresh,
   });
 
   final UiMessage message;
   final VoidCallback onAnimated;
   final VoidCallback onTick;
+  final bool isLastAiMessage; // 是否是最后一条 AI 消息
+  final VoidCallback? onRefresh; // 刷新回调
 
   @override
   State<ChatBubbleLeft> createState() => _ChatBubbleLeftState();
@@ -42,20 +48,21 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
   @override
   void didUpdateWidget(ChatBubbleLeft oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     bool needsUpdate = false;
-    
+
     // 检测思考内容是否有更新（情况1：有思考过程）
     if (widget.message.thinkingProcess != _previousThinkingProcess) {
       _previousThinkingProcess = widget.message.thinkingProcess;
-      if (widget.message.thinkingProcess != null && widget.message.thinkingProcess!.isNotEmpty) {
+      if (widget.message.thinkingProcess != null &&
+          widget.message.thinkingProcess!.isNotEmpty) {
         _showThinking = true;
         _thinkingText = widget.message.thinkingProcess!;
         needsUpdate = true;
         logPrint('🧠 思考内容更新: ${widget.message.thinkingProcess!.length} 字符');
       }
     }
-    
+
     // 检测文本内容是否有更新（情况1和情况2都需要）
     if (widget.message.text != _previousText) {
       _previousText = widget.message.text;
@@ -65,7 +72,7 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
         logPrint('💬 文本内容更新: ${widget.message.text.length} 字符');
       }
     }
-    
+
     // 检测是否思考完成（情况1：从思考中 -> 思考完成）
     if (widget.message.isThinkingDone && !oldWidget.message.isThinkingDone) {
       needsUpdate = true;
@@ -75,7 +82,7 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
         _showFinalAnswer = true;
       }
     }
-    
+
     // 只在需要时调用 setState
     if (needsUpdate) {
       setState(() {});
@@ -90,7 +97,7 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
       _thinkingText = widget.message.thinkingProcess ?? '';
     } else {
       // 未动画过 - 判断是哪种情况
-      
+
       // 情况1：有思考过程（think: true）
       if (widget.message.thinkingProcess != null) {
         _showThinking = true;
@@ -99,7 +106,7 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
         if (widget.message.isThinkingDone && widget.message.text.isNotEmpty) {
           _showFinalAnswer = true;
         }
-      } 
+      }
       // 情况2：没有思考过程，直接流式输出结果（think: false 或开场白）
       else {
         // 如果有文本内容，直接显示
@@ -162,7 +169,12 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                     Container(
                       padding: EdgeInsets.only(left: 12.toW),
                       decoration: BoxDecoration(
-                        border: Border(left: BorderSide(color: AppColors.color_line, width: 0.5))
+                        border: Border(
+                          left: BorderSide(
+                            color: AppColors.color_line,
+                            width: 0.5,
+                          ),
+                        ),
                       ),
                       child: Text(
                         _thinkingText,
@@ -186,22 +198,30 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                 children: [
                   _buildAnimatedText(textColor),
                   SizedBox(height: 14.toW),
-                  // 只在 AI 回复完成时显示操作按钮
-                  if (!widget.message.isPrologue && widget.message.isThinkingDone)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildActionButton(Icons.refresh, () {}),
-                      SizedBox(width: 12.toW),
-                      _buildActionButton(Icons.copy, () {}),
-                    ],
-                  ),
+                  // 只在最后一条 AI 消息且回复完成时显示操作按钮
+                  if (!widget.message.isPrologue &&
+                      widget.message.isThinkingDone &&
+                      widget.isLastAiMessage)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildActionButton(Icons.refresh, () {
+                          widget.onRefresh?.call();
+                        }),
+                        SizedBox(width: 12.toW),
+                        _buildActionButton(Icons.copy, () {
+                          final content = widget.message.text;
+                          Clipboard.setData(ClipboardData(text: content));
+                          showToast('复制成功');
+                        }),
+                      ],
+                    ),
                 ],
               ),
             ),
           // 如果没有思考过程，也没有文本内容，但正在思考中，显示加载提示
-          if (!widget.message.isThinkingDone && 
-              widget.message.thinkingProcess == null && 
+          if (!widget.message.isThinkingDone &&
+              widget.message.thinkingProcess == null &&
               widget.message.text.isEmpty)
             Padding(
               padding: EdgeInsets.symmetric(vertical: 14.toW),
@@ -221,9 +241,7 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                     height: 14.toW,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(
-                        Colors.grey.shade600,
-                      ),
+                      valueColor: AlwaysStoppedAnimation(Colors.grey.shade600),
                     ),
                   ),
                 ],
@@ -294,13 +312,8 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
         if (href != null) {
           final uri = Uri.parse(href);
           if (await canLaunchUrl(uri)) {
-            await launchUrl(
-              uri,
-              mode: LaunchMode.externalApplication,
-            );
-          } else {
-
-          }
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          } else {}
         }
       },
       styleSheet: MarkdownStyleSheet(
@@ -358,19 +371,11 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
         em: TextStyle(fontStyle: FontStyle.italic),
         strong: TextStyle(fontWeight: FontWeight.bold),
         del: TextStyle(decoration: TextDecoration.lineThrough),
-        tableBorder: TableBorder.all(
-          color: Colors.grey.shade300,
-          width: 1,
-        ),
-        tableHead: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: textColor,
-        ),
+        tableBorder: TableBorder.all(color: Colors.grey.shade300, width: 1),
+        tableHead: TextStyle(fontWeight: FontWeight.bold, color: textColor),
         tableBody: TextStyle(color: textColor),
         tableCellsPadding: EdgeInsets.all(8.toW),
       ),
     );
   }
-
-
 }
