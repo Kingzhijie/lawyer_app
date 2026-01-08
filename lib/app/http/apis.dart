@@ -88,6 +88,9 @@ class Apis {
   ///会员套餐列表
   static String memberPageList = '/member/package/page';
 
+  ///会员邀请活动
+  static String inviteActivity = '/member/invite-activity/get';
+
   ///获取案件数量
   static String getTaskCount = '/legal/task/get-count';
 
