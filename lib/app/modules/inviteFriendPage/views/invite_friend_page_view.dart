@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/modules/inviteFriendPage/models/invite_user_model.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
@@ -230,9 +232,9 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
                 Text(
                   '惊喜福利',
                   style: TextStyle(
-                      color: Color(0xFFB16000),
-                      fontSize: 11.toSp,
-                      fontWeight: FontWeight.w600
+                    color: Color(0xFFB16000),
+                    fontSize: 11.toSp,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -411,11 +413,11 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
     return Container(
       decoration: BoxDecoration(
         color: Color(0xFFF5F7FA),
-        borderRadius: BorderRadius.circular(8.toW)
+        borderRadius: BorderRadius.circular(8.toW),
       ),
       padding: EdgeInsets.symmetric(vertical: 6.toW),
       child: Obx(
-            () => Row(
+        () => Row(
           children: [
             Expanded(
               child: Column(
@@ -489,7 +491,7 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
 
       return Column(
         children: [
-          ...records.take(showCount).map((record) => _buildInviteItem(record)),
+          ...records.map((record) => _buildInviteItem(record)),
           if (records.length > 3) _buildShowMoreButton(),
         ],
       );
@@ -497,9 +499,9 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
   }
 
   /// 邀请项
-  Widget _buildInviteItem(InviteRecord record) {
+  Widget _buildInviteItem(InviteUserModel record) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 12.toW),
+      padding: EdgeInsets.symmetric(vertical: 8.toW),
       child: Row(
         children: [
           // 头像
@@ -518,7 +520,7 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
           // 手机号
           Expanded(
             child: Text(
-              record.phone,
+              record.nickname ?? '',
               style: TextStyle(
                 fontSize: 13.toSp,
                 color: AppColors.color_E6000000,
@@ -527,7 +529,7 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
           ),
           // 时间
           Text(
-            record.time,
+            DateTimeUtils.formatTimestamp(record.brokerageTime ?? 0),
             style: TextStyle(
               fontSize: 13.toSp,
               color: AppColors.color_99000000,
@@ -555,7 +557,7 @@ class InviteFriendPageView extends GetView<InviteFriendPageController> {
   Widget _buildShowMoreButton() {
     return Obx(
       () => Padding(
-        padding: EdgeInsets.only(top: 8.toW),
+        padding: EdgeInsets.only(top: 5.toW),
         child:
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

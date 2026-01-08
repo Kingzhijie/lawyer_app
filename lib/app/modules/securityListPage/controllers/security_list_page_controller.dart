@@ -1,15 +1,18 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/components/dialog.dart';
 import 'package:lawyer_app/app/config/app_config.dart';
 import 'package:lawyer_app/app/http/apis.dart';
 import 'package:lawyer_app/app/http/net/net_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/modules/securityListPage/models/assets_tab_count_model.dart';
 import 'package:lawyer_app/app/modules/securityListPage/models/security_item_model.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 import 'package:lawyer_app/app/utils/device_calendar_util.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
+import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
 
 class SecurityListPageController extends GetxController {
@@ -138,35 +141,54 @@ class SecurityListPageController extends GetxController {
 
   /// 提醒操作
   void remindAction(SecurityItemModel item) async {
+    String? eventId;
     if (ObjectUtils.boolValue(item.isAddCalendar)) {
-      return;
+      if (item.addCalendarId != null) {
+        bool isSuc = await DeviceCalendarUtil.deleteEvent(
+          eventId: item.addCalendarId!,
+        );
+        logPrint('提醒删除结果===$isSuc');
+      }
+    } else {
+      // 静默添加提醒（不跳转系统日历）
+      final eventId = await DeviceCalendarUtil.addReminder(
+        title: item.caseName ?? '案件提醒',
+        dateTime: DateTime.fromMillisecondsSinceEpoch(
+          item.nearestExpiryDate!.toInt(),
+        ),
+        description: '点击连接: ${AppConfig.appSchemeFull}\n${item.caseName}最近到期了',
+        reminderMinutes: 120, // 提前2小时提醒
+      );
+
+      if (eventId != null) {
+        AppDialog.singleItem(
+          title: '添加日历提醒成功',
+          titleStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 17.toSp,
+            fontWeight: FontWeight.w600,
+          ),
+          content: '事件开始前2小时, 将收到手机日历提醒, 可在系统日历中更改提醒时间',
+          contentStyle: TextStyle(color: Colors.black, fontSize: 15.toSp),
+          cancel: '我知道了',
+        ).showAlert();
+      }
     }
 
-    // 静默添加提醒（不跳转系统日历）
-    final eventId = await DeviceCalendarUtil.addReminder(
-      title: item.caseName ?? '案件提醒',
-      dateTime: DateTime.fromMillisecondsSinceEpoch(
-        item.nearestExpiryDate!.toInt(),
-      ),
-      description: '点击连接: ${AppConfig.appSchemeFull}\n${item.caseName}最近到期了',
-      reminderMinutes: 120, // 提前2小时提醒
-    );
-    if (eventId != null) {
-      NetUtils.post(
-        Apis.addCalendarPreservationAsset,
-        params: {
-          'caseId': item.caseId,
-          'addCalendar': !ObjectUtils.boolValue(item.isAddCalendar),
-          'addCalendarId': eventId,
-        },
-      ).then((result) {
-        if (result.code == NetCodeHandle.success) {
-          item.isAddCalendar = !ObjectUtils.boolValue(item.isAddCalendar);
-          securityList.refresh();
-          showToast('已添加提醒');
-        }
-      });
-    }
+    NetUtils.post(
+      Apis.addCalendarPreservationAsset,
+      params: {
+        'caseId': item.caseId,
+        'addCalendar': !ObjectUtils.boolValue(item.isAddCalendar),
+        'addCalendarId': eventId,
+      },
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        item.addCalendarId = eventId;
+        item.isAddCalendar = !ObjectUtils.boolValue(item.isAddCalendar);
+        securityList.refresh();
+      }
+    });
   }
 
   void pushDetailPage(SecurityItemModel item) {

@@ -31,7 +31,6 @@ class SecurityListDetailPageView
             ),
           ),
           _buildTopBar(),
-
           SingleChildScrollView(
             child: Column(
               children: [_buildCaseInfoCard(), _buildSecurityListSection()],
@@ -100,7 +99,9 @@ class SecurityListDetailPageView
               borderRadius: BorderRadius.circular(14.toW),
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: AssetImage(Assets.home.yuangaoBg.path),
+                image: caseInfo.casePartyRole == 2
+                    ? AssetImage(Assets.home.yuangaoBg.path)
+                    : AssetImage(Assets.home.beigaoBg.path),
               ),
             ),
             child: Column(
@@ -130,7 +131,9 @@ class SecurityListDetailPageView
             right: 19.toW,
             top: 10.toW,
             child: ImageUtils(
-              imageUrl: Assets.home.yuangaoIcon.path,
+              imageUrl: caseInfo.casePartyRole == 2
+                  ? Assets.home.yuangaoIcon.path
+                  : Assets.home.beigaoIcon.path,
               width: 58.toW,
             ),
           ),

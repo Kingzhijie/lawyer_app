@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/extension/string_extension.dart';
 import 'package:lawyer_app/app/modules/securityListPage/models/security_item_model.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/object_utils.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../common/constants/app_colors.dart';
@@ -26,9 +27,9 @@ class SecurityListItem extends StatelessWidget {
   /// 案件卡片
   Widget _buildCaseCard(SecurityItemModel caseInfo) {
     return Container(
-      padding: EdgeInsets.all(16.toW),
+      // padding: EdgeInsets.all(16.toW),
       decoration: BoxDecoration(
-        color: AppColors.color_white,
+        color: AppColors.color_FFF5F7FA,
         borderRadius: BorderRadius.circular(12.toW),
         boxShadow: [
           BoxShadow(
@@ -38,75 +39,109 @@ class SecurityListItem extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          // 案件标题
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  caseInfo.caseName ?? '',
-                  style: TextStyle(
-                    fontSize: 16.toSp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.color_E6000000,
-                  ),
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16.toW,
-                color: AppColors.color_FFC5C5C5,
-              ),
-            ],
-          ),
-          SizedBox(height: 12.toW),
-          Divider(color: AppColors.color_FFEEEEEE, height: 0.1),
-          SizedBox(height: 12.toW),
-          _setRichTextWidget('案号: ', caseInfo.caseNumber ?? '-'),
-          SizedBox(height: 10.toW),
-          // 最近到期日
-          _setRichTextWidget(
-            '最近到期日: ',
-            DateTimeUtils.formatTimestamp(caseInfo.nearestExpiryDate ?? 0),
-          ),
-          SizedBox(height: 10.toW),
-          _setRichTextWidget('关联保全资产: ', '${caseInfo.assetCount ?? 0}'),
-          SizedBox(height: 12.toW),
-          // 资产摘要
-          _buildAssetSummary(caseInfo),
-          SizedBox(height: 16.toW),
-          // 操作按钮
-          Row(
-            children: [
-              Expanded(
-                child:
-                    Container(
-                      height: 36.toW,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFECF2FE),
-                        borderRadius: BorderRadius.circular(8.toW),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '提醒',
-                        style: TextStyle(
-                          fontSize: 14.toSp,
-                          color: AppColors.theme,
-                          fontWeight: FontWeight.w500,
+          ...setChildren(),
+          Padding(
+            padding: EdgeInsets.all(16.toW),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 案件标题
+                Container(
+                  padding: EdgeInsets.only(right: 30.toW),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          caseInfo.caseName ?? '',
+                          style: TextStyle(
+                            fontSize: 16.toSp,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.color_E6000000,
+                          ),
                         ),
                       ),
-                    ).withOnTap(() {
-                      onRemindAction(caseInfo);
-                    }),
-              ),
-            ],
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16.toW,
+                        color: AppColors.color_FFC5C5C5,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 12.toW),
+                Divider(color: AppColors.color_FFEEEEEE, height: 0.1),
+                SizedBox(height: 12.toW),
+                _setRichTextWidget('案号: ', caseInfo.caseNumber ?? '-'),
+                SizedBox(height: 10.toW),
+                // 最近到期日
+                _setRichTextWidget(
+                  '最近到期日: ',
+                  DateTimeUtils.formatTimestamp(
+                    caseInfo.nearestExpiryDate ?? 0,
+                  ),
+                ),
+                SizedBox(height: 10.toW),
+                _setRichTextWidget('关联保全资产: ', '${caseInfo.assetCount ?? 0}'),
+                SizedBox(height: 12.toW),
+                // 资产摘要
+                _buildAssetSummary(caseInfo),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child:
+                Container(
+                  width: 50.toW,
+                  height: 50.toW,
+                  alignment: Alignment.topRight,
+                  child: ImageUtils(
+                    imageUrl: ObjectUtils.boolValue(caseInfo.isAddCalendar)
+                        ? Assets.home.noticeNormalIcon.path
+                        : Assets.home.unNoticeIcon.path,
+                    width: 30.toW,
+                    height: 30.toW,
+                  ),
+                ).withOnTap(() {
+                  onRemindAction(caseInfo);
+                }),
           ),
         ],
       ),
     );
+  }
+
+  List<Widget> setChildren() {
+    return [
+      Positioned(
+        left: 0,
+        top: 0,
+        bottom: 0,
+        child: Container(
+          width: 100.toW,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14.toW),
+          ),
+        ),
+      ),
+      Positioned(
+        top: 0,
+        right: 0,
+        child: ImageUtils(
+          imageUrl: true
+              ? Assets.home.yuangaoNoticeBg.path
+              : Assets.home.beigaoNoticeBg.path,
+          width: 300.toW,
+          fit: BoxFit.contain,
+        ),
+      ),
+    ];
   }
 
   Widget _setRichTextWidget(String name, String value) {

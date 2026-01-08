@@ -85,6 +85,9 @@ class Apis {
   static String brokerageUserChildSummary =
       '/member/brokerage-user/child-summary-page';
 
+  ///会员套餐列表
+  static String memberPageList = '/member/package/page';
+
   ///获取案件数量
   static String getTaskCount = '/legal/task/get-count';
 

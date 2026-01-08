@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/extension/string_extension.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
@@ -37,10 +38,12 @@ class VipCenterPageView extends GetView<VipCenterPageController> {
           _setBottomWidget(),
           Positioned(
             left: 15.toW,
-              top: AppScreenUtil.statusBarHeight + 10.toW,
-              child: Icon(Icons.arrow_back_ios, color: Colors.black, size: 24.toW).withOnTap((){
-                Get.back();
-              }))
+            top: AppScreenUtil.statusBarHeight + 10.toW,
+            child: Icon(Icons.arrow_back_ios, color: Colors.black, size: 24.toW)
+                .withOnTap(() {
+                  Get.back();
+                }),
+          ),
         ],
       ),
     );
@@ -52,7 +55,7 @@ class VipCenterPageView extends GetView<VipCenterPageController> {
       padding: EdgeInsets.symmetric(horizontal: 15.toW),
       child: Obx(
         () => Row(
-          children: controller.tags
+          children: controller.memberList.value
               .map(
                 (e) =>
                     Container(
@@ -65,26 +68,26 @@ class VipCenterPageView extends GetView<VipCenterPageController> {
                         borderRadius: BorderRadius.circular(8.toW),
                         color: Color(0xFFFFF4E7),
                         border: Border.all(
-                          color: e == controller.selectTag.value
+                          color: e == controller.selectMemberTag.value
                               ? Color(0xFFB95A2E)
                               : Color(0xFFE3A882),
                           width: 1,
                         ),
                       ),
                       child: Text(
-                        e,
+                        e.packageName ?? '',
                         style: TextStyle(
                           fontSize: 15.toSp,
-                          fontWeight: e == controller.selectTag.value
+                          fontWeight: e == controller.selectMemberTag.value
                               ? FontWeight.w600
                               : FontWeight.w500,
-                          color: e == controller.selectTag.value
+                          color: e == controller.selectMemberTag.value
                               ? Color(0xFF6D4520)
                               : Color(0xCC6D4520),
                         ),
                       ),
                     ).withOnTap(() {
-                      controller.selectTag.value = e;
+                      controller.selectMemberTag.value = e;
                     }),
               )
               .toList(),
@@ -130,62 +133,90 @@ class VipCenterPageView extends GetView<VipCenterPageController> {
                   fit: BoxFit.fill,
                 ),
               ),
-              Positioned(
-                left: 0,
-                top: 0,
-                child: ImageUtils(
-                  imageUrl: Assets.common.hyzhekIcon.path,
-                  height: 21.toW,
-                ),
+              Obx(
+                () =>
+                    controller.selectMemberTag.value != null &&
+                        (controller.selectMemberTag.value!.promoPrice ?? 0) > 0
+                    ? Positioned(
+                        left: 0,
+                        top: 0,
+                        child: ImageUtils(
+                          imageUrl: Assets.common.hyzhekIcon.path,
+                          height: 21.toW,
+                        ),
+                      )
+                    : SizedBox.shrink(),
               ),
-              Positioned(
-                left: 10.toW,
-                top: 3.toW,
-                child: Text(
-                  '限时折扣价',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 9.toSp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+
+              Obx(
+                () =>
+                    controller.selectMemberTag.value != null &&
+                        (controller.selectMemberTag.value!.promoPrice ?? 0) > 0
+                    ? Positioned(
+                        left: 10.toW,
+                        top: 3.toW,
+                        child: Text(
+                          '限时折扣价',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 9.toSp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                    : SizedBox.shrink(),
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // 左侧价格区域
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        '¥198',
-                        style: TextStyle(
-                          fontSize: 20.toSp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                  Obx(() {
+                    if (controller.selectMemberTag.value == null) {
+                      return SizedBox();
+                    }
+
+                    final salesPrice =
+                        controller.selectMemberTag.value!.salePrice ?? 0;
+                    final promoPrice =
+                        controller.selectMemberTag.value!.promoPrice ?? 0;
+                    final originalPrice =
+                        controller.selectMemberTag.value!.originalPrice ?? 0;
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          ((promoPrice > 0 ? promoPrice : salesPrice) / 100)
+                              .toString()
+                              .toRMBPrice(),
+                          style: TextStyle(
+                            fontSize: 18.toSp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      Text(
-                        '/年',
-                        style: TextStyle(
-                          fontSize: 12.toSp,
-                          color: Colors.white,
+                        Text(
+                          '/年',
+                          style: TextStyle(
+                            fontSize: 12.toSp,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 10.toW),
-                      Text(
-                        '原价: ¥600',
-                        style: TextStyle(
-                          fontSize: 12.toSp,
-                          color: Colors.white.withOpacity(0.7),
-                          decoration: TextDecoration.lineThrough,
-                          decorationColor: Colors.white.withOpacity(0.7),
-                        ),
-                      ),
-                    ],
-                  ),
+                        SizedBox(width: 10.toW),
+                        if (promoPrice > 0)
+                          Text(
+                            '原价: ${(originalPrice / 100).toString().toRMBPrice()}',
+                            style: TextStyle(
+                              fontSize: 10.toSp,
+                              color: Colors.white.withOpacity(0.7),
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: Colors.white.withOpacity(0.7),
+                            ),
+                          ),
+                      ],
+                    );
+                  }),
                   // 右侧确认支付按钮
                   Container(
                     alignment: Alignment.center,

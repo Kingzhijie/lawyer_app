@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/http/apis.dart';
+import 'package:lawyer_app/app/http/net/net_utils.dart';
+import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
+import 'package:lawyer_app/app/modules/inviteFriendPage/models/invite_user_model.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
 
@@ -10,62 +14,78 @@ class InviteRecord {
   final String phone;
   final String time;
 
-  InviteRecord({
-    this.avatar,
-    required this.phone,
-    required this.time,
-  });
+  InviteRecord({this.avatar, required this.phone, required this.time});
 }
 
 class InviteFriendPageController extends GetxController {
   /// 已达成人数
-  final achievedCount = 3.obs;
-  
+  final achievedCount = 0.obs;
+
   /// 获得积分
-  final totalPoints = 20.obs;
-  
+  final totalPoints = 0.obs;
+
   /// 是否显示全部记录
   final showAll = false.obs;
-  
+  var pageNo = 1;
+  bool isLoading = false;
+
   /// 邀请记录列表
-  final inviteRecords = <InviteRecord>[].obs;
+  final inviteRecords = <InviteUserModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
+    _loadInviteInfos();
     _loadInviteRecords();
   }
 
   /// 加载邀请记录
-  void _loadInviteRecords() {
-    // 模拟数据
-    inviteRecords.value = [
-      InviteRecord(
-        phone: '177****3342',
-        time: '2025/09/17 12:21:22',
-      ),
-      InviteRecord(
-        phone: '177****3342',
-        time: '2025/09/17 12:21:22',
-      ),
-      InviteRecord(
-        phone: '177****3342',
-        time: '2025/09/17 12:21:22',
-      ),
-      InviteRecord(
-        phone: '138****5566',
-        time: '2025/09/16 10:30:00',
-      ),
-      InviteRecord(
-        phone: '159****7788',
-        time: '2025/09/15 09:15:30',
-      ),
-    ];
+  void _loadInviteRecords() async {
+    if (isLoading) {
+      return;
+    }
+    isLoading = true;
+    var result = await NetUtils.get(
+      Apis.brokerageUserChildSummary,
+      isLoading: false,
+      queryParameters: {'pageNo': pageNo, 'pageSize': 3},
+    );
+    if (result.code == NetCodeHandle.success) {
+      final list = (result.data['list'] as List)
+          .map((e) => InviteUserModel.fromJson(e))
+          .toList();
+      final total = result.data['total'] as int? ?? 0;
+      if (pageNo == 1) {
+        inviteRecords.value = list;
+      } else {
+        inviteRecords.value.addAll(list);
+      }
+      if (pageNo > 1) {
+        showAll.value = inviteRecords.length >= total;
+      }
+    }
+    isLoading = false;
+  }
+
+  void _loadInviteInfos() async {
+    var result = await NetUtils.get(
+      Apis.brokerageUserSummary,
+      isLoading: false,
+    );
+    if (result.code == NetCodeHandle.success) {
+      achievedCount.value = result.data['brokerageUserCount'] as int? ?? 0;
+      totalPoints.value = result.data['totalPoints'] as int? ?? 0;
+    }
   }
 
   /// 切换显示全部
   void toggleShowAll() {
-    showAll.value = !showAll.value;
+    if (isLoading) {
+      return;
+    }
+
+    pageNo += 1;
+    _loadInviteRecords();
   }
 
   /// 显示规则弹窗
@@ -121,10 +141,7 @@ class InviteFriendPageController extends GetxController {
                   ),
                   child: Text(
                     '我知道了',
-                    style: TextStyle(
-                      fontSize: 15.toSp,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(fontSize: 15.toSp, color: Colors.white),
                   ),
                 ),
               ),
