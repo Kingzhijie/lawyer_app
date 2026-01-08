@@ -177,5 +177,4 @@ class CalendarPageController extends GetxController {
       }
     });
   }
-
 }

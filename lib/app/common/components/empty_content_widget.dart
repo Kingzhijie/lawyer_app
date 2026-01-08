@@ -3,6 +3,7 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
+import 'package:lawyer_app/gen/assets.gen.dart';
 
 import '../../utils/screen_utils.dart';
 import 'image_text_button.dart';
@@ -19,16 +20,15 @@ class EmptyContentWidget extends StatelessWidget {
     return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(vertical: top ?? 0),
-      child: Row(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (icon != null)
-            ImageUtils(
-              imageUrl: icon,
-              width: 140.toW,
-            ).withMarginOnly(bottom: 12.toW),
+          ImageUtils(
+            imageUrl: icon ?? Assets.common.noDataIcon.path,
+            width: 140.toW,
+          ).withMarginOnly(bottom: 12.toW),
           Text(
-            content ?? '暂无内容',
+            content ?? '暂无数据',
             style: TextStyle(
               color: AppColors.color_FFC5C5C5,
               fontSize: 14.toSp,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/components/easy_refresher.dart';
+import 'package:lawyer_app/app/common/components/empty_content_widget.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
@@ -35,19 +36,21 @@ class SearchCaseRsultSubPageView
         },
         childBuilder: (context, physics) {
           return Obx(
-            () => ListView.builder(
-              itemCount: vc.caseTaskList.value.length,
-              physics: physics,
-              padding: EdgeInsets.zero,
-              itemBuilder: (context, index) {
-                final task = vc.caseTaskList[index];
-                return TodayWaitWorkWidget(
-                  task: task,
-                  isShowTime: false,
-                  addRemarkAction: () => vc.addRemarkAction(task),
-                ).withOnTap(() => vc.onContractDetail(task.caseId));
-              },
-            ),
+            () => vc.caseTaskList.value.isEmpty
+                ? EmptyContentWidget()
+                : ListView.builder(
+                    itemCount: vc.caseTaskList.value.length,
+                    physics: physics,
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (context, index) {
+                      final task = vc.caseTaskList[index];
+                      return TodayWaitWorkWidget(
+                        task: task,
+                        isShowTime: false,
+                        addRemarkAction: () => vc.addRemarkAction(task),
+                      ).withOnTap(() => vc.onContractDetail(task.caseId));
+                    },
+                  ),
           );
         },
       ),

@@ -139,6 +139,9 @@ class $AssetsCommonGen {
   AssetGenImage get xuanzhongAnjian =>
       const AssetGenImage('assets/common/xuanzhong_anjian.png');
 
+  AssetGenImage get noDataIcon =>
+      const AssetGenImage('assets/common/no_data.png');
+
   /// List of all assets
   List<AssetGenImage> get values => [
     actionFileIcon,
@@ -173,6 +176,7 @@ class $AssetsCommonGen {
     voiceChangeIcon,
     weixuanzhongAnjian,
     xuanzhongAnjian,
+    noDataIcon,
   ];
 }
 

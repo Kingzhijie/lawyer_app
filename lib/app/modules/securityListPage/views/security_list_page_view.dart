@@ -17,7 +17,7 @@ class SecurityListPageView extends GetView<SecurityListPageController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.color_FFF3F3F3,
+      backgroundColor: AppColors.color_white,
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [

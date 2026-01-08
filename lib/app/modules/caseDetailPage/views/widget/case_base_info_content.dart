@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/components/empty_content_widget.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/string_extension.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_detail_model.dart';
@@ -259,9 +260,12 @@ class CaseBaseInfoContent extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16.toW),
-          ...casePartyResVOS.asMap().entries.map((item) {
-            return _buildPartyItem(index: item.key, item: item.value);
-          }),
+          if (casePartyResVOS.isEmpty)
+            EmptyContentWidget()
+          else
+            ...casePartyResVOS.asMap().entries.map((item) {
+              return _buildPartyItem(index: item.key, item: item.value);
+            }),
         ],
       ),
     );
@@ -620,7 +624,8 @@ class CaseBaseInfoContent extends StatelessWidget {
                 ),
               ],
             ),
-          ],
+          ] else
+            EmptyContentWidget(),
         ],
       ),
     );

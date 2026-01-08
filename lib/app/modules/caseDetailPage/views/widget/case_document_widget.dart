@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lawyer_app/app/common/components/empty_content_widget.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/doc_list_model.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
@@ -14,7 +15,6 @@ class CaseDocumentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 模拟文档数据
     final documents = controller.caseDetail.value?.docList ?? [];
 
     return SingleChildScrollView(
@@ -48,19 +48,21 @@ class CaseDocumentWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16.toW),
-                // 文档列表
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: documents.length,
-                  padding: EdgeInsets.zero,
-                  separatorBuilder: (context, index) =>
-                      SizedBox(height: 12.toW),
-                  itemBuilder: (context, index) {
-                    final doc = documents[index];
-                    return _buildDocumentItem(doc);
-                  },
-                ),
+                if (documents.isEmpty)
+                  EmptyContentWidget()
+                else
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: documents.length,
+                    padding: EdgeInsets.zero,
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.toW),
+                    itemBuilder: (context, index) {
+                      final doc = documents[index];
+                      return _buildDocumentItem(doc);
+                    },
+                  ),
               ],
             ),
           ),

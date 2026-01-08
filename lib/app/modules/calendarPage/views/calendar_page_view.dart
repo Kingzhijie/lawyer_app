@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_calendar/flutter_advanced_calendar.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/components/common_app_bar.dart';
+import 'package:lawyer_app/app/common/components/empty_content_widget.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
@@ -202,18 +203,7 @@ class CalendarPageView extends GetView<CalendarPageController> {
     final tasks = controller.todoTaskList.value;
 
     if (tasks.isEmpty) {
-      return Padding(
-        padding: EdgeInsets.all(40.toW),
-        child: Center(
-          child: Text(
-            '暂无待办事项',
-            style: TextStyle(
-              fontSize: 14.toSp,
-              color: AppColors.color_FFC5C5C5,
-            ),
-          ),
-        ),
-      );
+      return EmptyContentWidget(top: 120.toW);
     }
     return ListView.builder(
       shrinkWrap: true,

@@ -45,7 +45,13 @@ class AgencyCenterPageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final index = Get.arguments ?? 0;
+    final arguments = Get.arguments;
+    var index = 0;
+    if (arguments is Map) {
+      index = arguments['index'] ?? 0;
+    } else {
+      index = arguments ?? 0;
+    }
     if (index > 0) {
       tabIndex.value = index;
     }
