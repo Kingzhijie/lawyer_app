@@ -5,6 +5,7 @@ import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bottom_panel.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bubble_left.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_bubble_right.dart';
+import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_history_widget.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/chat_input_bar.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/no_find_case_widget.dart';
 import 'package:lawyer_app/app/modules/chatPage/views/widgets/voice_recording_overlay.dart';
@@ -19,10 +20,32 @@ import 'package:get/get.dart';
 class ChatPageView extends GetView<ChatPageController> {
   const ChatPageView({super.key});
 
+  static final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomInset: false, // 官方推荐保持 false，由控件管理键盘/面板切换
+      endDrawer: Drawer(
+        clipBehavior: Clip.none,
+        width: AppScreenUtil.screenWidth * 0.8,
+        child: Obx(
+          () => ChatHistoryWidget(
+            sessionId: controller.sessionId.value,
+            agentId: controller.agentId.value,
+            newChatCallBack: () {
+              _scaffoldKey.currentState?.closeEndDrawer();
+              // currentVc?.addNewChat();
+            },
+            chooseHistoryCallBack: (id) {
+              _scaffoldKey.currentState?.closeEndDrawer();
+              controller.getChatContent(id);
+            },
+          ),
+        ),
+      ),
       body: Stack(
         children: [
           // 背景
@@ -58,7 +81,8 @@ class ChatPageView extends GetView<ChatPageController> {
                     }
                     // 使用 reverse: true 模式，新消息自动出现在底部
                     // 消息少时使用 shrinkWrap + Align 让消息显示在顶部
-                    final reversedMessages = controller.messages.reversed.toList();
+                    final reversedMessages = controller.messages.reversed
+                        .toList();
                     final useShrinkWrap = reversedMessages.length <= 10;
                     return Align(
                       alignment: Alignment.topCenter,
@@ -158,7 +182,18 @@ class ChatPageView extends GetView<ChatPageController> {
                 color: AppColors.color_E6000000,
               ),
             ),
-            SizedBox(width: 34.toW),
+            Container(
+              width: 34.toW,
+              alignment: Alignment.centerLeft,
+              child:
+                  Icon(
+                    Icons.history,
+                    color: AppColors.color_E6000000,
+                    size: 24.toW,
+                  ).withMarginOnly(right: 15.toW).withOnTap(() {
+                    _scaffoldKey.currentState?.openEndDrawer();
+                  }),
+            ),
           ],
         ),
       ),

@@ -126,6 +126,7 @@ dependencies:
   #设备添加日历提醒事件
   device_calendar: ^4.3.3
   timezone: ^0.9.0
+  flutter_slidable: ^4.0.3
   #日历
   flutter_advanced_calendar:
     path: plugins/flutter_advanced_calendar-1.4.3

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -24,6 +25,7 @@ import 'package:vibration/vibration.dart';
 import '../../../http/net/sse_utils.dart';
 import '../../../utils/image_picker_util.dart';
 import '../models/chat_agent_ui_config.dart';
+import '../models/chat_history_list.dart';
 import '../models/ui_message.dart';
 
 enum ChatPanelType { none, keyboard, tool }
@@ -51,10 +53,10 @@ class ChatPageController extends GetxController {
   StreamSubscription<Amplitude>? _amplitudeSubscription;
 
   ///聊天智能体id
-  String? agentId;
+  var agentId = Rx<String?>(null);
 
   ///聊天id
-  String? sessionId;
+  var sessionId = Rx<String?>(null);
 
   // 当前消息内容
   final RxString currentMessage = ''.obs;
@@ -197,24 +199,24 @@ class ChatPageController extends GetxController {
     isShowNoCase.value = false;
     logPrint('🚀 开始发送消息: $text');
     
-    if (ObjectUtils.isEmptyString(agentId)) {
+    if (ObjectUtils.isEmptyString(agentId.value)) {
       logPrint('⚠️ agentId 为空');
       return;
     }
-    if (ObjectUtils.isEmptyString(sessionId)) {
+    if (ObjectUtils.isEmptyString(sessionId.value)) {
       logPrint('📝 创建会话 ID...');
       var result = await NetUtils.post(
         Apis.createChatId,
-        params: {'agentId': agentId, 'subject': text},
+        params: {'agentId': agentId.value, 'subject': text},
         isLoading: false,
       );
       if (result.code == NetCodeHandle.success) {
-        sessionId = result.data.toString();
+        sessionId.value = result.data.toString();
         logPrint('✅ 会话 ID: $sessionId');
       }
     }
 
-    if (!ObjectUtils.isEmptyString(sessionId)) {
+    if (!ObjectUtils.isEmptyString(sessionId.value)) {
       logPrint('📤 添加用户消息');
       messages.add(
         UiMessage(
@@ -229,14 +231,14 @@ class ChatPageController extends GetxController {
 
       // 使用真实的 SSE 连接替代模拟回复
       logPrint('🔄 调用 _sendMessageWithSSE');
-      _sendMessageWithSSE(text, sessionId!);
+      _sendMessageWithSSE(text, sessionId.value!);
     }
   }
 
   /// 使用 SSE 发送消息并接收 AI 回复
-  Future<void> _sendMessageWithSSE(String message, String sessionId) async {
+  Future<void> _sendMessageWithSSE(String message, String sId) async {
     logPrint('🎯 _sendMessageWithSSE 开始执行');
-    logPrint('📝 message: $message, sessionId: $sessionId');
+    logPrint('📝 message: $message, sessionId: $sId');
     
     // 取消之前的连接
     cancelConnection();
@@ -288,7 +290,7 @@ class ChatPageController extends GetxController {
     final request = SSEChatRequest(
       message: message,
       requestId: requestId,
-      hisId: sessionId.toNullInt(),
+      hisId: sId.toNullInt(),
       files: uploadFiles,
       think: enableThinkingMode, // 使用配置项
     );
@@ -297,7 +299,7 @@ class ChatPageController extends GetxController {
 
     try {
       _sseSubscription = await SSEUtils().chatStream(
-        agentId: agentId!,
+        agentId: agentId.value!,
         request: request,
         onMessage: (data) {
           logPrint('📨 收到 SSE 事件 - eventType: ${data.eventType}');
@@ -826,17 +828,17 @@ class ChatPageController extends GetxController {
     NetUtils.get(Apis.systemConfig).then((result) {
       if (result.code == NetCodeHandle.success) {
         var id = result.data?['sys_def_agent'];
-        agentId = id.toString();
-        getAgentUIConfig(id);
+        agentId.value = id.toString();
+        _loadSessions(id);
       }
     });
   }
 
   ///获取Ai智能图UI配置
-  void getAgentUIConfig(id) {
+  void getAgentUIConfig(aId) {
     NetUtils.get(
       Apis.agentUIConfig,
-      queryParameters: {'id': id},
+      queryParameters: {'id': aId},
       isLoading: false,
     ).then((result) {
       if (result.code == NetCodeHandle.success) {
@@ -846,6 +848,64 @@ class ChatPageController extends GetxController {
     });
   }
 
+  ///获取最新的一条对话
+  Future<void> _loadSessions(aId) async {
+    NetUtils.get(
+      Apis.getAiHistoryList,
+      queryParameters: {
+        'agentId': aId,
+        'pageNo': 1,
+        'pageSize': 1,
+      },
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        var list = (result.data['list'] as List)
+            .map((e) => ChatHistoryList.fromJson(e))
+            .toList();
+        if (list.isNotEmpty) {
+          var sId = list.first.id;
+          getChatContent(sId);
+        } else {
+          getAgentUIConfig(aId);
+        }
+      }
+    });
+  }
+
+  ///获取聊天内容
+  void getChatContent(sId){
+    sessionId.value = sId.toString();
+    messages.clear();
+    NetUtils.get(
+      Apis.getAiChatContentList,
+      queryParameters: {
+        'hisId': sId
+      },
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        List datas = result.data as List;
+        for (var map in datas) {
+          var msg = map['message'].toString();
+          if (!ObjectUtils.isEmptyString(msg)) {
+            var msgMap = json.decode(msg);
+            var content = msgMap['content'].toString();
+            final finalMessage = UiMessage(
+              id: map['id'].toString(),
+              text: ObjectUtils.isEmptyString(content) ? '未查询到案件' : content,
+              isAi: msgMap['role'] == 'assistant',
+              createdAt: DateTime.fromMillisecondsSinceEpoch(msgMap['createTime'].toString().toInt()),
+              hasAnimated: true, // 流式传输已经是逐字显示，不需要打字动画
+              isThinkingDone: true, // 流式传输完成
+            );
+            messages.value.add(finalMessage);
+          }
+        }
+        messages.refresh();
+      }
+    });
+  }
+
+
   /// 取消当前连接
   void cancelConnection() {
     _sseSubscription?.cancel();
@@ -853,4 +913,6 @@ class ChatPageController extends GetxController {
     isLoading.value = false;
     logPrint('SSE 连接已取消');
   }
+
+
 }

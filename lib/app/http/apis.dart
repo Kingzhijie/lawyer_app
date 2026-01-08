@@ -112,7 +112,15 @@ class Apis {
   ///AI智能体UI配置
   static String agentUIConfig = '/ai/agent-ui-config/get';
 
+  ///获取历史消息
+  static String getAiHistoryList = '/ai/chat-his/page';
+
+  ///获取对话详细内容
+  static String getAiChatContentList = '/ai/chat-msg/all';
+
+
   ///AI智能体聊天流式接口
   static String aiChatStream(String agentId) =>
       '/ai/super-agent/chat/stream/$agentId';
+
 }
