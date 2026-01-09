@@ -46,6 +46,7 @@ class TaskCard extends StatelessWidget {
                     imageUrl: model?.logo,
                     width: 32.toW,
                     height: 32.toW,
+                    placeholderColor: AppColors.color_FFF8F8F8,
                     circularRadius: 6.toW,
                   ),
                   SizedBox(width: 8.toW),

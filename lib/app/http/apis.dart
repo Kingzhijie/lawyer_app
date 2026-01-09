@@ -28,6 +28,9 @@ class Apis {
   ///案件基本信息列表
   static String caseBasicInfoList = '/legal/case-basic-info/page';
 
+  ///搜索案件
+  static String searchCaseInfoList = '/legal/case-basic-info/page-simple';
+
   ///案件基本信息
   static String caseBasicInfo = '/legal/case-basic-info/get';
 

@@ -76,7 +76,11 @@ class ChatPageView extends GetView<ChatPageController> {
                               AppScreenUtil.navigationBarHeight -
                               AppScreenUtil.bottomBarHeight -
                               80.toW,
-                          child: NoFindCaseWidget(),
+                          child: NoFindCaseWidget(
+                            closeWidget: () {
+                              controller.isShowNoCase.value = false;
+                            },
+                          ),
                         ).unfocusWhenTap(),
                       );
                     }
@@ -157,7 +161,7 @@ class ChatPageView extends GetView<ChatPageController> {
           }),
         ],
       ),
-    );
+    ).setStatusBarStyle();
   }
 
   Widget _buildTopBar(BuildContext context) {

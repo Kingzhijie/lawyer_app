@@ -16,7 +16,8 @@ import '../../../../routes/app_pages.dart';
 import '../../../casePage/models/case_base_info_model.dart';
 
 class NoFindCaseWidget extends StatefulWidget {
-  const NoFindCaseWidget({super.key});
+  final Function() closeWidget;
+  const NoFindCaseWidget({super.key, required this.closeWidget});
 
   @override
   State<NoFindCaseWidget> createState() => _NoFindCaseWidgetState();
@@ -69,10 +70,10 @@ class _NoFindCaseWidgetState extends State<NoFindCaseWidget> {
     Map<String, dynamic> parameters = {
       'page': 1,
       'pageSize': 3,
-      'title': searchController.text,
+      'caseSearch': searchController.text,
     };
     var result = await NetUtils.get(
-      Apis.caseBasicInfoList,
+      Apis.searchCaseInfoList,
       isLoading: false,
       queryParameters: parameters,
     );
@@ -96,103 +97,120 @@ class _NoFindCaseWidgetState extends State<NoFindCaseWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(top: 20.toW, left: 15.toW, right: 15.toW),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // 顶部提示文字
-          Text(
-            '未查询到案件相关信息，请选择需要更新的案件：',
-            style: TextStyle(
-              fontSize: 18.toSp,
-              color: AppColors.color_E6000000,
-              height: 1.5,
-            ),
+    return Stack(
+      children: [
+        Container(
+          constraints: BoxConstraints(
+              minHeight: 420.toW
           ),
-          SizedBox(height: 12.toW),
-          // 搜索框
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.toW, vertical: 12.toW),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12.toW),
-              border: Border.all(color: Color(0xFFEEEEEE), width: 0.5),
-            ),
-            child: Row(
-              children: [
-                ImageUtils(
-                  imageUrl: Assets.home.searchIcon.path,
-                  width: 15.toW,
-                ),
-                SizedBox(width: 8.toW),
-                Expanded(
-                  child: TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: '请输入案件信息',
-                      hintStyle: TextStyle(
-                        fontSize: 14.toSp,
-                        color: AppColors.color_66000000,
-                      ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    onChanged: (text){
-                      if (searchController.text.isEmpty) {
-                        setState(() {});
-                      }
-                    },
-                    onSubmitted: (text){
-                      searchCaseList();
-                    },
+          padding: EdgeInsets.only(top: 40.toW, left: 15.toW, right: 15.toW),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 顶部提示文字
+                  Text(
+                    '未查询到案件相关信息，请选择需要更新的案件：',
                     style: TextStyle(
-                      fontSize: 14.toSp,
+                      fontSize: 18.toSp,
                       color: AppColors.color_E6000000,
+                      height: 1.5,
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 12.toW),
-          if (searchList.isNotEmpty && searchController.text.isNotEmpty)
-            _setStatusWidget('搜索结果', searchList)
-          else
-            ...[
-              // 待更新列表
-              _setStatusWidget('待更新', caseWaitingList),
-              _setStatusWidget('进行中', caseingList),
-            ],
-          SizedBox(height: 12.toW),
-          // 确认按钮
-          Container(
-            width: double.infinity,
-            height: 52.toW,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.toW),
-              gradient: LinearGradient(colors: [
-                Color(0xFF0060FF), Color(0xFF10B2F9)
-              ])
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              '确认',
-              style: TextStyle(
-                fontSize: 16.toSp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
+                  SizedBox(height: 12.toW),
+                  // 搜索框
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.toW, vertical: 12.toW),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.toW),
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 0.5),
+                    ),
+                    child: Row(
+                      children: [
+                        ImageUtils(
+                          imageUrl: Assets.home.searchIcon.path,
+                          width: 15.toW,
+                        ),
+                        SizedBox(width: 8.toW),
+                        Expanded(
+                          child: TextField(
+                            controller: searchController,
+                            decoration: InputDecoration(
+                              hintText: '请输入案件信息',
+                              hintStyle: TextStyle(
+                                fontSize: 14.toSp,
+                                color: AppColors.color_66000000,
+                              ),
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            onChanged: (text){
+                              if (searchController.text.isEmpty) {
+                                setState(() {});
+                              }
+                            },
+                            onSubmitted: (text){
+                              searchCaseList();
+                            },
+                            style: TextStyle(
+                              fontSize: 14.toSp,
+                              color: AppColors.color_E6000000,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 12.toW),
+                  if (searchList.isNotEmpty && searchController.text.isNotEmpty)
+                    _setStatusWidget('搜索结果', searchList)
+                  else
+                    ...[
+                      // 待更新列表
+                      _setStatusWidget('待更新', caseWaitingList),
+                      _setStatusWidget('进行中', caseingList),
+                    ],
+                ],
               ),
-            ),
-          ).withOnTap((){
-            if (selectedId != null) {
-              Get.toNamed(Routes.CASE_DETAIL_PAGE, arguments: {'caseId': selectedId});
-            }
-          }),
-        ],
-      ),
+              // 确认按钮
+              Container(
+                width: double.infinity,
+                height: 52.toW,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.toW),
+                    gradient: LinearGradient(colors: [
+                      Color(0xFF0060FF), Color(0xFF10B2F9)
+                    ])
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  '确认',
+                  style: TextStyle(
+                    fontSize: 16.toSp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ).withOnTap((){
+                if (selectedId != null) {
+                  Get.toNamed(Routes.CASE_DETAIL_PAGE, arguments: {'caseId': selectedId});
+                }
+              }),
+            ],
+          ),
+        ),
+        Positioned(
+            top: 0, right: 15.toW,
+            child: Icon(Icons.close, size: 25.toW, color: AppColors.color_66000000).withOnTap((){
+              widget.closeWidget();
+            }))
+
+      ],
     );
   }
 
