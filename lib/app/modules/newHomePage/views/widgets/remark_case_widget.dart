@@ -11,12 +11,22 @@ import 'package:lawyer_app/gen/assets.gen.dart';
 
 import '../../models/case_task_model.dart';
 
-class RemarkCaseWidget extends StatelessWidget {
+class RemarkCaseWidget extends StatefulWidget {
   final List<Notes>? notes;
   const RemarkCaseWidget({super.key, this.notes});
 
   @override
+  State<RemarkCaseWidget> createState() => _RemarkCaseWidgetState();
+}
+
+class _RemarkCaseWidgetState extends State<RemarkCaseWidget> {
+
+  bool isOpen = false;
+
+  @override
   Widget build(BuildContext context) {
+    var totalCount = widget.notes?.length ?? 0;
+    var count = isOpen ? totalCount : (totalCount > 3 ? 3 : totalCount);
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -38,17 +48,17 @@ class RemarkCaseWidget extends StatelessWidget {
                       color: AppColors.color_66000000,
                       fontSize: 13.toSp,
                     ),
-                  )
+                  ),
                 ],
               ),
               ListView.builder(
-                itemCount: notes?.length ?? 0,
+                itemCount: count,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
-                  var model = notes![index];
-                  bool isHiddenLine = index == (notes!.length - 1);
+                  var model = widget.notes![index];
+                  bool isHiddenLine = index == (widget.notes!.length - 1);
                   return Container(
                     decoration: BoxDecoration(
                       border: isHiddenLine
@@ -66,7 +76,7 @@ class RemarkCaseWidget extends StatelessWidget {
                       children: [
                         RichText(
                           text: TextSpan(
-                            text: model.createBy ?? '',
+                            text: model.createBy ?? ' ',
                             style: TextStyle(
                               color: AppColors.color_99000000,
                               fontSize: 10.toSp,
@@ -97,6 +107,28 @@ class RemarkCaseWidget extends StatelessWidget {
                   );
                 },
               ),
+              if (totalCount > 3)
+              Container(
+                height: 30.toW,
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      isOpen ? '收起' : '展开',
+                      style: TextStyle(
+                        color: AppColors.theme,
+                        fontSize: 12.toSp,
+                      ),
+                    ),
+                    Icon(isOpen ? Icons.keyboard_arrow_up_sharp : Icons.keyboard_arrow_down_sharp, size: 18.toW, color: AppColors.theme),
+                  ],
+                ),
+              ).withOnTap((){
+                setState(() {
+                  isOpen = !isOpen;
+                });
+              }),
             ],
           ),
         ),

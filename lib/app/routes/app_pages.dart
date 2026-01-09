@@ -6,8 +6,6 @@ import '../modules/addTaskPage/bindings/add_task_page_binding.dart';
 import '../modules/addTaskPage/views/add_task_page_view.dart';
 import '../modules/agencyCenterPage/bindings/agency_center_page_binding.dart';
 import '../modules/agencyCenterPage/views/agency_center_page_view.dart';
-import '../modules/agencyPage/bindings/agency_page_binding.dart';
-import '../modules/agencyPage/views/agency_page_view.dart';
 import '../modules/attorneysFeePage/bindings/attorneys_fee_page_binding.dart';
 import '../modules/attorneysFeePage/views/attorneys_fee_page_view.dart';
 import '../modules/calendarPage/bindings/calendar_page_binding.dart';
@@ -68,11 +66,6 @@ class AppPages {
       name: _Paths.CHAT_PAGE,
       page: () => const ChatPageView(),
       binding: ChatPageBinding(),
-    ),
-    GetPage(
-      name: _Paths.AGENCY_PAGE,
-      page: () => const AgencyPageView(),
-      binding: AgencyPageBinding(),
     ),
     GetPage(
       name: _Paths.CASE_PAGE,

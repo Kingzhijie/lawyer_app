@@ -8,20 +8,10 @@ import 'logger.dart';
 class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final String accessToken = 'test1';
-    //StorageUtils.getToken();
+    final String accessToken = StorageUtils.getToken();
     logPrint('accessToken===$accessToken');
-    options.headers['Authorization'] = 'test1'; // 'Bearer $accessToken';
-    // options.headers['App-brand'] = base64Encode(utf8.encode(DeviceInfo.brand ?? ''));
-    // options.headers['Device-type'] = PlatformUtils.platform;
-    // options.headers['platformID'] = PlatformUtils.isIOS ? 1 : 2;
-    // options.headers['App-build'] = DeviceInfo.buildNumber;
-    // options.headers['App-version'] = DeviceInfo.version;
-    // options.headers['channel'] = AppInfoUtils.instance.appChannel;
-    // options.headers['Accept-Encoding'] = 'gzip, deflate';
-    //
-    // options.headers['latitude'] = AppInfoUtils.instance.latitude;
-    // options.headers['longitude'] = AppInfoUtils.instance.longitude;
+    options.headers['Authorization'] = 'test1';
+    //'Bearer $accessToken';
     super.onRequest(options, handler);
   }
 }

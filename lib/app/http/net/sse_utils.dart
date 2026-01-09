@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../../config/dio_config.dart';
+import '../../utils/storage_utils.dart';
 import 'tool/logger.dart';
 
 /// SSE 消息数据模型
@@ -244,8 +245,7 @@ class SSEUtils {
       logPrint('SSE 请求参数: ${jsonEncode(request.toJson())}');
 
       // 获取 token
-      final token = 'test1';
-      //StorageUtils.getToken();
+      final token = StorageUtils.getToken();
 
       // 构建请求头
       final headers = {

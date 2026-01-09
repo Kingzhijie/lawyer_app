@@ -81,6 +81,8 @@ class _LabelCustomTabItemState extends State<LabelCustomTabItem> {
       indicatorSize: TabBarIndicatorSize.label,
       unselectedLabelStyle: widget.unselectedLabelStyle,
       indicator: widget.indicator,
+      splashFactory: NoSplash.splashFactory, // 去掉波纹效果
+      overlayColor: WidgetStateProperty.all(Colors.transparent), // 去掉点击高亮
       tabs: _setTabs(),
     );
   }

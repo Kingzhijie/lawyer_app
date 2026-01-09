@@ -17,8 +17,6 @@ import 'package:lawyer_app/gen/assets.gen.dart';
 import '../../../../launch_page.dart';
 import '../../../common/components/keep_alive_wrapper.dart';
 import '../../../common/constants/app_colors.dart';
-import '../../agencyPage/controllers/agency_page_controller.dart';
-import '../../agencyPage/views/agency_page_view.dart';
 import '../../casePage/controllers/case_page_controller.dart';
 import '../../casePage/views/case_page_view.dart';
 import '../../chatPage/controllers/chat_page_controller.dart';
