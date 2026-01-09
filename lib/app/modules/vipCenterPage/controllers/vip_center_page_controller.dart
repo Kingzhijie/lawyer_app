@@ -6,6 +6,7 @@ import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/modules/vipCenterPage/models/member_item_model.dart';
 import 'package:lawyer_app/app/modules/vipCenterPage/views/widgets/vip_success_pop.dart';
+import 'package:lawyer_app/app/utils/html_praser.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
 
 class VipCenterPageController extends GetxController {
