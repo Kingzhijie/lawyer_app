@@ -100,7 +100,7 @@ class ContractDetailPageController extends GetxController {
     }
 
     if (userModel.hasTeamOffice == false) {
-      showToast('跳转引导开会员');
+      Get.toNamed(Routes.VIP_CENTER_PAGE);
       return;
     }
 

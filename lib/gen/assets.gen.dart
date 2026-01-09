@@ -142,6 +142,33 @@ class $AssetsCommonGen {
   AssetGenImage get noDataIcon =>
       const AssetGenImage('assets/common/no_data.png');
 
+  AssetGenImage get vipBackIcon =>
+      const AssetGenImage('assets/common/vip_back.png');
+
+  AssetGenImage get vipIcon =>
+      const AssetGenImage('assets/common/vip_icon.png');
+
+  AssetGenImage get closeArrowIcon =>
+      const AssetGenImage('assets/common/close-circle.png');
+
+  AssetGenImage get sharePyq =>
+      const AssetGenImage('assets/common/share_pyq.png');
+
+  AssetGenImage get shareWx =>
+      const AssetGenImage('assets/common/share_wx.png');
+
+  AssetGenImage get shareSave =>
+      const AssetGenImage('assets/common/share_save.png');
+
+  AssetGenImage get shareClose =>
+      const AssetGenImage('assets/common/share_close.png');
+
+  AssetGenImage get shareLogo =>
+      const AssetGenImage('assets/common/share_logo.png');
+
+  AssetGenImage get sharePosterBack =>
+      const AssetGenImage('assets/common/share_poster_back.png');
+
   /// List of all assets
   List<AssetGenImage> get values => [
     actionFileIcon,
@@ -177,6 +204,15 @@ class $AssetsCommonGen {
     weixuanzhongAnjian,
     xuanzhongAnjian,
     noDataIcon,
+    vipBackIcon,
+    vipIcon,
+    closeArrowIcon,
+    sharePyq,
+    shareWx,
+    shareClose,
+    shareLogo,
+    shareSave,
+    sharePosterBack,
   ];
 }
 
