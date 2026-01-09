@@ -230,7 +230,7 @@ class VipCenterPageView extends GetView<VipCenterPageController> {
                       ),
                     ),
                   ).withOnTap(() {
-                    // 点击支付
+                    controller.onCreatePayOrder();
                   }),
                 ],
               ).withPaddingOnly(left: 12.toW, top: 5.toW),

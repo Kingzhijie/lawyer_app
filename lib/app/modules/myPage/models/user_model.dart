@@ -13,18 +13,19 @@
 
 class UserModel {
   UserModel({
-      num? id, 
-      String? nickname, 
-      String? avatar, 
-      String? mobile, 
-      num? sex,  //1男性, 2女性, 0未填写
-      num? point, 
-      num? experience, 
-      Level? level, 
-      bool? brokerageEnabled, 
-      bool? hasTeamOffice, 
-      bool? hasNonLitigation, 
-      String? pkgEffectiveTime,}){
+    num? id,
+    String? nickname,
+    String? avatar,
+    String? mobile,
+    num? sex, //1男性, 2女性, 0未填写
+    num? point,
+    num? experience,
+    Level? level,
+    bool? brokerageEnabled,
+    bool? hasTeamOffice,
+    bool? hasNonLitigation,
+    int? pkgEffectiveTime,
+  }) {
     _id = id;
     _nickname = nickname;
     _avatar = avatar;
@@ -37,7 +38,7 @@ class UserModel {
     _hasTeamOffice = hasTeamOffice;
     _hasNonLitigation = hasNonLitigation;
     _pkgEffectiveTime = pkgEffectiveTime;
-}
+  }
 
   UserModel.fromJson(dynamic json) {
     _id = json['id'];
@@ -64,32 +65,34 @@ class UserModel {
   bool? _brokerageEnabled;
   bool? _hasTeamOffice;
   bool? _hasNonLitigation;
-  String? _pkgEffectiveTime;
-UserModel copyWith({  num? id,
-  String? nickname,
-  String? avatar,
-  String? mobile,
-  num? sex,
-  num? point,
-  num? experience,
-  Level? level,
-  bool? brokerageEnabled,
-  bool? hasTeamOffice,
-  bool? hasNonLitigation,
-  String? pkgEffectiveTime,
-}) => UserModel(  id: id ?? _id,
-  nickname: nickname ?? _nickname,
-  avatar: avatar ?? _avatar,
-  mobile: mobile ?? _mobile,
-  sex: sex ?? _sex,
-  point: point ?? _point,
-  experience: experience ?? _experience,
-  level: level ?? _level,
-  brokerageEnabled: brokerageEnabled ?? _brokerageEnabled,
-  hasTeamOffice: hasTeamOffice ?? _hasTeamOffice,
-  hasNonLitigation: hasNonLitigation ?? _hasNonLitigation,
-  pkgEffectiveTime: pkgEffectiveTime ?? _pkgEffectiveTime,
-);
+  int? _pkgEffectiveTime;
+  UserModel copyWith({
+    num? id,
+    String? nickname,
+    String? avatar,
+    String? mobile,
+    num? sex,
+    num? point,
+    num? experience,
+    Level? level,
+    bool? brokerageEnabled,
+    bool? hasTeamOffice,
+    bool? hasNonLitigation,
+    int? pkgEffectiveTime,
+  }) => UserModel(
+    id: id ?? _id,
+    nickname: nickname ?? _nickname,
+    avatar: avatar ?? _avatar,
+    mobile: mobile ?? _mobile,
+    sex: sex ?? _sex,
+    point: point ?? _point,
+    experience: experience ?? _experience,
+    level: level ?? _level,
+    brokerageEnabled: brokerageEnabled ?? _brokerageEnabled,
+    hasTeamOffice: hasTeamOffice ?? _hasTeamOffice,
+    hasNonLitigation: hasNonLitigation ?? _hasNonLitigation,
+    pkgEffectiveTime: pkgEffectiveTime ?? _pkgEffectiveTime,
+  );
   num? get id => _id;
   String? get nickname => _nickname;
   String? get avatar => _avatar;
@@ -101,7 +104,7 @@ UserModel copyWith({  num? id,
   bool? get brokerageEnabled => _brokerageEnabled;
   bool? get hasTeamOffice => _hasTeamOffice;
   bool? get hasNonLitigation => _hasNonLitigation;
-  String? get pkgEffectiveTime => _pkgEffectiveTime;
+  int? get pkgEffectiveTime => _pkgEffectiveTime;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -121,7 +124,6 @@ UserModel copyWith({  num? id,
     map['pkgEffectiveTime'] = _pkgEffectiveTime;
     return map;
   }
-
 }
 
 /// id : 1
@@ -130,16 +132,12 @@ UserModel copyWith({  num? id,
 /// icon : "https://www.iocoder.cn/yudao.jpg"
 
 class Level {
-  Level({
-      num? id, 
-      String? name, 
-      num? level, 
-      String? icon,}){
+  Level({num? id, String? name, num? level, String? icon}) {
     _id = id;
     _name = name;
     _level = level;
     _icon = icon;
-}
+  }
 
   Level.fromJson(dynamic json) {
     _id = json['id'];
@@ -151,15 +149,12 @@ class Level {
   String? _name;
   num? _level;
   String? _icon;
-Level copyWith({  num? id,
-  String? name,
-  num? level,
-  String? icon,
-}) => Level(  id: id ?? _id,
-  name: name ?? _name,
-  level: level ?? _level,
-  icon: icon ?? _icon,
-);
+  Level copyWith({num? id, String? name, num? level, String? icon}) => Level(
+    id: id ?? _id,
+    name: name ?? _name,
+    level: level ?? _level,
+    icon: icon ?? _icon,
+  );
   num? get id => _id;
   String? get name => _name;
   num? get level => _level;
@@ -173,5 +168,4 @@ Level copyWith({  num? id,
     map['icon'] = _icon;
     return map;
   }
-
 }
