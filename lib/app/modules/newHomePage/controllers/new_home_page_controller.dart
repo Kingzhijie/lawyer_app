@@ -43,7 +43,6 @@ class NewHomePageController extends GetxController {
 
   int pageNo = 1;
 
-
   final EasyRefreshController easyRefreshController = EasyRefreshController(
     controlFinishRefresh: true,
     controlFinishLoad: true,
@@ -97,7 +96,7 @@ class NewHomePageController extends GetxController {
     }
 
     if (userModel.value!.hasTeamOffice == false) {
-      showToast('跳转引导开会员');
+      Get.toNamed(Routes.VIP_CENTER_PAGE);
       return;
     }
 
@@ -260,7 +259,7 @@ class NewHomePageController extends GetxController {
       if (ObjectUtils.boolValue(model.isAddCalendar)) {
         if (model.addCalendarId != null) {
           bool isSuc = await DeviceCalendarUtil.deleteEvent(
-            eventId:model.addCalendarId!,
+            eventId: model.addCalendarId!,
           );
           logPrint('提醒删除结果===$isSuc');
         }
@@ -295,7 +294,7 @@ class NewHomePageController extends GetxController {
       params: {
         'addCalendar': !ObjectUtils.boolValue(model.isAddCalendar),
         'id': model.id,
-        'addCalendarId': eventId
+        'addCalendarId': eventId,
       },
     ).then((result) {
       if (result.code == NetCodeHandle.success) {
@@ -326,10 +325,8 @@ class NewHomePageController extends GetxController {
             textColor: AppColors.color_E6000000,
           ),
         ],
-        clickItemCallBack: (contentModel) async {
-        },
+        clickItemCallBack: (contentModel) async {},
       ),
     );
   }
-
 }

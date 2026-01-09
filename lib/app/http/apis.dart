@@ -88,6 +88,12 @@ class Apis {
   ///会员套餐列表
   static String memberPageList = '/member/package/page';
 
+  ///创建会员订单
+  static String createMemberOrder = '/member/package-order/create';
+
+  ///会员套餐订单
+  static String memberOrder = '/member/package-order/get';
+
   ///会员邀请活动
   static String inviteActivity = '/member/invite-activity/get';
 

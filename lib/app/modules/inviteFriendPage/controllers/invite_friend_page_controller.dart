@@ -6,6 +6,7 @@ import 'package:lawyer_app/app/http/net/net_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/modules/inviteFriendPage/models/invite_rule_model.dart';
 import 'package:lawyer_app/app/modules/inviteFriendPage/models/invite_user_model.dart';
+import 'package:lawyer_app/app/modules/inviteFriendPage/views/widgets/share_poster_pop.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
 
@@ -30,6 +31,7 @@ class InviteFriendPageController extends GetxController {
   var pageNo = 1;
   bool isLoading = false;
   final inviteRules = <InviteRuleModel>[].obs;
+  var ruleDsc = '';
 
   /// 邀请记录列表
   final inviteRecords = <InviteUserModel>[].obs;
@@ -45,6 +47,7 @@ class InviteFriendPageController extends GetxController {
   void _getInviteActivity() async {
     var result = await NetUtils.get(Apis.inviteActivity, isLoading: false);
     if (result.code == NetCodeHandle.success) {
+      ruleDsc = result.data['ruleDsc'] as String? ?? '';
       inviteRules.value = (result.data['rules'] as List)
           .map((e) => InviteRuleModel.fromJson(e))
           .toList();
@@ -133,12 +136,7 @@ class InviteFriendPageController extends GetxController {
                 ],
               ),
               SizedBox(height: 16.toW),
-              _buildRuleItem('1. 邀请好友首次注册成功，您可获得10积分奖励'),
-              _buildRuleItem('2. 累计邀请1人，额外奖励10积分'),
-              _buildRuleItem('3. 累计邀请3人，额外奖励20积分'),
-              _buildRuleItem('4. 累计邀请10人，额外奖励30积分'),
-              _buildRuleItem('5. 累计邀请50人，可获得惊喜福利'),
-              _buildRuleItem('6. 积分可用于兑换会员权益'),
+              _buildRuleItem(ruleDsc),
               SizedBox(height: 20.toW),
               SizedBox(
                 width: double.infinity,
@@ -180,8 +178,7 @@ class InviteFriendPageController extends GetxController {
 
   /// 发送邀请海报
   void sendInvitePoster() {
-    showToast('生成邀请海报中...');
-    // TODO: 实现生成海报并分享功能
+    Get.dialog(SharePosterPop());
   }
 
   /// 邀请微信好友
