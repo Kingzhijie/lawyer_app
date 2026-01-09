@@ -1,3 +1,4 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_calendar/flutter_advanced_calendar.dart';
 import 'package:get/get.dart';
@@ -26,6 +27,10 @@ class CalendarPageController extends GetxController {
   final RxList<DateTime> eventDates = <DateTime>[].obs;
   List<CaseTaskModel> monthsTodoTaskList = [];
   final RxList<CaseTaskModel> todoTaskList = <CaseTaskModel>[].obs;
+
+  final EasyRefreshController easyRefreshController = EasyRefreshController(
+    controlFinishRefresh: true,
+  );
 
   @override
   void onInit() {
@@ -71,6 +76,7 @@ class CalendarPageController extends GetxController {
           final isDay = dueAt.isDay(currentDisplayMonth.value);
           return isDay;
         }).toList();
+        easyRefreshController.finishRefresh();
         if (!isOnlyShowEventDates) {
           taskList.sort(
             (a, b) => (a.createTime ?? 0).compareTo((b.createTime ?? 0)),
@@ -181,4 +187,11 @@ class CalendarPageController extends GetxController {
       }
     });
   }
+
+  ///查看详情
+  void lookDetail(CaseTaskModel task) {
+    Get.toNamed(Routes.CASE_DETAIL_PAGE, arguments: {'caseId': task.caseId});
+    // Get.toNamed(Routes.CASE_DETAIL_PAGE, arguments: task.caseId);
+  }
+
 }

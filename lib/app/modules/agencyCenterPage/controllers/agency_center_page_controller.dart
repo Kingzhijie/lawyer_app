@@ -250,4 +250,10 @@ class AgencyCenterPageController extends GetxController {
       ),
     );
   }
+
+  ///查看合同详情
+  void lookContractDetailPage(num? caseId) {
+    Get.toNamed(Routes.CONTRACT_DETAIL_PAGE, arguments: caseId);
+  }
+
 }

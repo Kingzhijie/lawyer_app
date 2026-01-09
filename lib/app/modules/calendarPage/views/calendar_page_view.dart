@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_calendar/flutter_advanced_calendar.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/components/common_app_bar.dart';
+import 'package:lawyer_app/app/common/components/easy_refresher.dart';
 import 'package:lawyer_app/app/common/components/empty_content_widget.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
@@ -48,12 +49,23 @@ class CalendarPageView extends GetView<CalendarPageController> {
               }),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          top: 12.toW,
-          bottom: AppScreenUtil.bottomBarHeight + 50.toW,
-        ),
-        child: Column(children: [_buildCalendarSection(), _buildTodoList()]),
+      body: MSEasyRefresher(
+        controller: controller.easyRefreshController,
+        onRefresh: (){
+          controller.getTaskList(isClickCalendar: true);
+        },
+        childBuilder: (context, physics) {
+          return SingleChildScrollView(
+            padding: EdgeInsets.only(
+              top: 12.toW,
+              bottom: AppScreenUtil.bottomBarHeight + 50.toW,
+            ),
+            physics: physics,
+            child: Column(
+              children: [_buildCalendarSection(), _buildTodoList()],
+            ),
+          );
+        },
       ),
     );
   }
@@ -113,10 +125,14 @@ class CalendarPageView extends GetView<CalendarPageController> {
             return AdvancedCalendar(
               controller: controller.calendarController,
               weekLineHeight: 50.toW,
-              startWeekDay: 0, // 周日开始
-              events: controller.eventDates.value, // 显示事件点
-              innerDot: true, // 显示小点
-              onHorizontalDrag: controller.onMonthChanged, // 监听月份切换
+              startWeekDay: 0,
+              // 周日开始
+              events: controller.eventDates.value,
+              // 显示事件点
+              innerDot: true,
+              // 显示小点
+              onHorizontalDrag: controller.onMonthChanged,
+              // 监听月份切换
               headerStyle: TextStyle(
                 fontSize: 0.toSp, // 隐藏默认header（我们自定义了）
               ),
@@ -217,7 +233,9 @@ class CalendarPageView extends GetView<CalendarPageController> {
           addRemarkAction: () {
             controller.addRemarkAction(task);
           },
-        );
+        ).withOnTap((){
+          controller.lookDetail(task);
+        });
       },
     );
   }

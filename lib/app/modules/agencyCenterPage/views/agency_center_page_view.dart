@@ -235,7 +235,9 @@ class AgencyCenterPageView extends StatelessWidget {
                           controller.addRemarkMethod(model);
                         }
                       },
-                    ).withMarginOnly(bottom: 12.toW);
+                    ).withOnTap((){
+                      controller.lookContractDetailPage(model.caseId);
+                    }).withMarginOnly(bottom: 12.toW);
                   },
                 ),
         );
