@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/string_extension.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/utils/html_praser.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
@@ -98,7 +101,43 @@ class VipCenterPageView extends GetView<VipCenterPageController> {
 
   ///设置对应的套餐图片
   Widget _setComboContentWidget() {
-    return ImageUtils(imageUrl: '', width: AppScreenUtil.screenWidth - 32.toW);
+    return Obx(() {
+      final detailContent = controller.selectMemberTag.value != null
+          ? controller.selectMemberTag.value!.detailContent!.replaceAll(
+              '\\n',
+              '&nbsp',
+            )
+          : '';
+      final nodes = RichTextParser.parse(detailContent);
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.toW, vertical: 20.toW),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: nodes.map((node) {
+            switch (node.type) {
+              case RichNodeType.text:
+                return Text(
+                  node.text ?? '',
+                  style: TextStyle(
+                    fontSize: 14.toSp,
+                    color: AppColors.color_E6000000,
+                    height: 1.6,
+                  ),
+                );
+              case RichNodeType.image:
+                return node.url != null && !node.url!.contains('file')
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Image.network(node.url!),
+                      )
+                    : SizedBox();
+              default:
+                return SizedBox();
+            }
+          }).toList(),
+        ),
+      );
+    });
   }
 
   Widget _setBottomWidget() {

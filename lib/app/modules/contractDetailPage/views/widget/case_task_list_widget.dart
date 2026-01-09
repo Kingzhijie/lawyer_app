@@ -119,28 +119,6 @@ class CaseTaskListWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // 图标
-          Container(
-            width: 32.toW,
-            height: 32.toW,
-            decoration: BoxDecoration(
-              color: AppColors.theme.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8.toW),
-            ),
-            child: item.logo != null
-                ? ImageUtils(
-                    imageUrl: item.logo,
-                    width: 32.toW,
-                    height: 32.toW,
-                    fit: BoxFit.cover,
-                  )
-                : Icon(
-                    Icons.people_outline,
-                    size: 20.toW,
-                    color: AppColors.theme,
-                  ),
-          ),
-          SizedBox(width: 12.toW),
           // 任务信息
           Expanded(
             child: Column(

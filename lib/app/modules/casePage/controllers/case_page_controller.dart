@@ -134,7 +134,7 @@ class CasePageController extends GetxController {
 
   ////查看案件详情
   void lookCaseDetail(CaseBaseInfoModel model) {
-    Get.toNamed(Routes.CASE_DETAIL_PAGE, arguments: {'caseId': model.id});
+    Get.toNamed(Routes.CONTRACT_DETAIL_PAGE, arguments: model.id);
   }
 
   void onLinkUser() {
