@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/components/empty_content_widget.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/doc_list_model.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/file_preview_util.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
@@ -116,14 +118,16 @@ class CaseDocumentWidget extends StatelessWidget {
             ),
           ),
           SizedBox(width: 6.toW),
-          // 箭头图标
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16.toW,
-            color: AppColors.color_99000000,
-          ),
+          if (item.files != null && item.files!.isNotEmpty)
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 20.toW,
+              color: AppColors.color_99000000,
+            ),
         ],
       ),
-    );
+    ).withOnTap(() {
+      FilePreviewUtil.previewFile(filePath: item.files?[0].fileUrl ?? '');
+    });
   }
 }

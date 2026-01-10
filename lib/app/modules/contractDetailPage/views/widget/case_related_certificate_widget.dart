@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/doc_list_model.dart';
 import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/file_preview_util.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
@@ -126,11 +127,13 @@ class CaseRelatedCertificateWidget extends StatelessWidget {
           ),
           SizedBox(width: 6.toW),
           // 查看图标
-          if (item.fileUrl != null && item.fileUrl!.isNotEmpty)
+          if (item.files != null && item.files!.isNotEmpty)
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                showToast('弹窗查看图片');
+                FilePreviewUtil.previewFile(
+                  filePath: item.files?[0].fileUrl ?? '',
+                );
               },
               child: Icon(
                 Icons.remove_red_eye_outlined,
