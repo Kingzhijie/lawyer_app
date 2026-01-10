@@ -999,4 +999,8 @@ class ChatPageController extends GetxController {
       logPrint('⚠️ sessionId 为空');
     }
   }
+
+  ///新建对话
+  void addNewChat() {}
+  
 }

@@ -38,7 +38,7 @@ class ChatPageView extends GetView<ChatPageController> {
             agentId: controller.agentId.value,
             newChatCallBack: () {
               _scaffoldKey.currentState?.closeEndDrawer();
-              // currentVc?.addNewChat();
+              controller.addNewChat();
             },
             chooseHistoryCallBack: (id) {
               _scaffoldKey.currentState?.closeEndDrawer();
