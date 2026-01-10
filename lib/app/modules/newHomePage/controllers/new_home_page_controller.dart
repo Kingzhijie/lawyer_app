@@ -6,9 +6,7 @@ import 'package:lawyer_app/app/http/apis.dart';
 import 'package:lawyer_app/app/http/net/net_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/error_handle.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
-import 'package:lawyer_app/app/modules/myPage/controllers/my_page_controller.dart';
 import 'package:lawyer_app/app/modules/myPage/models/user_model.dart';
-import 'package:lawyer_app/app/modules/myPage/views/my_page_view.dart';
 import 'package:lawyer_app/app/modules/newHomePage/models/home_statistics.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/widgets/add_case_remark_widget.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/widgets/link_user_widget.dart';
@@ -29,7 +27,8 @@ import '../models/case_task_model.dart';
 import '../views/widgets/cooperation_person_widget.dart';
 import '../views/widgets/create_case_widget.dart';
 
-class NewHomePageController extends GetxController {
+class NewHomePageController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   /// 顶部筛选 tab 下标：0 我的待办、1 我参与的、2 已逾期
   final RxInt tabIndex = 0.obs;
 
@@ -254,6 +253,53 @@ class NewHomePageController extends GetxController {
         getCaseListData(true);
       }
     });
+  }
+
+  /// 更新任务状态
+  void updateTaskStatus(CaseTaskModel model) {
+    NetUtils.put(
+      Apis.updateTaskStatus,
+      params: {'title': model.title, 'id': model.id, 'status': 1},
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        reloadTaskUI(model);
+      }
+    });
+  }
+
+  /// 删除任务
+  void deleteTask(CaseTaskModel model) {
+    AppDialog.doubleItem(
+      title: '温馨提示',
+      titleStyle: TextStyle(
+        color: Colors.black,
+        fontSize: 17.toSp,
+        fontWeight: FontWeight.w600,
+      ),
+      content: '是否确认删除当前任务？',
+      contentStyle: TextStyle(color: Colors.black, fontSize: 15.toSp),
+      cancel: '取消',
+      confirm: '确认删除',
+      onConfirm: () {
+        onConfirmDeleteTask(model);
+      },
+    ).showAlert();
+  }
+
+  void onConfirmDeleteTask(CaseTaskModel model) {
+    NetUtils.put(Apis.deleteTask, params: {'id': model.id}).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        reloadTaskUI(model);
+      }
+    });
+  }
+
+  void reloadTaskUI(CaseTaskModel model) {
+    caseTaskList.remove(model);
+    if (homeStatistics.value != null) {
+      homeStatistics.value?.wddbCount = homeStatistics.value!.wddbCount! - 1;
+      homeStatistics.refresh();
+    }
   }
 
   ///添加日历提醒

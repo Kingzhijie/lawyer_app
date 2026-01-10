@@ -267,6 +267,50 @@ class AgencyCenterPageController extends GetxController {
     });
   }
 
+  /// 更新任务状态
+  void updateTaskStatus(CaseTaskModel model) {
+    NetUtils.put(
+      Apis.updateTaskStatus,
+      params: {'title': model.title, 'id': model.id, 'status': 1},
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        reloadTaskUI(model);
+      }
+    });
+  }
+
+  /// 删除任务
+  void deleteTask(CaseTaskModel model) {
+    AppDialog.doubleItem(
+      title: '温馨提示',
+      titleStyle: TextStyle(
+        color: Colors.black,
+        fontSize: 17.toSp,
+        fontWeight: FontWeight.w600,
+      ),
+      content: '是否确认删除当前任务？',
+      contentStyle: TextStyle(color: Colors.black, fontSize: 15.toSp),
+      cancel: '取消',
+      confirm: '确认删除',
+      onConfirm: () {
+        onConfirmDeleteTask(model);
+      },
+    ).showAlert();
+  }
+
+  void onConfirmDeleteTask(CaseTaskModel model) {
+    NetUtils.put(Apis.deleteTask, params: {'id': model.id}).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        reloadTaskUI(model);
+      }
+    });
+  }
+
+  void reloadTaskUI(CaseTaskModel model) {
+    caseTaskList.remove(model);
+    getFindController<NewHomePageController>()?.onRefresh();
+  }
+
   void chooseConcernedAction(int type) {
     var title = '';
     List<ChooseTypeModel> models = [];

@@ -116,9 +116,11 @@ class CaseBaseInfoContent extends StatelessWidget {
           SizedBox(height: 16.toW),
           _buildInfoRow(
             '立案日期',
-            DateTimeUtils.formatTimestamp(
-              controller.caseDetail.value!.caseBase?.createTime ?? 0,
-            ),
+            controller.caseDetail.value!.caseBase?.filingDate != null
+                ? DateTimeUtils.formatTimestamp(
+                    controller.caseDetail.value!.caseBase?.filingDate ?? 0,
+                  )
+                : '-',
           ),
           SizedBox(height: 16.toW),
           _buildInfoRow(

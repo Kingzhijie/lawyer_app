@@ -286,26 +286,37 @@ class NewHomePageView extends GetView<NewHomePageController> {
       itemBuilder: (context, index) {
         var model = controller.caseTaskList.value[index];
         return TaskCard(
-              model: model,
-              clickItemType: (type) {
-                if (type == 1) {
-                  //关联用户
-                  controller.linkUserAlert(model);
-                }
-                if (type == 0) {
-                  //备注
-                  controller.addRemarkMethod(model);
-                }
-                if (type == 2) {
-                  //日历提醒
-                  controller.addCalendar(model);
-                }
-              },
-            )
-            .withOnTap(() {
-              controller.lookContractDetailPage(model.caseId);
-            })
-            .withMarginOnly(bottom: 12.toW);
+          model: model,
+          clickItemType: (type) {
+            if (type == 1) {
+              //关联用户
+              controller.linkUserAlert(model);
+            }
+            if (type == 0) {
+              //备注
+              controller.addRemarkMethod(model);
+            }
+            if (type == 2) {
+              //日历提醒
+              controller.addCalendar(model);
+            }
+          },
+          onTaskOperatorTap: (type) {
+            switch (type) {
+              case TaskOperatorType.completed:
+                controller.updateTaskStatus(model);
+                break;
+              case TaskOperatorType.reamrk:
+                controller.addRemarkMethod(model);
+                break;
+              case TaskOperatorType.delete:
+                controller.deleteTask(model);
+                break;
+            }
+          },
+        ).withOnTap(() {
+          controller.lookContractDetailPage(model.caseId);
+        });
       },
     );
   }

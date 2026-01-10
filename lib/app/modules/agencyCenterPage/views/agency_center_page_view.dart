@@ -238,6 +238,19 @@ class AgencyCenterPageView extends StatelessWidget {
                               controller.addCalendar(model);
                             }
                           },
+                          onTaskOperatorTap: (type) {
+                            switch (type) {
+                              case TaskOperatorType.completed:
+                                controller.updateTaskStatus(model);
+                                break;
+                              case TaskOperatorType.reamrk:
+                                controller.addRemarkMethod(model);
+                                break;
+                              case TaskOperatorType.delete:
+                                controller.deleteTask(model);
+                                break;
+                            }
+                          },
                         )
                         .withOnTap(() {
                           controller.lookContractDetailPage(model.caseId);

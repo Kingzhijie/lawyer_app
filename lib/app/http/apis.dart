@@ -61,6 +61,12 @@ class Apis {
   ///获取案件任务分页
   static String getTaskPage = '/legal/task/page';
 
+  ///更新任务状态
+  static String updateTaskStatus = '/legal/task/update';
+
+  ///删除任务
+  static String deleteTask = '/legal/task/delete';
+
   ///上传文书
   static String uploadDocument = '/legal/document/create';
 

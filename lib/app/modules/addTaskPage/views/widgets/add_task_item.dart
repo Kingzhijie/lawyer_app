@@ -324,7 +324,8 @@ class AddTaskItem extends StatelessWidget {
     var currentUserId = StorageUtils.getString(StorageKey.userId);
     bool isCurrentUserInList =
         model?.relateUsers?.any(
-          (user) => user.id.toString() == currentUserId,
+          (user) =>
+              user.id.toString() == currentUserId && user.isSponsor == false,
         ) ??
         false;
     return isCurrentUserInList;
