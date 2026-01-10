@@ -136,7 +136,11 @@ class ContractDetailPageController extends GetxController {
 
         NetUtils.uploadSingleFile(file.path!).then((result) {
           logPrint('result====$result--');
-          uploadDocument(path: file.path!, fileName: file.name);
+          if (result!=null){
+            delay(300, (){
+              uploadDocument(path: result, fileName: file.name);
+            });
+          }
         });
       }
     } catch (e) {
@@ -155,6 +159,7 @@ class ContractDetailPageController extends GetxController {
       },
     ).then((result) {
       if (result.code == NetCodeHandle.success) {
+        showToast('文件上传成功');
         getContractDetailInfo();
       }
     });
