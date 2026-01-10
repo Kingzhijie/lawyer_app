@@ -5,6 +5,7 @@ import 'package:lawyer_app/app/modules/contractDetailPage/models/case/task_list_
 import 'package:lawyer_app/app/utils/date_utils.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
+import 'package:lawyer_app/gen/assets.gen.dart';
 
 class CaseTaskListWidget extends StatelessWidget {
   final List<TaskListModel> tasks;
@@ -117,109 +118,112 @@ class CaseTaskListWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          // 任务信息
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item.title ?? '-',
-                        style: TextStyle(
-                          fontSize: 15.toSp,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.color_E6000000,
-                        ),
-                      ),
-                    ),
-                    if (item.isEmergency == true) ...[
-                      SizedBox(width: 8.toW),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6.toW,
-                          vertical: 2.toW,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: const Color(0xFFFF4D4F),
-                            width: 0.5,
-                          ),
-                          borderRadius: BorderRadius.circular(4.toW),
-                        ),
-                        child: Text(
-                          '紧急',
-                          style: TextStyle(
-                            fontSize: 10.toSp,
-                            color: const Color(0xFFFF4D4F),
-                          ),
-                        ),
-                      ),
-                    ],
-                    if (item.status == 0) ...[
-                      SizedBox(width: 6.toW),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6.toW,
-                          vertical: 2.toW,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: const Color(0xFFFFA940),
-                            width: 0.5,
-                          ),
-                          borderRadius: BorderRadius.circular(4.toW),
-                        ),
-                        child: Text(
-                          '待办',
-                          style: TextStyle(
-                            fontSize: 10.toSp,
-                            color: const Color(0xFFFFA940),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                SizedBox(height: 6.toW),
-                Text(
-                  '截止时间：${DateTimeUtils.formatTimestamp(item.dueAt ?? 0)}',
+          Row(
+            children: [
+              ImageUtils(
+                imageUrl: Assets.home.susongfeiIcon.path,
+                width: 32.toW,
+                height: 32.toW,
+                fit: BoxFit.cover,
+              ),
+              SizedBox(width: 8.toW),
+              Flexible(
+                child: Text(
+                  item.title ?? '-',
                   style: TextStyle(
-                    fontSize: 12.toSp,
-                    color: AppColors.color_99000000,
+                    fontSize: 15.toSp,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.color_E6000000,
+                  ),
+                ),
+              ),
+              if (item.isEmergency == true) ...[
+                SizedBox(width: 8.toW),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 6.toW,
+                    vertical: 2.toW,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4.toW),
+                    color: Color(0xFFFDECEE),
+                  ),
+                  child: Text(
+                    '紧急',
+                    style: TextStyle(
+                      fontSize: 10.toSp,
+                      color: const Color(0xFFFF4D4F),
+                    ),
                   ),
                 ),
               ],
-            ),
-          ),
-          SizedBox(width: 10.toW),
-          if (item.status != 0)
-            GestureDetector(
-              onTap: () {},
-              child: Row(
-                children: [
-                  Icon(
-                    item.status == 1
-                        ? Icons.check_circle_outline
-                        : Icons.cancel_outlined,
-                    size: 16.toW,
-                    color: AppColors.color_99000000,
+              if (item.status == 0) ...[
+                SizedBox(width: 6.toW),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 6.toW,
+                    vertical: 2.toW,
                   ),
-                  SizedBox(width: 4.toW),
-                  Text(
-                    item.status == 1 ? '已完成' : '已取消',
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFFFFA940),
+                      width: 0.5,
+                    ),
+                    borderRadius: BorderRadius.circular(4.toW),
+                  ),
+                  child: Text(
+                    '待办',
                     style: TextStyle(
-                      fontSize: 13.toSp,
-                      color: AppColors.color_99000000,
+                      fontSize: 10.toSp,
+                      color: const Color(0xFFFFA940),
                     ),
                   ),
-                ],
+                ),
+              ],
+            ],
+          ),
+          SizedBox(height: 8.toW),
+          Row(
+            children: [
+              Text(
+                '截止时间：',
+                style: TextStyle(
+                  fontSize: 12.toSp,
+                  color: AppColors.color_99000000,
+                ),
               ),
-            ),
+              Text(
+                DateTimeUtils.formatTimestamp(item.dueAt ?? 0),
+                style: TextStyle(
+                  fontSize: 12.toSp,
+                  color: AppColors.color_E6000000,
+                ),
+              ),
+              const Spacer(),
+              if (item.status != 0)
+                Row(
+                  children: [
+                    Icon(
+                      item.status == 1
+                          ? Icons.check_circle_outline
+                          : Icons.cancel_outlined,
+                      size: 16.toW,
+                      color: AppColors.color_42000000,
+                    ),
+                    SizedBox(width: 4.toW),
+                    Text(
+                      item.status == 1 ? '已完成' : '已取消',
+                      style: TextStyle(
+                        fontSize: 13.toSp,
+                        color: AppColors.color_42000000,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
         ],
       ),
     );

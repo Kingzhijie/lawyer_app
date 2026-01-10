@@ -136,13 +136,28 @@ class ContractDetailPageController extends GetxController {
 
         NetUtils.uploadSingleFile(file.path!).then((result) {
           logPrint('result====$result--');
-
-          /// todo : 上传文件到该案件
+          uploadDocument(path: file.path!, fileName: file.name);
         });
       }
     } catch (e) {
       logPrint('选取错误===$e');
     }
+  }
+
+  void uploadDocument({required String path, required String fileName}) async {
+    NetUtils.post(
+      Apis.uploadDocument,
+      params: {
+        'caseId': caseId,
+        'files': [
+          {'fileUrl': path, 'fileName': fileName},
+        ],
+      },
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        getContractDetailInfo();
+      }
+    });
   }
 
   // 处理菜单操作

@@ -1,10 +1,15 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/common/components/dialog.dart';
+import 'package:lawyer_app/app/config/app_config.dart';
+import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/modules/contractDetailPage/models/case/case_party_model.dart';
 import 'package:lawyer_app/app/modules/newHomePage/controllers/new_home_page_controller.dart';
 import 'package:lawyer_app/app/modules/newHomePage/views/widgets/link_user_widget.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
+import 'package:lawyer_app/app/utils/date_utils.dart';
+import 'package:lawyer_app/app/utils/device_calendar_util.dart';
 
 import '../../../../main.dart';
 import '../../../common/components/bottom_sheet_utils.dart';
@@ -174,6 +179,7 @@ class AgencyCenterPageController extends GetxController {
       return;
     }
 
+    ///
     BottomSheetUtils.show(
       currentContext,
       radius: 12.toW,
@@ -187,6 +193,61 @@ class AgencyCenterPageController extends GetxController {
   ///添加任务
   void addTaskAction() {
     Get.toNamed(Routes.ADD_TASK_PAGE);
+  }
+
+  ///添加日历提醒
+  Future<void> addCalendar(CaseTaskModel model) async {
+    final time = DateTimeUtils.formatTimestamp(model.remindTimes ?? 0);
+    logPrint('toime = $time');
+    String? eventId;
+    if (model.remindTimes != null && model.remindTimes != 0) {
+      if (ObjectUtils.boolValue(model.isAddCalendar)) {
+        if (model.addCalendarId != null) {
+          bool isSuc = await DeviceCalendarUtil.deleteEvent(
+            eventId: model.addCalendarId!,
+          );
+          logPrint('提醒删除结果===$isSuc');
+        }
+      } else {
+        // 静默添加提醒（不跳转系统日历）
+        eventId = await DeviceCalendarUtil.addReminder(
+          title: model.title ?? '案件提醒',
+          dateTime: DateTime.fromMillisecondsSinceEpoch(
+            model.remindTimes!.toInt(),
+          ),
+          description: '点击连接: ${AppConfig.appSchemeFull}\n${model.content}',
+          reminderMinutes: 120, // 提前2小时提醒
+        );
+        if (eventId != null) {
+          AppDialog.singleItem(
+            title: '添加日历提醒成功',
+            titleStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 17.toSp,
+              fontWeight: FontWeight.w600,
+            ),
+            content: '事件开始前2小时, 将收到手机日历提醒, 可在系统日历中更改提醒时间',
+            contentStyle: TextStyle(color: Colors.black, fontSize: 15.toSp),
+            cancel: '我知道了',
+          ).showAlert();
+        }
+      }
+    }
+
+    NetUtils.post(
+      Apis.taskAddCalendar,
+      params: {
+        'addCalendar': !ObjectUtils.boolValue(model.isAddCalendar),
+        'id': model.id,
+        'addCalendarId': eventId,
+      },
+    ).then((result) {
+      if (result.code == NetCodeHandle.success) {
+        model.isAddCalendar = !ObjectUtils.boolValue(model.isAddCalendar);
+        model.addCalendarId = eventId;
+        caseTaskList.refresh();
+      }
+    });
   }
 
   ///设置备注
@@ -255,5 +316,4 @@ class AgencyCenterPageController extends GetxController {
   void lookContractDetailPage(num? caseId) {
     Get.toNamed(Routes.CONTRACT_DETAIL_PAGE, arguments: caseId);
   }
-
 }

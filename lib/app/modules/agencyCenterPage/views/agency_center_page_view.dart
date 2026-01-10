@@ -224,20 +224,25 @@ class AgencyCenterPageView extends StatelessWidget {
                   itemBuilder: (context, index) {
                     var model = controller.caseTaskList.value[index];
                     return TaskCard(
-                      model: model,
-                      clickItemType: (type) {
-                        if (type == 1) {
-                          //关联用户
-                          controller.linkUserAlert();
-                        }
-                        if (type == 0) {
-                          //备注
-                          controller.addRemarkMethod(model);
-                        }
-                      },
-                    ).withOnTap((){
-                      controller.lookContractDetailPage(model.caseId);
-                    }).withMarginOnly(bottom: 12.toW);
+                          model: model,
+                          clickItemType: (type) {
+                            if (type == 1) {
+                              //关联用户
+                              controller.linkUserAlert();
+                            }
+                            if (type == 0) {
+                              //备注
+                              controller.addRemarkMethod(model);
+                            }
+                            if (type == 2) {
+                              controller.addCalendar(model);
+                            }
+                          },
+                        )
+                        .withOnTap(() {
+                          controller.lookContractDetailPage(model.caseId);
+                        })
+                        .withMarginOnly(bottom: 12.toW);
                   },
                 ),
         );

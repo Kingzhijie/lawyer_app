@@ -61,6 +61,9 @@ class Apis {
   ///获取案件任务分页
   static String getTaskPage = '/legal/task/page';
 
+  ///上传文书
+  static String uploadDocument = '/legal/document/create';
+
   ///当事人列表
   static String casePartyList = '/legal/case-party/party-page';
 
@@ -136,9 +139,7 @@ class Apis {
   ///删除历史消息
   static String deleteAiHistory = '/ai/chat-his/delete';
 
-
   ///AI智能体聊天流式接口
   static String aiChatStream(String agentId) =>
       '/ai/super-agent/chat/stream/$agentId';
-
 }

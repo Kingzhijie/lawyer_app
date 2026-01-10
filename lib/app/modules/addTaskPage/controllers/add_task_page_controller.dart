@@ -111,9 +111,9 @@ class AddTaskPageController extends GetxController {
       params: {
         'title': taskNameController.text.trim(),
         'isEmergency': isUrgent.value,
-        'remindTimes': DateTime.parse(
-          reminderTime.value,
-        ).millisecondsSinceEpoch,
+        'remindTimes': DateFormatUtils.milli2YMDHMS(
+          DateTime.parse(reminderTime.value).millisecondsSinceEpoch,
+        ),
         'caseId': selectModel.value?.id,
       },
     ).then((result) {

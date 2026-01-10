@@ -335,6 +335,7 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
                   height: 36.toW,
                   fit: BoxFit.cover,
                   circularRadius: 18.toW,
+                  placeholderImagePath: Assets.home.defaultUserIcon.path,
                 ),
                 if (ObjectUtils.boolValue(item.value.isSponsor))
                   Positioned(
