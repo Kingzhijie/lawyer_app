@@ -10,7 +10,7 @@ class AuthInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final String accessToken = StorageUtils.getToken();
     logPrint('accessToken===$accessToken');
-    options.headers['Authorization'] = 'Bearer $accessToken';
+    options.headers['Authorization'] = 'test1';
     //'Bearer $accessToken';
     super.onRequest(options, handler);
   }

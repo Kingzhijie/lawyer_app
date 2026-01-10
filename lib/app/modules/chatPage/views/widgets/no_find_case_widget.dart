@@ -101,7 +101,7 @@ class _NoFindCaseWidgetState extends State<NoFindCaseWidget> {
       children: [
         Container(
           constraints: BoxConstraints(
-              minHeight: 420.toW
+              minHeight: 490.toW
           ),
           padding: EdgeInsets.only(top: 40.toW, left: 15.toW, right: 15.toW),
           child: Column(
