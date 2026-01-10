@@ -70,6 +70,10 @@ class ChatPageView extends GetView<ChatPageController> {
                     closeWidget: () {
                       controller.isShowNoCase.value = false;
                     },
+                    sureUpdateCase: (caseId){ //确认更新案件
+                      controller.isShowNoCase.value = false;
+                      controller.updateCaseInfo(caseId);
+                    },
                   ),
                 ),
               ).unfocusWhenTap();
@@ -112,7 +116,13 @@ class ChatPageView extends GetView<ChatPageController> {
                                       : null,
                                   onAnimated: () =>
                                       controller.markMessageAnimated(msg.id),
-                                  onTick: () {}, // reverse 模式不需要滚动
+                                  updateCaseCallBack: (isUpdate, caseId) {
+                                    if (isUpdate) {
+                                      controller.updateCaseInfo(caseId);
+                                    } else {
+                                      controller.isShowNoCase.value = true;
+                                    }
+                                  }, // reverse 模式不需要滚动
                                 );
                               } else {
                                 return ChatBubbleRight(message: msg);

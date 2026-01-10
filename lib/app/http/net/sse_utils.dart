@@ -103,12 +103,22 @@ class SSEMessageData {
     return null;
   }
 
-  /// 获取 OCR 识别结果
+  /// 获取 OCR 识别结果（完整的 result 对象）
   Map<String, dynamic>? get ocrResult {
     final ocrData = ocrResultData;
     if (ocrData != null && ocrData['ocrResultDTO'] is Map) {
       final dto = ocrData['ocrResultDTO'] as Map<String, dynamic>;
       return dto['result'] as Map<String, dynamic>?;
+    }
+    return null;
+  }
+
+  /// 获取 OCR 识别结果的字符串表示（用于显示）
+  String? get ocrResultString {
+    final result = ocrResult;
+    if (result != null) {
+      // 直接返回 JSON 字符串
+      return jsonEncode(result);
     }
     return null;
   }

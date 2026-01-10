@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,16 +16,16 @@ class ChatBubbleLeft extends StatefulWidget {
     super.key,
     required this.message,
     required this.onAnimated,
-    required this.onTick,
     this.isLastAiMessage = false,
     this.onRefresh,
+    this.updateCaseCallBack,
   });
 
   final UiMessage message;
   final VoidCallback onAnimated;
-  final VoidCallback onTick;
   final bool isLastAiMessage; // 是否是最后一条 AI 消息
   final VoidCallback? onRefresh; // 刷新回调
+  final Function(bool isUpdate, int? caseId)? updateCaseCallBack;
 
   @override
   State<ChatBubbleLeft> createState() => _ChatBubbleLeftState();
@@ -121,7 +122,7 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
   @override
   Widget build(BuildContext context) {
     final textColor = Colors.black87;
-
+    logPrint('caseId ======= ${widget.message.caseId}');
     return Align(
       alignment: Alignment.centerLeft,
       child: Column(
@@ -216,6 +217,45 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                         }),
                       ],
                     ),
+                  if (widget.message.caseId != null)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.message.caseId! > 0 ? '检测到系统中存在该案号相关信息' : '未检测到案号相关信息',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15.toSp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Height(6.toW),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.toW,
+                            vertical: 4.toW,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.theme,
+                            borderRadius: BorderRadius.circular(10.toW),
+                          ),
+                          child: Text(
+                            '是否更新到案件中?',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12.toSp,
+                            ),
+                          ),
+                        ).withOnTap(() {
+                          if (widget.updateCaseCallBack != null) {
+                            widget.updateCaseCallBack!(
+                              widget.message.caseId! > 0,
+                              widget.message.caseId,
+                            );
+                          }
+                        }),
+                      ],
+                    ).withMarginOnly(top: 15.toW),
                 ],
               ),
             ),
@@ -283,7 +323,6 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
       duration: duration,
       onEnd: widget.onAnimated,
       builder: (context, value, _) {
-        widget.onTick();
         final count = value.clamp(0, total.toDouble()).floor();
         final text = widget.message.text.substring(0, count);
         return _setMarkDownWidget(text, textColor);
@@ -294,7 +333,8 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
   Widget _setMarkDownWidget(String text, Color textColor) {
     return MarkdownBody(
       data: text.isEmpty ? ' ' : text,
-      selectable: true, // 支持文本选择
+      selectable: true,
+      // 支持文本选择
       imageBuilder: (uri, title, alt) {
         // 自定义图片渲染，支持图文混排
         return Padding(

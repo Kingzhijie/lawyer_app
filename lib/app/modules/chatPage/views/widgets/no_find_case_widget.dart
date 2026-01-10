@@ -17,7 +17,8 @@ import '../../../casePage/models/case_base_info_model.dart';
 
 class NoFindCaseWidget extends StatefulWidget {
   final Function() closeWidget;
-  const NoFindCaseWidget({super.key, required this.closeWidget});
+  final Function(int? caseId) sureUpdateCase;
+  const NoFindCaseWidget({super.key, required this.closeWidget, required this.sureUpdateCase});
 
   @override
   State<NoFindCaseWidget> createState() => _NoFindCaseWidgetState();
@@ -197,9 +198,7 @@ class _NoFindCaseWidgetState extends State<NoFindCaseWidget> {
                   ),
                 ),
               ).withOnTap((){
-                if (selectedId != null) {
-                  Get.toNamed(Routes.CASE_DETAIL_PAGE, arguments: {'caseId': selectedId});
-                }
+                widget.sureUpdateCase(selectedId?.toInt());
               }),
             ],
           ),

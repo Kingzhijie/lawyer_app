@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/main.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../common/extension/widget_extension.dart';
 import '../../../../utils/file_preview_util.dart';
 import '../../../../utils/image_utils.dart';
+import '../../../../utils/image_viewer_util.dart';
 import '../../../../utils/object_utils.dart';
 import '../../../../utils/screen_utils.dart';
 import '../../controllers/chat_page_controller.dart';
@@ -33,26 +35,27 @@ class ChatBubbleRight extends StatelessWidget {
         children: [
           if (!ObjectUtils.isEmptyList(message.images)) _setImageWidget(),
           if (!ObjectUtils.isEmptyList(message.files)) _setFilesWidget(),
-          Container(
-            // margin: const EdgeInsets.symmetric(vertical: 6),
-            margin: EdgeInsets.only(top: 6.toW, bottom: 16.toW, left: 30.toW),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              color: bubbleColor,
-              borderRadius: radius,
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x1A000000),
-                  blurRadius: 14,
-                  offset: const Offset(0, 0),
-                ),
-              ],
+          if (!ObjectUtils.isEmptyString(message.text))
+            Container(
+              // margin: const EdgeInsets.symmetric(vertical: 6),
+              margin: EdgeInsets.only(top: 6.toW, bottom: 16.toW, left: 30.toW),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: bubbleColor,
+                borderRadius: radius,
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x1A000000),
+                    blurRadius: 14,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: Text(
+                message.text,
+                style: TextStyle(color: textColor, fontSize: 15),
+              ),
             ),
-            child: Text(
-              message.text,
-              style: TextStyle(color: textColor, fontSize: 15),
-            ),
-          ),
         ],
       ),
     );
@@ -124,18 +127,34 @@ class ChatBubbleRight extends StatelessWidget {
   }
 
   Widget _setImageWidget() {
+    List<String> imgs = [];
+    for (var e in message.images!) {
+      imgs.add(e.url ?? (e.path ?? ''));
+    }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
-        children: message.images!
+        children: imgs
             .map(
-              (e) => ImageUtils(
-                imageUrl: e.url ?? e.path,
-                width: 80.toW,
-                height: 80.toW,
-                circularRadius: 6.toW,
-              ).withMarginOnly(left: 4.toW),
+              (e) =>
+                  Hero(
+                    tag: 'chat_right_image_$e',
+                    child: ImageUtils(
+                      imageUrl: e,
+                      width: 80.toW,
+                      height: 80.toW,
+                      circularRadius: 6.toW,
+                    ),
+                  ).withMarginOnly(left: 4.toW).withOnTap(() {
+                    // 点击图片打开全屏浏览，支持多图滑动
+                    ImageViewerUtil.showImageGallery(
+                      currentContext,
+                      imgs,
+                      initialIndex: imgs.indexOf(e),
+                      heroTag: 'chat_right_image_$e',
+                    );
+                  }),
             )
             .toList(),
       ),

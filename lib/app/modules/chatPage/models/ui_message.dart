@@ -52,6 +52,7 @@ class UiMessage {
     this.isPrologue = false,
     this.files,
     this.images,
+    this.caseId
   });
 
   final String id;
@@ -65,6 +66,7 @@ class UiMessage {
   final bool isPrologue; // 是否开场白
   final List<MessageFileModel>? files; // 文件数组
   final List<MessageImageModel>? images; // 图片数组
+  final int? caseId;
 
   UiMessage copyWith({
     String? id,
@@ -76,11 +78,13 @@ class UiMessage {
     int? thinkingSeconds,
     bool? isThinkingDone,
     bool? isPrologue,
+    int? caseId,
     List<MessageFileModel>? files,
     List<MessageImageModel>? images,
   }) {
     return UiMessage(
       id: id ?? this.id,
+      caseId: caseId ?? this.caseId,
       text: text ?? this.text,
       isAi: isAi ?? this.isAi,
       createdAt: createdAt ?? this.createdAt,

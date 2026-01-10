@@ -82,6 +82,8 @@ class ChatPageController extends GetxController {
 
   ///是否显示未查询到案件
   RxBool isShowNoCase = false.obs;
+  //ocr识别结果
+  String ocrResultString = '';
 
   void updatePanelType(ChatPanelType type) {
     final targetPanelType = _toBottomPanel(type);
@@ -113,7 +115,6 @@ class ChatPageController extends GetxController {
 
   void handleSendPressed({bool isFocus = true}) {
     final text = textController.text.trim();
-    if (text.isEmpty) return;
     _addUserMessage(text);
     textController.clear();
     hasText.value = false;
@@ -200,6 +201,10 @@ class ChatPageController extends GetxController {
 
   ///添加发送消息
   Future<void> _addUserMessage(String text) async {
+    if (text.isEmpty && (files.isEmpty && images.isEmpty)) { //不能都为空
+      return;
+    }
+
     isShowNoCase.value = false;
     logPrint('🚀 开始发送消息: $text');
 
@@ -257,6 +262,8 @@ class ChatPageController extends GetxController {
     // 用于累积思考过程和回复内容
     String thinkingContent = '';
     String replyContent = '';
+    int? caseId; //匹配到的案件id
+    ocrResultString = ''; //ocr识别结果
     final startTime = DateTime.now();
 
     // 自动检测后端是否支持思考模式
@@ -312,9 +319,33 @@ class ChatPageController extends GetxController {
         onMessage: (data) {
           logPrint('📨 收到 SSE 事件 - eventType: ${data.eventType}');
 
+          // 处理 OCR 结果事件
           if (data.isOcrResult) {
-            logPrint('caseId====${data.ocrCaseId}');
-            isShowNoCase.value = true;
+            if (data.ocrResultString != null &&
+                data.ocrResultString!.isNotEmpty) {
+              var result = data.ocrResultString ?? '';
+              ocrResultString += result;
+              result = result.processingAiOcrText();
+              replyContent += result;
+              hasReceivedContent = true;
+              logPrint('✅ OCR 结果已添加到回复内容$replyContent---原始结果====$ocrResultString');
+            }
+
+            // 如果没有关联案件，显示提示
+            if (data.ocrCaseId == null) {
+              // isShowNoCase.value = true;
+              caseId = -100;
+              logPrint('⚠️ OCR 结果未关联案件');
+            } else { //匹配到案件id
+              caseId = data.ocrCaseId?.toInt();
+            }
+
+          }
+
+          // 处理 OCR 文件类型事件
+          if (data.isOcrFileType) {
+            logPrint('📋 收到 OCR 文件类型: ${data.ocrResultData}');
+            // 可以在这里处理文件类型信息
           }
 
           // 检测后端是否支持思考模式
@@ -422,13 +453,14 @@ class ChatPageController extends GetxController {
           if (index != -1) {
             final finalMessage = UiMessage(
               id: aiMessageId,
-              text: replyContent.isNotEmpty ? replyContent : '未识别出相关案件',
+              text: replyContent.isNotEmpty ? replyContent : '未识别出相关内容',
               isAi: true,
               createdAt: messages[index].createdAt,
               hasAnimated: true, // 流式传输已经是逐字显示，不需要打字动画
               thinkingProcess: thinkingContent.isNotEmpty
                   ? thinkingContent
                   : null,
+              caseId: caseId,
               thinkingSeconds: thinkingSeconds,
               isThinkingDone: true, // 流式传输完成
             );
@@ -924,21 +956,36 @@ class ChatPageController extends GetxController {
         List<UiMessage> models = [];
         for (var map in datas) {
           var msg = map['message'].toString();
+          var expand = map['expand'].toString();
+          String content = '';
+          bool isAi = false;
           if (!ObjectUtils.isEmptyString(msg)) {
             var msgMap = json.decode(msg);
-            var content = msgMap['content'].toString();
-            final finalMessage = UiMessage(
-              id: map['id'].toString(),
-              text: ObjectUtils.isEmptyString(content) ? '未查询到案件' : content,
-              isAi: msgMap['role'] == 'assistant',
-              createdAt: DateTime.fromMillisecondsSinceEpoch(
-                msgMap['createTime'].toString().toInt(),
-              ),
-              hasAnimated: true, // 流式传输已经是逐字显示，不需要打字动画
-              isThinkingDone: true, // 流式传输完成
-            );
-            models.add(finalMessage);
+            isAi = msgMap['role'] == 'assistant';
+            content = msgMap['content'].toString();
           }
+          if (!ObjectUtils.isEmptyString(expand)) { //特殊处理,  图片和文件格式
+            var msgMap = json.decode(expand);
+            isAi = true;
+            if (msgMap['ocrResultDTO'] != null) {
+              var contentMap = msgMap['ocrResultDTO']['result'] as Map<String, dynamic>;
+              content = json.encode(contentMap);
+              content = content.processingAiOcrText();
+            } else {
+              content = msgMap['fileTypeCode'].toString();
+            }
+          }
+          final finalMessage = UiMessage(
+            id: map['id'].toString(),
+            text: ObjectUtils.isEmptyString(content) ? '未查询到案件' : content,
+            isAi: isAi,
+            createdAt: DateTime.fromMillisecondsSinceEpoch(
+              map['createTime'].toString().toInt(),
+            ),
+            hasAnimated: true, // 流式传输已经是逐字显示，不需要打字动画
+            isThinkingDone: true, // 流式传输完成
+          );
+          models.add(finalMessage);
         }
         if (isLoadMore) {
           messages.value.insertAll(0, models);
@@ -1034,4 +1081,11 @@ class ChatPageController extends GetxController {
     // 获取新的欢迎语
     getAgentUIConfig(agentId.value);
   }
+
+  ///确认更新案件信息
+  void updateCaseInfo(int? caseId) {
+    logPrint('案件更新内容====$ocrResultString----$caseId');
+  }
+
+
 }

@@ -68,6 +68,24 @@ extension StringOssExtension on String {
     return '$this${part}x-oss-process=image/format,webp';
   }
 
+  ///处理AiOcr消息
+  String processingAiOcrText(){
+    var caseNum = '案号';
+    var titleKey = '文书标题';
+
+
+
+    var result = this;
+    result = result.replaceAll('},{', '  \n');
+    result = result.replaceAll('{', '  \n');
+    result = result.replaceAll('}', '');
+    result = result.replaceAll(',', '  \n');
+    result = result.replaceAll('[', '');
+    result = result.replaceAll(']', '');
+    result = result.replaceAll('"', '');
+    return result;
+  }
+
 }
 
 
