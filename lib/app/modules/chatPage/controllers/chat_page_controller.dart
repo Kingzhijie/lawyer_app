@@ -1001,6 +1001,37 @@ class ChatPageController extends GetxController {
   }
 
   ///新建对话
-  void addNewChat() {}
-  
+  void addNewChat() {
+    // 清空消息列表
+    messages.clear();
+
+    // 重置会话 ID
+    sessionId.value = null;
+
+    // 重置加载状态
+    isLoading.value = false;
+
+    // 清空当前消息内容
+    currentMessage.value = '';
+
+    // 清空文件和图片
+    files.clear();
+    images.clear();
+
+    // 重置未查询到案件状态
+    isShowNoCase.value = false;
+
+    // 取消当前的 SSE 连接
+    cancelConnection();
+
+    // 清空输入框
+    textController.clear();
+    hasText.value = false;
+
+    // 重置面板状态
+    hidePanel();
+
+    // 获取新的欢迎语
+    getAgentUIConfig(agentId.value);
+  }
 }
