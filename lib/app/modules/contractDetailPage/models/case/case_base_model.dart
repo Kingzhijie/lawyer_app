@@ -27,6 +27,7 @@ class CaseBaseModel {
   String? handler;
   dynamic handlerPhone;
   int? createTime;
+  int? filingDate;
   List<CasePartyModel>? casePartyResVos;
 
   CaseBaseModel({
@@ -52,6 +53,7 @@ class CaseBaseModel {
     this.handler,
     this.handlerPhone,
     this.createTime,
+    this.filingDate,
     this.casePartyResVos,
     this.primaryLawyer,
     this.assistantLawyer,
@@ -82,6 +84,7 @@ class CaseBaseModel {
     handler: json['handler'] as String?,
     handlerPhone: json['handlerPhone'] as dynamic,
     createTime: json['createTime'] as int?,
+    filingDate: json['filingDate'] as int?,
     casePartyResVos: (json['casePartyResVOS'] as List<dynamic>?)
         ?.map((e) => CasePartyModel.fromJson(e as Map<String, dynamic>))
         .toList(),
@@ -114,6 +117,7 @@ class CaseBaseModel {
     'handler': handler,
     'handlerPhone': handlerPhone,
     'createTime': createTime,
+    'filingDate': filingDate,
     'primaryLawyer': primaryLawyer,
     'assistantLawyer': assistantLawyer,
     'judgePhone': judgePhone,
