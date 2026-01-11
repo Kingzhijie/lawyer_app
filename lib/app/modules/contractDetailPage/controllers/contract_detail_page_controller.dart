@@ -19,6 +19,9 @@ import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
 import 'package:lawyer_app/main.dart';
 
+import '../../../common/components/bottom_sheet_content_widget.dart';
+import '../../../utils/image_picker_util.dart';
+
 class ContractDetailPageController extends GetxController {
   final RxInt trialIndex = 0.obs; // 0-一审, 1-二审, 2-再审
   num? caseId;
@@ -122,31 +125,64 @@ class ContractDetailPageController extends GetxController {
   }
 
   void uploadFile() async {
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.any, // 所有类型
-        allowMultiple: false, // 单选
-      );
-      if (result != null && result.files.isNotEmpty) {
-        PlatformFile file = result.files.first;
-        logPrint('文件名: ${file.name}');
-        logPrint('文件大小: ${file.size} bytes');
-        logPrint('文件路径: ${file.path}');
-        logPrint('文件扩展名: ${file.extension}');
+    BottomSheetUtils.show(currentContext,
+        isShowCloseIcon: false,
+        radius: 24.toR,
+        isSetBottomInset: false,
+        contentWidget: BottomSheetContentWidget(
+          contentModels: [
+            BottomSheetContentModel(name: '相册', index: 0),
+            BottomSheetContentModel(name: '拍照', index: 1),
+            BottomSheetContentModel(name: '文件', index: 2),
+          ],
+          clickItemCallBack: (type) async {
+            if (type.index == 0){ //相册
+              var file = await ImagePickerUtil.takePhotoOrFromLibrary(
+                  imageSource: ImageSourceType.gallery,
+              );
+              if (file?.path != null) {
+                uploadDataMethod(file!.path, '图片');
+              }
+            } else if (type.index == 1) { //相机
+              var file = await ImagePickerUtil.takePhotoOrFromLibrary(
+                imageSource: ImageSourceType.camera,
+              );
+              if (file?.path != null) {
+                uploadDataMethod(file!.path, '图片');
+              }
+            } else if (type.index == 2) { //上传文件
+              try {
+                FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  type: FileType.any, // 所有类型
+                  allowMultiple: false, // 单选
+                );
+                if (result != null && result.files.isNotEmpty) {
+                  PlatformFile file = result.files.first;
+                  logPrint('文件名: ${file.name}');
+                  logPrint('文件大小: ${file.size} bytes');
+                  logPrint('文件路径: ${file.path}');
+                  logPrint('文件扩展名: ${file.extension}');
+                  uploadDataMethod(file.path!, file.name);
+                }
+              } catch (e) {
+                logPrint('选取错误===$e');
+              }
+            }
+          },
+        ));
+  }
 
-        NetUtils.uploadSingleFile(file.path!).then((result) {
-          logPrint('result====$result--');
-          if (result!=null){
-            delay(300, (){
-              uploadDocument(path: result, fileName: file.name);
-            });
-          }
+  void uploadDataMethod(String path, String name){
+    NetUtils.uploadSingleFile(path).then((result) {
+      logPrint('result====$result--');
+      if (result!=null){
+        delay(300, (){
+          uploadDocument(path: result, fileName:name);
         });
       }
-    } catch (e) {
-      logPrint('选取错误===$e');
-    }
+    });
   }
+
 
   void uploadDocument({required String path, required String fileName}) async {
     NetUtils.post(

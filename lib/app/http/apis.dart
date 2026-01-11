@@ -145,6 +145,11 @@ class Apis {
   ///删除历史消息
   static String deleteAiHistory = '/ai/chat-his/delete';
 
+  ///更新案件信息
+  static String uploadByAgent = '/legal/document/upload-byAgent';
+
+
+
   ///AI智能体聊天流式接口
   static String aiChatStream(String agentId) =>
       '/ai/super-agent/chat/stream/$agentId';

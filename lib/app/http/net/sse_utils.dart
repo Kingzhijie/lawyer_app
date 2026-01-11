@@ -154,6 +154,20 @@ class SSEMessageData {
     final ocrData = ocrResultData;
     return ocrData?['userId'] as num?;
   }
+
+  /// 转换为 JSON
+  Map<String, dynamic> toJson() {
+    return {
+      if (content != null) 'content': content,
+      if (reasoningContent != null) 'reasoningContent': reasoningContent,
+      if (phase != null) 'phase': phase,
+      if (status != null) 'status': status,
+      if (role != null) 'role': role,
+      if (eventType != null) 'eventType': eventType,
+      if (meta != null) 'meta': meta,
+      if (data != null) 'data': data,
+    };
+  }
 }
 
 /// SSE 请求参数模型

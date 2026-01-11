@@ -31,7 +31,10 @@ class ChatInputBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.toW),
       ),
       child: Obx(() {
-        final hasText = controller.hasText.value;
+        final hasText =
+            controller.hasText.value ||
+            controller.images.isNotEmpty ||
+            controller.files.isNotEmpty;
         final hasVoice = controller.hasVoice.value;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,9 +51,7 @@ class ChatInputBar extends StatelessWidget {
                   controller.clickAction(ActionType.photo);
                 }),
                 if (!hasVoice)
-                  Flexible(
-                    child: _InputField(),
-                  )
+                  Flexible(child: _InputField())
                 else
                   Expanded(
                     child: GestureDetector(
@@ -92,7 +93,7 @@ class ChatInputBar extends StatelessWidget {
                         controller.handleVoicePressed();
                       })
                       .withMarginOnly(right: 8.toW),
-
+                if (!hasVoice)
                 ImageUtils(
                       imageUrl: hasText
                           ? Assets.home.sendIcon.path
@@ -101,9 +102,9 @@ class ChatInputBar extends StatelessWidget {
                     )
                     .withOnTap(() {
                       if (hasText) {
-                        controller.handleSendPressed(isFocus: false);
+                        controller.handleSendPressed();
                       } else {
-                        controller.handleToolBtnClick();
+                        controller.handleToolBtnClick(focusTool: hasVoice);
                       }
                     })
                     .withMarginOnly(left: hasText ? 8.toW : 0),
@@ -208,7 +209,7 @@ class ChatInputBar extends StatelessWidget {
                               ),
                             ).withExpanded(),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
