@@ -141,7 +141,6 @@ class ChatPageController extends GetxController {
       final isToolOpen = currentPanelType == ChatPanelType.tool;
       updatePanelType(isToolOpen ? ChatPanelType.keyboard : ChatPanelType.tool);
     }
-
   }
 
   void onPanelTypeChange(ChatBottomPanelType panelType, ChatPanelType? data) {
@@ -966,11 +965,15 @@ class ChatPageController extends GetxController {
       if (result.code == NetCodeHandle.success) {
         List datas = result.data as List;
         List<UiMessage> models = [];
+        bool isHiddenRefresh = false;
         for (var map in datas) {
           var msg = map['message'].toString();
           var expand = map['expand'].toString();
           String content = '';
-          bool isAi = false;
+          List<MessageFileModel> files = []; // 文件数组
+          List<MessageImageModel> images = [];
+
+          bool isAi = map['role'] != 'user';
           if (!ObjectUtils.isEmptyString(msg)) {
             var msgMap = json.decode(msg);
             isAi = msgMap['role'] == 'assistant';
@@ -979,8 +982,20 @@ class ChatPageController extends GetxController {
           if (!ObjectUtils.isEmptyString(expand)) {
             //特殊处理,  图片和文件格式
             var msgMap = json.decode(expand);
-            isAi = true;
-            if (msgMap['ocrResultDTO'] != null) {
+            if (!isAi && msgMap['files'] != null && msgMap['files'] is List) { //用户消息
+              var files = msgMap['files'] as List;
+              for (var e in files) {
+                var isImage = ObjectUtils.isImage(files.first['url'].toString());
+                if (isImage) {
+                  images.add(MessageImageModel(url: e['url']));
+                } else {
+                  files.add(MessageFileModel(url: e['url'].toString(), name: e['name'].toString()));
+                }
+              }
+            } else if (!ObjectUtils.isEmptyString(msgMap['content'])) { //自定义消息, 需隐藏刷新消息
+              content = msgMap['content'];
+              isHiddenRefresh = isAi;
+            } else if (msgMap['ocrResultDTO'] != null) {
               var contentMap =
                   msgMap['ocrResultDTO']['result'] as Map<String, dynamic>;
               content = json.encode(contentMap);
@@ -991,12 +1006,15 @@ class ChatPageController extends GetxController {
           }
           final finalMessage = UiMessage(
             id: map['id'].toString(),
-            text: ObjectUtils.isEmptyString(content) ? '未查询到案件' : content,
+            text: content,
             isAi: isAi,
+            files: files,
+            images: images,
             createdAt: DateTime.fromMillisecondsSinceEpoch(
               map['createTime'].toString().toInt(),
             ),
             hasAnimated: true,
+            isHiddenRefresh: isHiddenRefresh,
             // 流式传输已经是逐字显示，不需要打字动画
             isThinkingDone: true, // 流式传输完成
           );
@@ -1109,6 +1127,9 @@ class ChatPageController extends GetxController {
         createdAt: DateTime.now(),
       ),
     );
+    saveChatMsg(expand: json.encode({
+      'content': '更新到案件中'
+    }), isUser: true);
 
     if (ssEMessageData?.data != null) {
       var map = ssEMessageData!.data as Map<String, dynamic>;
@@ -1117,23 +1138,45 @@ class ChatPageController extends GetxController {
       NetUtils.post(Apis.uploadByAgent, params: map).then((result) {
         if (result.code == NetCodeHandle.success) {
           if (result.data['success'] == true) {
+            String text =  '已更新至:\n\n' +
+                '案件名称: ${map['ocrResultDTO']['result']['文书标题']}\n\n' +
+                '案号: ${map['ocrResultDTO']['result']['案号']}';
             messages.add(
               UiMessage(
                 id: 'user-${DateTime.now().microsecondsSinceEpoch}',
-                text:
-                    '已更新至:\n\n' +
-                    '案件名称: ${map['ocrResultDTO']['result']['文书标题']}\n\n' +
-                    '案号: ${map['ocrResultDTO']['result']['案号']}',
+                text: text,
                 isAi: true,
                 hasAnimated: true,
                 createdAt: DateTime.now(),
               ),
             );
+            saveChatMsg(expand: json.encode({
+              'content': text
+            }), isUser: false);
           } else {
             showToast(result.data['msg'].toString());
           }
         }
       });
     }
+  }
+
+  ///手动保存历史消息
+  void saveChatMsg({
+    required String expand,
+    required bool isUser,
+  }) {
+    NetUtils.post(
+      Apis.saveChatMsg,
+      isLoading: false,
+      isToastErrorMsg: false,
+      params: {
+        'agentId': agentId.value,
+        'hisId': sessionId.value,
+        'requestId': Uuid().v4(),
+        'expand': expand,
+        'role': isUser ? 'user' : 'system',
+      },
+    );
   }
 }

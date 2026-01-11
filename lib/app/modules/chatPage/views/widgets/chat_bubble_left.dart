@@ -122,7 +122,6 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
   @override
   Widget build(BuildContext context) {
     final textColor = Colors.black87;
-    logPrint('caseId ======= ${widget.message.caseId}');
     return Align(
       alignment: Alignment.centerLeft,
       child: Column(
@@ -206,10 +205,10 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        _buildActionButton(Icons.refresh, () {
-                          widget.onRefresh?.call();
-                        }),
-                        SizedBox(width: 12.toW),
+                        if (!widget.message.isHiddenRefresh)
+                          _buildActionButton(Icons.refresh, () {
+                            widget.onRefresh?.call();
+                          }).withMarginOnly(right: 12.toW),
                         _buildActionButton(Icons.copy, () {
                           final content = widget.message.text;
                           Clipboard.setData(ClipboardData(text: content));
@@ -222,7 +221,9 @@ class _ChatBubbleLeftState extends State<ChatBubbleLeft> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.message.caseId! > 0 ? '检测到系统中存在该案号相关信息' : '未检测到案号相关信息',
+                          widget.message.caseId! > 0
+                              ? '检测到系统中存在该案号相关信息'
+                              : '未检测到案号相关信息',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 15.toSp,

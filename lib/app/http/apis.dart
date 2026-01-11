@@ -148,6 +148,10 @@ class Apis {
   ///更新案件信息
   static String uploadByAgent = '/legal/document/upload-byAgent';
 
+  ///手动保存历史消息
+  static String saveChatMsg = '/ai/chat-msg/saveChatMsg';
+
+
 
 
   ///AI智能体聊天流式接口

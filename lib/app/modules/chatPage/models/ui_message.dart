@@ -52,7 +52,8 @@ class UiMessage {
     this.isPrologue = false,
     this.files,
     this.images,
-    this.caseId
+    this.caseId,
+    this.isHiddenRefresh = false
   });
 
   final String id;
@@ -67,6 +68,7 @@ class UiMessage {
   final List<MessageFileModel>? files; // 文件数组
   final List<MessageImageModel>? images; // 图片数组
   final int? caseId;
+  final bool isHiddenRefresh;
 
   UiMessage copyWith({
     String? id,
@@ -79,6 +81,7 @@ class UiMessage {
     bool? isThinkingDone,
     bool? isPrologue,
     int? caseId,
+    bool? isHiddenRefresh,
     List<MessageFileModel>? files,
     List<MessageImageModel>? images,
   }) {
@@ -87,6 +90,7 @@ class UiMessage {
       caseId: caseId ?? this.caseId,
       text: text ?? this.text,
       isAi: isAi ?? this.isAi,
+      isHiddenRefresh: isHiddenRefresh ?? this.isHiddenRefresh,
       createdAt: createdAt ?? this.createdAt,
       hasAnimated: hasAnimated ?? this.hasAnimated,
       thinkingProcess: thinkingProcess ?? this.thinkingProcess,
