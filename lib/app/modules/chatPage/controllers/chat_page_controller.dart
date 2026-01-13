@@ -25,6 +25,7 @@ import 'package:vibration/vibration.dart';
 
 import '../../../http/net/sse_utils.dart';
 import '../../../utils/image_picker_util.dart';
+import '../../contractDetailPage/models/case/case_detail_model.dart';
 import '../models/chat_agent_ui_config.dart';
 import '../models/chat_history_list.dart';
 import '../models/ui_message.dart';
@@ -1116,7 +1117,21 @@ class ChatPageController extends GetxController {
   }
 
   ///确认更新案件信息
-  void updateCaseInfo(int? caseId) {
+  Future<void> updateCaseInfo(int? caseId) async {
+
+    var result = await NetUtils.get(
+      Apis.caseBasicInfo,
+      queryParameters: {'id': caseId},
+      isLoading: false,
+      isToastErrorMsg: false,
+    );
+    String? caseName;
+    if (result.code == NetCodeHandle.success) {
+      var model = CaseDetailModel.fromJson(result.data ?? {});
+      caseName = model.caseBase?.caseName;
+    }
+
+
     //更新成功
     messages.add(
       UiMessage(
@@ -1139,7 +1154,7 @@ class ChatPageController extends GetxController {
         if (result.code == NetCodeHandle.success) {
           if (result.data['success'] == true) {
             String text =  '已更新至:\n\n' +
-                '案件名称: ${map['ocrResultDTO']['result']['文书标题']}\n\n' +
+                '案件名称: $caseName\n\n' +
                 '案号: ${map['ocrResultDTO']['result']['案号']}';
             messages.add(
               UiMessage(
@@ -1179,4 +1194,8 @@ class ChatPageController extends GetxController {
       },
     );
   }
+
+
+
+
 }

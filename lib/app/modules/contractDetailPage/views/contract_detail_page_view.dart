@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
+import 'package:lawyer_app/app/common/extension/widget_extension.dart';
 import 'package:lawyer_app/app/utils/object_utils.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../utils/image_utils.dart';
@@ -128,7 +129,7 @@ class ContractDetailPageView extends GetView<ContractDetailPageController> {
           ),
         ],
       ),
-    );
+    ).setStatusBarStyle();
   }
 
   // 顶部导航栏

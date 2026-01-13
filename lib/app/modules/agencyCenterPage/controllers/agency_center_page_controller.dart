@@ -299,7 +299,7 @@ class AgencyCenterPageController extends GetxController {
   }
 
   void onConfirmDeleteTask(CaseTaskModel model) {
-    NetUtils.put(Apis.deleteTask, params: {'id': model.id}).then((result) {
+    NetUtils.delete(Apis.deleteTask, queryParameters: {'id': model.id}).then((result) {
       if (result.code == NetCodeHandle.success) {
         reloadTaskUI(model);
       }

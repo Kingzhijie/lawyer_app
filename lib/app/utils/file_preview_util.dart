@@ -5,6 +5,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/utils/toast_utils.dart';
 
+import '../../main.dart';
+import 'image_viewer_util.dart';
+import 'object_utils.dart';
+
 /// 文件预览工具类
 /// 支持本地文件和网络文件预览
 /// 支持格式：.doc, .docx, .wps, .ppt, .pptx, .xls, .xlsx, .md, .txt, .pdf
@@ -41,6 +45,17 @@ class FilePreviewUtil {
     bool useCache = true,
   }) async {
     try {
+
+      if (ObjectUtils.isImage(filePath)) {
+        // 点击图片打开全屏浏览，支持多图滑动
+        ImageViewerUtil.showImageGallery(
+          currentContext,
+          [filePath],
+          initialIndex: 0,
+        );
+        return true;
+      }
+
       // 判断是本地文件还是网络文件
       final isNetworkFile = filePath.startsWith('http://') || 
                            filePath.startsWith('https://');
