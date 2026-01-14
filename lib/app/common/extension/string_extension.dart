@@ -3,6 +3,7 @@
 /// @Description: 字符串相关扩展方法
 
 // ignore: depend_on_referenced_packages
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:decimal/decimal.dart';
@@ -70,12 +71,18 @@ extension StringOssExtension on String {
 
   ///处理AiOcr消息
   String processingAiOcrText(){
-    var caseNum = '案号';
-    var titleKey = '文书标题';
-
-
-
     var result = this;
+    //此处特殊处理, 原告被告
+    Map? map = json.decode(result);
+    Map? yg = map?['原告'];
+    List? bg = map?['被告'];
+    String ygStr = yg?['名称'];
+    String bgStr = '';
+    bg?.forEach((e){
+      bgStr = bgStr.isEmpty ? e['姓名'] : '$bgStr，${e['姓名']}';
+    });
+    result = result.replaceAll(json.encode(yg), ygStr);
+    result = result.replaceAll(json.encode(bg), bgStr);
     result = result.replaceAll('},{', '  \n');
     result = result.replaceAll('{', '  \n');
     result = result.replaceAll('}', '');
@@ -83,6 +90,7 @@ extension StringOssExtension on String {
     result = result.replaceAll('[', '');
     result = result.replaceAll(']', '');
     result = result.replaceAll('"', '');
+    result = result.replaceAll(':', ':  ');
     return result;
   }
 
