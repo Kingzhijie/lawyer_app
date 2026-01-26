@@ -145,6 +145,9 @@ class DioUtils {
             BaseEntity<T> model = BaseEntity<T>.fromJson({
               'code': NetCodeHandle.unauthorized,
             });
+            showToast('登录失效, 请重新登录');
+            //token失效, 或者未登录
+            AppCommonUtils.logout();
             return model;
           }
         }
@@ -166,7 +169,7 @@ class DioUtils {
         if (model.code != NetCodeHandle.success && isToastErrorMsg) {
           if (model.code == NetCodeHandle.unauthorized) {
             //token失效, 或者未登录
-            // AppCommonUtils.logout();
+            AppCommonUtils.logout();
           } else {
             showToast(model.message);
           }
@@ -179,7 +182,7 @@ class DioUtils {
         BaseEntity<T> model = BaseEntity<T>(error.code, error.msg, null);
         if (model.code == NetCodeHandle.unauthorized) {
           //token失效, 或者未登录
-          // AppCommonUtils.logout();
+          AppCommonUtils.logout();
         } else if (isToastErrorMsg) {
           showToast(model.message);
         }

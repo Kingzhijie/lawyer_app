@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/http/net/tool/logger.dart';
 import 'package:lawyer_app/app/modules/tabPage/controllers/tab_page_controller.dart';
+import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/app/utils/storage_utils.dart';
 
+import '../common/components/dialog.dart';
+import '../common/constants/app_colors.dart';
 import '../routes/app_pages.dart';
 import 'object_utils.dart';
 
@@ -43,23 +46,23 @@ class AppCommonUtils {
     StorageUtils.removeString(StorageKey.tokenExpiresTime);
     StorageUtils.removeString(StorageKey.userId);
     if (isAlert) {
-      // AppDialog.singleItem(
-      //   title: S.of(currentContext).alert,
-      //   titleStyle: TextStyle(
-      //       color: Colors.black,
-      //       fontSize: 17.toSp,
-      //       fontWeight: FontWeight.w600),
-      //   content: S.of(currentContext).offline_notice,
-      //   contentStyle: TextStyle(color: Colors.black, fontSize: 15.toSp),
-      //   cancel: S.of(currentContext).iKnow,
-      //   firstBtnTextStyle: TextStyle(
-      //       color: AppColors.theme,
-      //       fontSize: 13.toSp,
-      //       fontWeight: FontWeight.w500),
-      //   onCancel: () {
+      AppDialog.singleItem(
+        title: '温馨提示',
+        titleStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 17.toSp,
+            fontWeight: FontWeight.w600),
+        content: '您当前账号已下线, 请重新登录\n如非本人操作请及时修改密码或联系客服',
+        contentStyle: TextStyle(color: Colors.black, fontSize: 15.toSp),
+        cancel: '我知道了',
+        firstBtnTextStyle: TextStyle(
+            color: AppColors.theme,
+            fontSize: 13.toSp,
+            fontWeight: FontWeight.w500),
+        onCancel: () {
           backAppRootPage();
-      //   },
-      // ).showAlert();
+        },
+      ).showAlert();
     } else {
       backAppRootPage();
     }
@@ -67,7 +70,6 @@ class AppCommonUtils {
 
   ///返回app主页
   static void backAppRootPage(){
-    logPrint('tuichudelu');
     getFindController<TabPageController>()?.closeDrawer();
     Get.until((route) => Get.currentRoute == Routes.TAB_PAGE);
     changeTabHome();
