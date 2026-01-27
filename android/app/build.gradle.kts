@@ -56,7 +56,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         manifestPlaceholders += mapOf(
-            "GETUI_APPID" to "Omh21RFrHMAnXXOjPH7mY7",
+            "GETUI_APPID" to "3lKDEvjnKPAR0FVwW5dy4A",
             "XIAOMI_APP_ID" to "2882303761520359164",
             "XIAOMI_APP_KEY" to "5382035933164",
             "MEIZU_APP_ID" to "155168",

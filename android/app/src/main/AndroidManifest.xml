@@ -129,11 +129,11 @@
             android:value="2" />
         <meta-data
             android:name="PUSH_APPID"
-            android:value="Omh21RFrHMAnXXOjPH7mY7" />
+            android:value="3lKDEvjnKPAR0FVwW5dy4A" />
         <!-- 个推必要 meta -->
         <meta-data android:name="GETUI_APPID" android:value="${GETUI_APPID}" />
-        <meta-data android:name="GETUI_APPSECRET" android:value="Pp0hnL7cvt9GVQ2nuhE7G9" />
-        <meta-data android:name="GETUI_APPKEY" android:value="W1XAkXoLAp8OdSigQM8OI4" />
+        <meta-data android:name="GETUI_APPSECRET" android:value="RDMNRsY7Ze6PajUYCNeVW4" />
+        <meta-data android:name="GETUI_APPKEY" android:value="gecHFJkNv971zHCZQMQ6S8" />
 
         <!-- 小米 -->
         <meta-data android:name="MI_APP_ID" android:value="${XIAOMI_APP_ID}" />

@@ -13,9 +13,9 @@ import '../permission_util.dart';
 class PushUtil {
   static final Getuiflut pushUtil = Getuiflut();
 
-  static String pushAppId = 'Omh21RFrHMAnXXOjPH7mY7';
-  static String pushAppKey = 'W1XAkXoLAp8OdSigQM8OI4';
-  static String pushAppSecret = 'Pp0hnL7cvt9GVQ2nuhE7G9';
+  static String pushAppId = '3lKDEvjnKPAR0FVwW5dy4A';
+  static String pushAppKey = 'gecHFJkNv971zHCZQMQ6S8';
+  static String pushAppSecret = 'RDMNRsY7Ze6PajUYCNeVW4';
   static final FlutterLocalNotificationsPlugin localNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
 
