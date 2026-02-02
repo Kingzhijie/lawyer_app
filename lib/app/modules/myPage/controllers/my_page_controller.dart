@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawyer_app/app/routes/app_pages.dart';
 import 'package:lawyer_app/app/utils/app_common_instance.dart';
+import 'package:lawyer_app/app/utils/toast_utils.dart';
 
 import '../../../common/components/dialog.dart';
 import '../../../http/apis.dart';
@@ -66,6 +67,48 @@ class MyPageController extends GetxController {
   ///打开会员中心
   void openVipCenterPage() {
     Get.toNamed(Routes.VIP_CENTER_PAGE);
+  }
+
+  void accountCancel() {
+    AppDialog.doubleItem(
+      title: '温馨提示',
+      titleStyle: TextStyle(
+        color: Colors.black,
+        fontSize: 17.toSp,
+        fontWeight: FontWeight.w600,
+      ),
+      content: '确认注销账号, 账号注销以后将无法找回',
+      contentStyle: TextStyle(color: Colors.black, fontSize: 15.toSp),
+      cancel: '取消',
+      confirm: '确认注销',
+      onConfirm: () {
+        NetUtils.delete(Apis.cancelAccount).then((result){
+          if (result.code == NetCodeHandle.success) {
+            showToast('账号注销成功');
+            AppCommonUtils.logout(isAlert: false);
+          }
+        });
+      },
+    ).showAlert();
+  }
+
+  /// 打开用户服务协议
+  void openUserServiceAgreement() {
+    Get.toNamed(
+      Routes.WEB_VIEW_PAGE,
+      arguments: {
+        'title': '用户服务协议',
+        'url': 'http://lingb.lawseek.cn/yhxy.html',
+      },
+    );
+  }
+
+  /// 打开隐私政策
+  void openPrivacyPolicy() {
+    Get.toNamed(
+      Routes.WEB_VIEW_PAGE,
+      arguments: {'title': '隐私政策', 'url': 'http://lingb.lawseek.cn/yszc.html'},
+    );
   }
 
   

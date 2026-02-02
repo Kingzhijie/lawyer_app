@@ -27,19 +27,37 @@ class LoginPageController extends GetxController {
     }
     FocusManager.instance.primaryFocus?.unfocus();
     isSending.value = true;
-    NetUtils.post(Apis.sendSmsCode, params: {'mobile': phone, 'scene':  1}, isLoading: false).then((data){
+    NetUtils.post(
+      Apis.sendSmsCode,
+      params: {'mobile': phone, 'scene': 1},
+      isLoading: false,
+    ).then((data) {
       isSending.value = false;
       if (data.code == NetCodeHandle.success) {
         showToast('短信验证码已发送');
         Get.toNamed(Routes.LOGIN_CODE_PAGE, arguments: phone);
       }
     });
-
-
   }
 
   void lookProtocol(String text) {
-    // TODO: 跳转用户协议/隐私政策
+    if (text == '《用户协议》') {
+      Get.toNamed(
+        Routes.WEB_VIEW_PAGE,
+        arguments: {
+          'title': '用户服务协议',
+          'assetPath': 'assets/html/user_agreement.html',
+        },
+      );
+    } else if (text == '《隐私政策》') {
+      Get.toNamed(
+        Routes.WEB_VIEW_PAGE,
+        arguments: {
+          'title': '隐私政策',
+          'url': 'http://lingb.lawseek.cn/yszc.html',
+        },
+      );
+    }
   }
 
   @override

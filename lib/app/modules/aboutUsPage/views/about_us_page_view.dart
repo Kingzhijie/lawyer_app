@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:lawyer_app/app/common/components/common_app_bar.dart';
 import 'package:lawyer_app/app/common/constants/app_colors.dart';
 import 'package:lawyer_app/app/common/extension/widget_extension.dart';
+import 'package:lawyer_app/app/utils/device_info_utils.dart';
 import 'package:lawyer_app/app/utils/image_utils.dart';
 import 'package:lawyer_app/app/utils/screen_utils.dart';
 import 'package:lawyer_app/gen/assets.gen.dart';
@@ -52,7 +53,7 @@ class AboutUsPageView extends GetView<AboutUsPageController> {
         ),
         SizedBox(height: 16.toW),
         Text(
-          '当前版本: 1.0',
+          '当前版本: ${DeviceInfo.version}',
           style: TextStyle(
             fontSize: 14.toSp,
             color: AppColors.color_66000000,

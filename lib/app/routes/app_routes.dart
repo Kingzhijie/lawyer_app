@@ -28,6 +28,7 @@ abstract class Routes {
   static const EDIT_CASE_BASE_INFO = _Paths.EDIT_CASE_BASE_INFO;
   static const VIP_CENTER_PAGE = _Paths.VIP_CENTER_PAGE;
   static const INVITE_FRIEND_PAGE = _Paths.INVITE_FRIEND_PAGE;
+  static const WEB_VIEW_PAGE = _Paths.WEB_VIEW_PAGE;
 }
 
 abstract class _Paths {
@@ -57,4 +58,5 @@ abstract class _Paths {
   static const EDIT_CASE_BASE_INFO = '/edit-case-base-info';
   static const VIP_CENTER_PAGE = '/vip-center-page';
   static const INVITE_FRIEND_PAGE = '/invite-friend-page';
+  static const WEB_VIEW_PAGE = '/web-view-page';
 }

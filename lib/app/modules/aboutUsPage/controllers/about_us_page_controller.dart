@@ -1,33 +1,23 @@
 import 'package:get/get.dart';
+import 'package:lawyer_app/app/routes/app_pages.dart';
 
 class AboutUsPageController extends GetxController {
-  //TODO: Implement AboutUsPageController
-
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
-
   /// 打开用户服务协议
   void openUserServiceAgreement() {
-    // TODO: 跳转到用户服务协议页面
+    Get.toNamed(
+      Routes.WEB_VIEW_PAGE,
+      arguments: {
+        'title': '用户服务协议',
+        'assetPath': 'assets/html/user_agreement.html',
+      },
+    );
   }
 
   /// 打开隐私政策
   void openPrivacyPolicy() {
-    // TODO: 跳转到隐私政策页面
+    Get.toNamed(
+      Routes.WEB_VIEW_PAGE,
+      arguments: {'title': '隐私政策', 'url': 'http://lingb.lawseek.cn/yszc.html'},
+    );
   }
 }

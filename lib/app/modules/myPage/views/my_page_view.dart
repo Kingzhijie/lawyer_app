@@ -27,8 +27,8 @@ class MyPageView extends GetView<MyPageController> {
                   children: [
                     _buildUserInfo(),
                     SizedBox(height: 24.toW),
-                    _buildProMemberCard(),
-                    SizedBox(height: 24.toW),
+                    // _buildProMemberCard(),
+                    // SizedBox(height: 24.toW),
                     _buildMenuItems(),
                   ],
                 ).withMarginOnly(left: 16.toW, right: 16.toW, top: 20.toW),
@@ -43,7 +43,7 @@ class MyPageView extends GetView<MyPageController> {
 
   /// 用户信息区域
   Widget _buildUserInfo() {
-    return Obx((){
+    return Obx(() {
       var homeController = getFindController<NewHomePageController>();
       var userModel = homeController?.userModel.value;
       return Row(
@@ -83,8 +83,8 @@ class MyPageView extends GetView<MyPageController> {
             width: 22.toW,
             height: 22.toW,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(11.toW),
-                color: AppColors.color_FFF3F3F3
+              borderRadius: BorderRadius.circular(11.toW),
+              color: AppColors.color_FFF3F3F3,
             ),
             alignment: Alignment.center,
             child: Icon(
@@ -102,7 +102,7 @@ class MyPageView extends GetView<MyPageController> {
 
   /// PRO 会员卡片
   Widget _buildProMemberCard() {
-    return ImageUtils(imageUrl: Assets.my.vipCardBg.path).withOnTap((){
+    return ImageUtils(imageUrl: Assets.my.vipCardBg.path).withOnTap(() {
       controller.openVipCenterPage();
     });
   }
@@ -111,14 +111,15 @@ class MyPageView extends GetView<MyPageController> {
   Widget _buildMenuItems() {
     return Column(
       children: [
-        _buildMenuItem(
-          icon: Assets.my.inviteFriend.path,
-          title: '邀请好友',
-          onTap: () {
-            controller.pushInviteFriendPage();
-          },
-        ),
-        SizedBox(height: 6.toW),
+        // _buildMenuItem(
+        //   icon: Assets.my.inviteFriend.path,
+        //   title: '邀请好友',
+        //   onTap: () {
+        //     controller.pushInviteFriendPage();
+        //   },
+        // ),
+        // SizedBox(height: 6.toW),
+
         _buildMenuItem(
           icon: Assets.my.aboutUsIcon.path,
           title: '关于我们',
@@ -140,11 +141,7 @@ class MyPageView extends GetView<MyPageController> {
       padding: EdgeInsets.symmetric(vertical: 12.toW),
       child: Row(
         children: [
-          ImageUtils(
-            imageUrl: icon,
-            width: 24.toW,
-            height: 24.toW,
-          ),
+          ImageUtils(imageUrl: icon, width: 24.toW, height: 24.toW),
           SizedBox(width: 12.toW),
           Expanded(
             child: Text(
@@ -167,30 +164,37 @@ class MyPageView extends GetView<MyPageController> {
 
   /// 退出登录按钮
   Widget _buildLogoutButton() {
-    return Container(
-      margin: EdgeInsets.only(
-        left: 16.toW,
-        right: 16.toW,
-        bottom: 20.toW,
-      ),
-      child: Container(
-        height: 44.toW,
-        decoration: BoxDecoration(
-          color: AppColors.color_FFF5F7FA,
-          borderRadius: BorderRadius.circular(12.toW),
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: 16.toW, right: 16.toW, bottom: 20.toW),
+          child:
+              Container(
+                height: 44.toW,
+                decoration: BoxDecoration(
+                  color: AppColors.color_FFF5F7FA,
+                  borderRadius: BorderRadius.circular(12.toW),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  '退出登录',
+                  style: TextStyle(
+                    fontSize: 16.toSp,
+                    color: AppColors.color_E6000000,
+                  ),
+                ),
+              ).withOnTap(() {
+                // TODO: 退出登录
+                controller.logout();
+              }),
         ),
-        alignment: Alignment.center,
-        child: Text(
-          '退出登录',
-          style: TextStyle(
-            fontSize: 16.toSp,
-            color: AppColors.color_E6000000,
-          ),
-        ),
-      ).withOnTap(() {
-        // TODO: 退出登录
-        controller.logout();
-      }),
+        Text(
+          '账号注销',
+          style: TextStyle(color: AppColors.color_99000000, fontSize: 12.toSp),
+        ).withOnTap((){
+          controller.accountCancel();
+        }),
+      ],
     );
   }
 }

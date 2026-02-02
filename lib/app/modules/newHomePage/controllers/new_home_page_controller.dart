@@ -94,10 +94,10 @@ class NewHomePageController extends GetxController
       return;
     }
 
-    if (userModel.value!.hasTeamOffice == false) {
-      Get.toNamed(Routes.VIP_CENTER_PAGE);
-      return;
-    }
+    // if (userModel.value!.hasTeamOffice == false) {
+    //   Get.toNamed(Routes.VIP_CENTER_PAGE);
+    //   return;
+    // }
 
     BottomSheetUtils.show(
       currentContext,

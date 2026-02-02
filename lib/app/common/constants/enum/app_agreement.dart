@@ -1,17 +1,11 @@
 enum AppAgreement {
-  userAgreement('https://www.miliyue.com/about/user.html', '用户服务协议', 'https://www.miliyue.com/about/user_en.html'),
-  privacyServiceAgreement(
-      'https://www.miliyue.com/about/policy.html', '隐私政策', 'https://www.miliyue.com/about/policy_en.html'),
-  partyServiceAgreement(
-      'https://miyue360.pages.dev/agreement/agreement.html', '线上聚会服务协议', 'https://miyue360.pages.dev/agreement/agreement_en.html'),
-  vipServiceAgreement(
-      'https://www.miliyue.com/about/vip.html', 'vip协议', 'https://www.miliyue.com/about/vip_en.html'),;
+  userAgreement('https://www.miliyue.com/about/user.html', '用户服务协议'),
+  website('https://www.miliyue.com/about/user.html', '用户服务协议');
 
-  const AppAgreement(this.url, this.name, this.enUrl);
+  const AppAgreement(this.url, this.name);
 
   final String url;
   final String name;
-  final String enUrl;
 
   //https://www.miliyue.com/about/vip.html
 }

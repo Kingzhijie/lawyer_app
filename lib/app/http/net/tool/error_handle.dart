@@ -6,10 +6,10 @@ class NetCodeHandle {
   ///请求成功
   static const int success = 0;
   /// 未授权, 未登录
-  static const int unauthorized = 403;
+  static const int unauthorized = 401;
   static const int success_not_content = 204;
   static const int not_modified = 304;
-  static const int forbidden = 401;
+  static const int forbidden = 403;
   static const int not_found = 404;
 
   static const int net_error = 1000;

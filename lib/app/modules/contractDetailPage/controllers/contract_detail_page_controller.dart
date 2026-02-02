@@ -102,10 +102,10 @@ class ContractDetailPageController extends GetxController {
       return;
     }
 
-    if (userModel.hasTeamOffice == false) {
-      Get.toNamed(Routes.VIP_CENTER_PAGE);
-      return;
-    }
+    // if (userModel.hasTeamOffice == false) {
+    //   Get.toNamed(Routes.VIP_CENTER_PAGE);
+    //   return;
+    // }
 
     BottomSheetUtils.show(
       currentContext,

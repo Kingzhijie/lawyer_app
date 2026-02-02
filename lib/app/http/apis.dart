@@ -152,6 +152,8 @@ class Apis {
   static String saveChatMsg = '/ai/chat-msg/saveChatMsg';
 
 
+  ///账号注销
+  static String cancelAccount = '/member/user/cancel-account';
 
 
   ///AI智能体聊天流式接口

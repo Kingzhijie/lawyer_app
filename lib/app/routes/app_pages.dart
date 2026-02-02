@@ -48,6 +48,8 @@ import '../modules/userInfoPage/bindings/user_info_page_binding.dart';
 import '../modules/userInfoPage/views/user_info_page_view.dart';
 import '../modules/vipCenterPage/bindings/vip_center_page_binding.dart';
 import '../modules/vipCenterPage/views/vip_center_page_view.dart';
+import '../modules/webViewPage/bindings/web_view_page_binding.dart';
+import '../modules/webViewPage/views/web_view_page_view.dart';
 
 part 'app_routes.dart';
 
@@ -176,6 +178,11 @@ class AppPages {
       name: _Paths.INVITE_FRIEND_PAGE,
       page: () => const InviteFriendPageView(),
       binding: InviteFriendPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.WEB_VIEW_PAGE,
+      page: () => const WebViewPageView(),
+      binding: WebViewPageBinding(),
     ),
   ];
 }
